@@ -544,7 +544,11 @@ local function build_languages_tab()
         {},
     }
 
-    local graph_x_axis_parts = { { "        " } } -- Start with 8 spaces
+    -- Calculate dynamic spacing based on max label width
+    local max_label_length = tostring(max_chars):len()
+    local x_axis_spacing = 6 + max_label_length
+    local spacing_str = string.rep(" ", x_axis_spacing)
+    local graph_x_axis_parts = { { spacing_str } }
     for i = 1, math.min(M.max_language_entries, #lang_data) do
         local icon = languages.get_icon(lang_data[i].lang)
         local hl = "Comment"
