@@ -128,6 +128,13 @@ require("triforce").setup({
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },  -- Levels 11-20
     tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+
   },
+
+  -- Customize XP rewards (optional)
+  xp_rewards = {
+    char = 1,   -- XP per character typed
+    line = 1,   -- XP per new line
+    save = 50,  -- XP per file save
+  },
 })
 ```
 
@@ -144,6 +151,7 @@ require("triforce").setup({
 | `keymap.show_profile` | `string \| nil` | `nil` | Keymap for opening profile |
 | `custom_languages` | `table \| nil` | `nil` | Custom language definitions |
 | `level_progression` | `table \| nil` | See below | Custom XP requirements per level tier |
+| `xp_rewards` | `table \| nil` | See below | Custom XP rewards for actions |
 
 ### Level Progression
 
@@ -168,6 +176,38 @@ require("triforce").setup({
     tier_1 = { min_level = 1, max_level = 15, xp_per_level = 200 },   -- Super easy early levels
     tier_2 = { min_level = 16, max_level = 30, xp_per_level = 400 },
     tier_3 = { min_level = 31, max_level = math.huge, xp_per_level = 800 },
+  },
+})
+```
+
+### XP Rewards
+
+By default, Triforce awards XP for different coding activities:
+
+- **Character typed**: 1 XP
+- **New line**: 1 XP
+- **File save**: 50 XP
+
+You can customize these values to match your preferences. For example, if you want to emphasize quality over quantity and reward saves more:
+
+```lua
+require("triforce").setup({
+  xp_rewards = {
+    char = 0.5,  -- Less XP for characters
+    line = 2,    -- More XP for new lines
+    save = 100,  -- Reward file saves heavily
+  },
+})
+```
+
+Or if you prefer to focus on typing volume:
+
+```lua
+require("triforce").setup({
+  xp_rewards = {
+    char = 2,    -- More XP per character
+    line = 5,    -- Moderate XP for lines
+    save = 25,   -- Less emphasis on saves
   },
 })
 ```

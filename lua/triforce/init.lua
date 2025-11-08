@@ -8,6 +8,11 @@
 ---@field tier_2 LevelTier Levels 11-20
 ---@field tier_3 LevelTier Levels 21+
 
+---@class XPRewards
+---@field char number XP gained per character typed (default: 1)
+---@field line number XP gained per new line (default: 1)
+---@field save number XP gained per file save (default: 50)
+
 ---@class TriforceConfig
 ---@field enabled boolean Enable the plugin
 ---@field gamification_enabled boolean Enable gamification features (stats, XP, achievements)
@@ -20,6 +25,7 @@
 ---@field keymap.show_profile string|nil Keymap for showing profile (default: nil = no keymap)
 ---@field custom_languages table<string, table>|nil Custom language definitions { filetype = { icon = "", name = "" } }
 ---@field level_progression LevelProgression|nil Custom level progression tiers
+---@field xp_rewards XPRewards|nil Custom XP reward amounts for different actions
 
 local M = {}
 
@@ -42,6 +48,11 @@ local defaults = {
     tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },   -- Levels 1-10: 300 XP each
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },  -- Levels 11-20: 500 XP each
     tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
+  },
+  xp_rewards = {
+    char = 1,   -- XP per character typed
+    line = 1,   -- XP per new line (changed from 10 to 1)
+    save = 50,  -- XP per file save
   },
 }
 

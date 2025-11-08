@@ -26,11 +26,16 @@ M.dirty = false
 -- Last save timestamp to prevent rapid saves
 M.last_save_time = 0
 
-local XP_REWARDS = {
-  char = 1,
-  line = 10,
-  save = 50,
-}
+---Get XP rewards from config
+---@return table
+local function get_xp_rewards()
+  local config = require('triforce.init').config
+  return config.xp_rewards or {
+    char = 1,
+    line = 1,
+    save = 50,
+  }
+end
 
 ---Initialize the tracker
 function M.setup()
@@ -109,7 +114,8 @@ function M.on_text_changed()
     local new_lines = current_line_count - previous_line_count
     M.current_stats.lines_typed = M.current_stats.lines_typed + new_lines
     M.lines_today = M.lines_today + new_lines
-    stats_module.add_xp(M.current_stats, XP_REWARDS.line * new_lines)
+    local xp_rewards = get_xp_rewards()
+    stats_module.add_xp(M.current_stats, xp_rewards.line * new_lines)
   end
 
   -- Update the tracked line count
@@ -132,7 +138,8 @@ function M.on_text_changed()
     end
   end
 
-  local leveled_up = stats_module.add_xp(M.current_stats, XP_REWARDS.char)
+  local xp_rewards = get_xp_rewards()
+  local leveled_up = stats_module.add_xp(M.current_stats, xp_rewards.char)
 
   if leveled_up then
     M.notify_level_up()
@@ -151,7 +158,8 @@ function M.on_new_line()
   end
 
   M.current_stats.lines_typed = M.current_stats.lines_typed + 1
-  stats_module.add_xp(M.current_stats, XP_REWARDS.line)
+  local xp_rewards = get_xp_rewards()
+  stats_module.add_xp(M.current_stats, xp_rewards.line)
 end
 
 ---Track file saves
@@ -160,7 +168,8 @@ function M.on_save()
     return
   end
 
-  local leveled_up = stats_module.add_xp(M.current_stats, XP_REWARDS.save)
+  local xp_rewards = get_xp_rewards()
+  local leveled_up = stats_module.add_xp(M.current_stats, xp_rewards.save)
   M.dirty = true
 
   if leveled_up then
