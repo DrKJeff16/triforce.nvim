@@ -109,6 +109,13 @@ require("triforce").setup({
     odin = { icon = "🔷", name = "Odin" },
     -- Add more languages...
   },
+
+  -- Customize level progression (optional)
+  level_progression = {
+    tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },   -- Levels 1-10
+    tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },  -- Levels 11-20
+    tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+
+  },
 })
 ```
 
@@ -124,6 +131,34 @@ require("triforce").setup({
 | `auto_save_interval` | `number` | `300` | Auto-save interval in seconds |
 | `keymap.show_profile` | `string \| nil` | `nil` | Keymap for opening profile |
 | `custom_languages` | `table \| nil` | `nil` | Custom language definitions |
+| `level_progression` | `table \| nil` | See below | Custom XP requirements per level tier |
+
+### Level Progression
+
+By default, Triforce uses a **simple, easy-to-reach** leveling system:
+
+- **Levels 1-10**: 300 XP per level
+- **Levels 11-20**: 500 XP per level
+- **Levels 21+**: 1,000 XP per level
+
+**Example progression:**
+- Level 5: 1,500 XP (5 × 300)
+- Level 10: 3,000 XP (10 × 300)
+- Level 15: 5,500 XP (3,000 + 5 × 500)
+- Level 20: 8,000 XP (3,000 + 10 × 500)
+- Level 30: 18,000 XP (8,000 + 10 × 1,000)
+
+You can customize this by overriding `level_progression` in your setup. For example, to make it even easier:
+
+```lua
+require("triforce").setup({
+  level_progression = {
+    tier_1 = { min_level = 1, max_level = 15, xp_per_level = 200 },   -- Super easy early levels
+    tier_2 = { min_level = 16, max_level = 30, xp_per_level = 400 },
+    tier_3 = { min_level = 31, max_level = math.huge, xp_per_level = 800 },
+  },
+})
+```
 
 ---
 

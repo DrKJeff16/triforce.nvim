@@ -1,3 +1,13 @@
+---@class LevelTier
+---@field min_level number Starting level for this tier
+---@field max_level number Ending level for this tier (use math.huge for infinite)
+---@field xp_per_level number XP required per level in this tier
+
+---@class LevelProgression
+---@field tier_1 LevelTier Levels 1-10
+---@field tier_2 LevelTier Levels 11-20
+---@field tier_3 LevelTier Levels 21+
+
 ---@class TriforceConfig
 ---@field enabled boolean Enable the plugin
 ---@field gamification_enabled boolean Enable gamification features (stats, XP, achievements)
@@ -9,6 +19,7 @@
 ---@field keymap table|nil Keymap configuration
 ---@field keymap.show_profile string|nil Keymap for showing profile (default: nil = no keymap)
 ---@field custom_languages table<string, table>|nil Custom language definitions { filetype = { icon = "", name = "" } }
+---@field level_progression LevelProgression|nil Custom level progression tiers
 
 local M = {}
 
@@ -27,6 +38,11 @@ local defaults = {
     show_profile = nil, -- Set to a keymap like "<leader>tp" to enable
   },
   custom_languages = nil, -- { rust = { icon = "", name = "Rust" } }
+  level_progression = {
+    tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },   -- Levels 1-10: 300 XP each
+    tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },  -- Levels 11-20: 500 XP each
+    tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
+  },
 }
 
 ---@type TriforceConfig
@@ -36,6 +52,12 @@ M.config = vim.deepcopy(defaults)
 ---@param opts TriforceConfig|nil User configuration options
 function M.setup(opts)
   M.config = vim.tbl_deep_extend('force', vim.deepcopy(defaults), opts or {})
+
+  -- Apply custom level progression to stats module
+  if M.config.level_progression then
+    local stats_module = require('triforce.stats')
+    stats_module.level_config = M.config.level_progression
+  end
 
   -- Register custom languages if provided
   if M.config.custom_languages then

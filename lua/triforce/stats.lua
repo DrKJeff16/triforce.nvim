@@ -15,6 +15,14 @@
 
 local M = {}
 
+-- Configurable level progression
+M.level_config = {
+  -- XP required per level for each tier
+  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },   -- Levels 1-10: 300 XP each
+  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },  -- Levels 11-20: 500 XP each
+  tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
+}
+
 ---@type Stats
 M.default_stats = {
   xp = 0,
@@ -146,21 +154,87 @@ function M.save(stats)
   return true
 end
 
+---Calculate total XP needed to reach a specific level
+---@param level number
+---@return number total_xp
+local function get_total_xp_for_level(level)
+  if level <= 1 then
+    return 0
+  end
+
+  local total_xp = 0
+  local config = M.level_config
+
+  -- Calculate XP for tier 1 (levels 1-10)
+  if level > config.tier_1.min_level then
+    local tier_1_levels = math.min(level - 1, config.tier_1.max_level)
+    total_xp = total_xp + (tier_1_levels * config.tier_1.xp_per_level)
+  end
+
+  -- Calculate XP for tier 2 (levels 11-20)
+  if level > config.tier_2.min_level then
+    local tier_2_start = config.tier_2.min_level
+    local tier_2_end = math.min(level - 1, config.tier_2.max_level)
+    local tier_2_levels = tier_2_end - tier_2_start + 1
+    if tier_2_levels > 0 then
+      total_xp = total_xp + (tier_2_levels * config.tier_2.xp_per_level)
+    end
+  end
+
+  -- Calculate XP for tier 3 (levels 21+)
+  if level > config.tier_3.min_level then
+    local tier_3_start = config.tier_3.min_level
+    local tier_3_levels = level - tier_3_start
+    total_xp = total_xp + (tier_3_levels * config.tier_3.xp_per_level)
+  end
+
+  return total_xp
+end
+
 ---Calculate level from XP
----Level formula: level = floor(sqrt(xp / 100)) + 1
----Level 2 = 100 XP, Level 3 = 400 XP, Level 4 = 900 XP, etc.
+---Simple tier-based progression:
+---  Levels 1-10: 300 XP each
+---  Levels 11-20: 500 XP each
+---  Levels 21+: 1000 XP each
 ---@param xp number
 ---@return number level
 function M.calculate_level(xp)
-  return math.floor(math.sqrt(xp / 100)) + 1
+  if xp <= 0 then
+    return 1
+  end
+
+  local level = 1
+  local accumulated_xp = 0
+  local config = M.level_config
+
+  -- Tier 1: Levels 1-10 (300 XP each)
+  local tier_1_total = config.tier_1.max_level * config.tier_1.xp_per_level
+  if xp <= tier_1_total then
+    return 1 + math.floor(xp / config.tier_1.xp_per_level)
+  end
+  accumulated_xp = tier_1_total
+  level = config.tier_1.max_level
+
+  -- Tier 2: Levels 11-20 (500 XP each)
+  local tier_2_range = config.tier_2.max_level - config.tier_2.min_level + 1
+  local tier_2_total = tier_2_range * config.tier_2.xp_per_level
+  if xp <= accumulated_xp + tier_2_total then
+    local xp_in_tier = xp - accumulated_xp
+    return level + math.floor(xp_in_tier / config.tier_2.xp_per_level)
+  end
+  accumulated_xp = accumulated_xp + tier_2_total
+  level = config.tier_2.max_level
+
+  -- Tier 3: Levels 21+ (1000 XP each)
+  local xp_in_tier = xp - accumulated_xp
+  return level + math.floor(xp_in_tier / config.tier_3.xp_per_level)
 end
 
 ---Calculate XP needed for next level
----XP needed = (level ^ 2) * 100
 ---@param current_level number
 ---@return number xp_needed
 function M.xp_for_next_level(current_level)
-  return (current_level ^ 2) * 100
+  return get_total_xp_for_level(current_level + 1)
 end
 
 ---Add XP and update level
@@ -296,38 +370,44 @@ function M.record_daily_activity(stats, lines_today)
   stats.longest_streak = longest
 end
 
----Check and unlock achievements
+---Get all achievements with their unlock status
 ---@param stats Stats
----@return table newly_unlocked List of achievement objects { name, desc, icon }
-function M.check_achievements(stats)
-  local newly_unlocked = {}
-
+---@return table achievements List of achievement objects { id, name, desc, icon, check }
+function M.get_all_achievements(stats)
   -- Count unique languages
   local unique_languages = 0
   for _ in pairs(stats.chars_by_language or {}) do
     unique_languages = unique_languages + 1
   end
 
-  local achievements = {
-    { id = 'first_100', check = stats.chars_typed >= 100, name = 'First Steps', desc = 'Typed your first 100 characters', icon = '🌱' },
-    { id = 'first_1000', check = stats.chars_typed >= 1000, name = 'Getting Started', desc = 'Reached 1,000 characters typed', icon = '⚔️' },
-    { id = 'first_10000', check = stats.chars_typed >= 10000, name = 'Dedicated Coder', desc = 'Typed 10,000 characters', icon = '🛡️' },
-    { id = 'first_100000', check = stats.chars_typed >= 100000, name = 'Master Scribe', desc = 'Reached 100,000 characters typed', icon = '📜' },
-    { id = 'level_5', check = stats.level >= 5, name = 'Rising Star', desc = 'Achieved level 5', icon = '⭐' },
-    { id = 'level_10', check = stats.level >= 10, name = 'Expert Coder', desc = 'Reached level 10', icon = '💎' },
-    { id = 'level_25', check = stats.level >= 25, name = 'Champion', desc = 'Achieved level 25', icon = '👑' },
-    { id = 'level_50', check = stats.level >= 50, name = 'Legend', desc = 'Reached the legendary level 50', icon = '🔱' },
-    { id = 'sessions_10', check = stats.sessions >= 10, name = 'Regular Visitor', desc = 'Completed 10 coding sessions', icon = '🔄' },
-    { id = 'sessions_50', check = stats.sessions >= 50, name = 'Creature of Habit', desc = 'Completed 50 coding sessions', icon = '📅' },
-    { id = 'sessions_100', check = stats.sessions >= 100, name = 'Dedicated Hero', desc = 'Reached 100 coding sessions', icon = '🏆' },
-    { id = 'time_1h', check = stats.time_coding >= 3600, name = 'First Hour', desc = 'Coded for 1 hour total', icon = '⏰' },
-    { id = 'time_10h', check = stats.time_coding >= 36000, name = 'Committed', desc = 'Coded for 10 hours total', icon = '⌛' },
-    { id = 'time_100h', check = stats.time_coding >= 360000, name = 'Veteran', desc = 'Coded for 100 hours total', icon = '🕐' },
-    { id = 'polyglot_3', check = unique_languages >= 3, name = 'Polyglot Beginner', desc = 'Coded in 3 different languages', icon = '🌍' },
-    { id = 'polyglot_5', check = unique_languages >= 5, name = 'Polyglot', desc = 'Coded in 5 different languages', icon = '🌎' },
-    { id = 'polyglot_10', check = unique_languages >= 10, name = 'Master Polyglot', desc = 'Coded in 10 different languages', icon = '🌏' },
-    { id = 'polyglot_15', check = unique_languages >= 15, name = 'Language Virtuoso', desc = 'Mastered 15 different languages', icon = '🗺️' },
+  return {
+    { id = 'first_100', name = 'First Steps', desc = 'Type 100 characters', icon = '🌱', check = stats.chars_typed >= 100 },
+    { id = 'first_1000', name = 'Getting Started', desc = 'Type 1,000 characters', icon = '⚔️', check = stats.chars_typed >= 1000 },
+    { id = 'first_10000', name = 'Dedicated Coder', desc = 'Type 10,000 characters', icon = '🛡️', check = stats.chars_typed >= 10000 },
+    { id = 'first_100000', name = 'Master Scribe', desc = 'Type 100,000 characters', icon = '📜', check = stats.chars_typed >= 100000 },
+    { id = 'level_5', name = 'Rising Star', desc = 'Reach level 5', icon = '⭐', check = stats.level >= 5 },
+    { id = 'level_10', name = 'Expert Coder', desc = 'Reach level 10', icon = '💎', check = stats.level >= 10 },
+    { id = 'level_25', name = 'Champion', desc = 'Reach level 25', icon = '👑', check = stats.level >= 25 },
+    { id = 'level_50', name = 'Legend', desc = 'Reach level 50', icon = '🔱', check = stats.level >= 50 },
+    { id = 'sessions_10', name = 'Regular Visitor', desc = 'Complete 10 sessions', icon = '🔄', check = stats.sessions >= 10 },
+    { id = 'sessions_50', name = 'Creature of Habit', desc = 'Complete 50 sessions', icon = '📅', check = stats.sessions >= 50 },
+    { id = 'sessions_100', name = 'Dedicated Hero', desc = 'Complete 100 sessions', icon = '🏆', check = stats.sessions >= 100 },
+    { id = 'time_1h', name = 'First Hour', desc = 'Code for 1 hour total', icon = '⏰', check = stats.time_coding >= 3600 },
+    { id = 'time_10h', name = 'Committed', desc = 'Code for 10 hours total', icon = '⌛', check = stats.time_coding >= 36000 },
+    { id = 'time_100h', name = 'Veteran', desc = 'Code for 100 hours total', icon = '🕐', check = stats.time_coding >= 360000 },
+    { id = 'polyglot_3', name = 'Polyglot Beginner', desc = 'Code in 3 different languages', icon = '🌍', check = unique_languages >= 3 },
+    { id = 'polyglot_5', name = 'Polyglot', desc = 'Code in 5 different languages', icon = '🌎', check = unique_languages >= 5 },
+    { id = 'polyglot_10', name = 'Master Polyglot', desc = 'Code in 10 different languages', icon = '🌏', check = unique_languages >= 10 },
+    { id = 'polyglot_15', name = 'Language Virtuoso', desc = 'Code in 15 different languages', icon = '🗺️', check = unique_languages >= 15 },
   }
+end
+
+---Check and unlock achievements
+---@param stats Stats
+---@return table newly_unlocked List of achievement objects { name, desc, icon }
+function M.check_achievements(stats)
+  local newly_unlocked = {}
+  local achievements = M.get_all_achievements(stats)
 
   for _, achievement in ipairs(achievements) do
     if achievement.check and not stats.achievements[achievement.id] then
