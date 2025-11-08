@@ -12,7 +12,7 @@ I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay 
 
 I made it to **gamify my coding workflow** — to turn those long, sometimes frustrating coding sessions into something that feels rewarding. Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time gives me that little *dopamine boost* that helps me stay focused and motivated.
 
-I named it **Triforce** just because I love **The Legend of Zelda** — no deep reason beyond that. The name felt right: a symbol of balance, courage, and power — things I definitely need when coding 😅.
+I named it **Triforce** just because I love **The Legend of Zelda** — no deep reason beyond that.
 
 The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous designs** and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas played a huge role in how this turned out. Building it with **Volt.nvim** made the process so much smoother and helped me focus on bringing those ideas to life.
 
