@@ -1,18 +1,14 @@
 # 🕹️ triforce.nvim
 
-<img width="1224" height="970" alt="image" src="https://github.com/user-attachments/assets/91848cb8-16e6-4ab2-9a18-e488d4341e96" />
+**Hey, listen!** Triforce is a small Neovim plugin that adds a bit of RPG flavor to your coding — XP, levels, and achievements while you work.
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac" />
 
 ## 💭 Why I Made This
 
 I have ADHD, and coding can sometimes feel boring and hard to stay consistent with, especially when you're struggling with task initiation and motivation. That's why I love Neovim—it's highly customizable and makes the development experience actually *fun*. I made Triforce to gamify my coding workflow, turning those grinding sessions into something rewarding. Seeing that XP bar fill up, unlocking achievements, and tracking my progress in real-time? That's the dopamine hit that keeps me coding!
 
-**Huge inspiration to [nvzone/typr](https://github.com/nvzone/typr) and most of siduck's creations**—his design work is absolutely gorgeous, and I shamelessly drew heavy inspiration from the beautiful aesthetics and thoughtful UI patterns he's created. The Volt.nvim framework is a game-changer for building clean, polished interfaces.
-
----
-
-**Gamify your Neovim coding experience!** Track your progress, unlock achievements, and level up as you code.
-
-Triforce transforms your coding sessions into an RPG-like adventure with XP, levels, achievements, and detailed statistics—all while you focus on what matters: writing great code.
+**Huge inspiration to [nvzone/typr](https://github.com/nvzone/typr) and most of [siduck's](https://github.com/siduck) creations**—his design work is absolutely gorgeous, and I shamelessly drew heavy inspiration from the beautiful aesthetics and thoughtful UI patterns he's created. The Volt.nvim framework is a game-changer for building clean, polished interfaces.
 
 ---
 
@@ -352,6 +348,7 @@ The file is automatically backed up before each save to:
 
 ### Future Features
 
+- [ ] **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
 - [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
 - [ ] **Leaderboards**: Compete with friends or the community
 - [ ] **Custom Achievements**: Define your own achievement criteria
