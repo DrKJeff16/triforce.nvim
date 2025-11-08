@@ -4,6 +4,25 @@
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac" />
 
+## 📑 Table of Contents
+
+- [Why I Made This](#-why-i-made-this)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Lualine Integration](#-lualine-integration)
+- [Usage](#-usage)
+- [Achievements](#-achievements)
+- [Customization](#-customization)
+- [Data Storage](#-data-storage)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Acknowledgments](#-acknowledgments)
+- [Support](#-support)
+
+---
+
 ## 💭 Why I Made This
 
 I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent or even get started some days. That’s part of why I fell in love with Neovim: it’s customizable, expressive, and makes the act of writing code feel *fun* again.
@@ -26,6 +45,7 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 - **📈 Activity Heatmap**: GitHub-style contribution graph showing your coding consistency
 - **🌍 Language Tracking**: See which programming languages you use most
 - **🎨 Beautiful UI**: Clean, themed interface powered by [Volt.nvim](https://github.com/NvChad/volt.nvim)
+- **📊 Lualine Integration**: Optional modular statusline components (level, achievements, streak, session time)
 - **⚙️ Highly Configurable**: Customize notifications, keymaps, and add custom languages
 - **💾 Auto-Save**: Your progress is automatically saved every 5 minutes
 
@@ -214,6 +234,281 @@ require("triforce").setup({
 
 ---
 
+## 📊 Lualine Integration
+
+Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display your coding stats right in your statusline.
+
+### Available Components
+
+| Component | Default Display | Description |
+|-----------|----------------|-------------|
+| `level` | `Lv.27 ████░░` | Level + XP progress bar |
+| `achievements` | ` 12/18` | Unlocked/total achievements |
+| `streak` | ` 5` | Current coding streak (days) |
+| `session_time` | ` 2h 34m` | Current session duration |
+
+### Basic Setup
+
+Add Triforce components to your lualine configuration:
+
+```lua
+require('lualine').setup({
+  sections = {
+    lualine_x = {
+      -- Add one or more components
+      function() return require('triforce.lualine').level() end,
+      function() return require('triforce.lualine').achievements() end,
+      'encoding', 'fileformat', 'filetype'
+    },
+  }
+})
+```
+
+### Quick Setup (All Components)
+
+Use the `components()` helper to get all components at once:
+
+```lua
+local triforce = require('triforce.lualine').components()
+
+require('lualine').setup({
+  sections = {
+    lualine_x = {
+      triforce.level,
+      triforce.achievements,
+      triforce.streak,
+      triforce.session_time,
+      'encoding', 'fileformat', 'filetype'
+    },
+  }
+})
+```
+
+### Component Configuration
+
+Each component can be customized independently:
+
+#### Level Component
+
+```lua
+-- Default: prefix + level + bar
+function()
+  return require('triforce.lualine').level()
+end
+-- Result: Lv.27 ████░░
+
+-- Show percentage instead of bar
+function()
+  return require('triforce.lualine').level({
+    show_bar = false,
+    show_percent = true,
+  })
+end
+-- Result: Lv.27 90%
+
+-- Show everything (XP numbers + percentage)
+function()
+  return require('triforce.lualine').level({
+    show_bar = true,
+    show_percent = true,
+    show_xp = true,
+    bar_length = 8,
+  })
+end
+-- Result: Lv.27 ████████ 90% 450/500
+
+-- Customize bar style
+function()
+  return require('triforce.lualine').level({
+    bar_chars = { filled = '●', empty = '○' },
+    bar_length = 10,
+  })
+end
+-- Result: Lv.27 ●●●●●●●●●○
+
+-- Custom prefix or no prefix
+function()
+  return require('triforce.lualine').level({
+    prefix = 'Level ',  -- or set to '' for no prefix
+  })
+end
+-- Result: Level 27 ████░░
+```
+
+**Options:**
+- `prefix` (string): Text prefix before level number (default: `'Lv.'`)
+- `show_level` (boolean): Show level number (default: `true`)
+- `show_bar` (boolean): Show progress bar (default: `true`)
+- `show_percent` (boolean): Show percentage (default: `false`)
+- `show_xp` (boolean): Show XP numbers like `450/500` (default: `false`)
+- `bar_length` (number): Progress bar length (default: `6`)
+- `bar_chars` (table): `{ filled = '█', empty = '░' }` (default)
+
+#### Achievements Component
+
+```lua
+-- Default
+function()
+  return require('triforce.lualine').achievements()
+end
+-- Result:  12/18
+
+-- Custom icon or no icon
+function()
+  return require('triforce.lualine').achievements({
+    icon = '',  -- or '' for no icon
+  })
+end
+-- Result:  12/18
+```
+
+**Options:**
+- `icon` (string): Icon to display (default: `''` - trophy)
+- `show_count` (boolean): Show unlocked/total count (default: `true`)
+
+#### Streak Component
+
+```lua
+-- Default
+function()
+  return require('triforce.lualine').streak()
+end
+-- Result:  5
+
+-- Different icon
+function()
+  return require('triforce.lualine').streak({
+    icon = '',
+  })
+end
+-- Result:  5
+```
+
+**Options:**
+- `icon` (string): Icon to display (default: `''` - flame)
+- `show_days` (boolean): Show day count (default: `true`)
+
+**Note:** The streak component returns an empty string when streak is 0, so it won't clutter your statusline.
+
+#### Session Time Component
+
+```lua
+-- Default (short format)
+function()
+  return require('triforce.lualine').session_time()
+end
+-- Result:  2h 34m
+
+-- Long format (2:34:12 instead of 2h 34m)
+function()
+  return require('triforce.lualine').session_time({
+    format = 'long',
+  })
+end
+-- Result:  2:34:12
+
+-- Different icon
+function()
+  return require('triforce.lualine').session_time({
+    icon = '',  -- watch icon
+  })
+end
+-- Result:  2h 34m
+```
+
+**Options:**
+- `icon` (string): Icon to display (default: `''` - clock)
+- `show_duration` (boolean): Show time duration (default: `true`)
+- `format` (string): `'short'` (2h 34m) or `'long'` (2:34:12) (default: `'short'`)
+
+### Global Component Configuration
+
+Set defaults for all components:
+
+```lua
+-- Configure defaults
+require('triforce.lualine').setup({
+  level = {
+    prefix = 'Level ',
+    bar_length = 8,
+    show_percent = true,
+  },
+  achievements = {
+    icon = '',
+  },
+  streak = {
+    icon = '',
+  },
+  session_time = {
+    icon = '',
+    format = 'long',
+  },
+})
+
+-- Then use components normally
+local triforce = require('triforce.lualine').components()
+```
+
+### Example Configurations
+
+#### Minimalist Setup
+
+```lua
+require('lualine').setup({
+  sections = {
+    lualine_x = {
+      function() return require('triforce.lualine').level() end,
+    },
+  }
+})
+-- Result: Lv.27 ████░░
+```
+
+#### Full Stats Dashboard
+
+```lua
+local triforce = require('triforce.lualine').components()
+
+require('lualine').setup({
+  sections = {
+    lualine_c = { 'filename' },
+    lualine_x = {
+      triforce.session_time,
+      triforce.streak,
+      triforce.achievements,
+      triforce.level,
+      'encoding', 'filetype'
+    },
+  }
+})
+-- Result:  2h 34m  5  12/18 Lv.27 ████░░ ...
+```
+
+#### Custom Styled
+
+```lua
+require('triforce.lualine').setup({
+  level = {
+    prefix = '',  -- No prefix, just number
+    bar_chars = { filled = '●', empty = '○' },
+    bar_length = 10,
+    show_percent = true,
+  },
+  achievements = {
+    icon = '',  -- medal icon
+  },
+  streak = {
+    icon = '',  -- bolt icon
+  },
+})
+
+local triforce = require('triforce.lualine').components()
+-- Now all components use your custom config
+-- Result:  2h 34m  5  12/18 27 ●●●●●●●●●○ 90%
+```
+
+---
+
 ## 🎮 Usage
 
 ### Commands
@@ -235,7 +530,7 @@ The profile has **3 tabs**:
    - Session/time milestone progress
    - Activity heatmap (7 months)
    - Quick stats overview
-  
+
 <img width="1224" height="970" alt="image" src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e" />
 
 
