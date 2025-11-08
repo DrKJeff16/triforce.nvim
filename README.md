@@ -1,6 +1,6 @@
 # 🕹️ triforce.nvim
 
-**Hey, listen!** Triforce is a small Neovim plugin that adds a bit of RPG flavor to your coding — XP, levels, and achievements while you work.
+**Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels, and achievements while you work.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac" />
 
