@@ -305,4 +305,93 @@ function M.debug_languages()
   vim.notify(string.format("Current filetype: '%s'", ft or "none"), vim.log.levels.INFO)
 end
 
+---Debug: Show current XP progress
+function M.debug_xp()
+  if not M.current_stats then
+    vim.notify('No stats loaded', vim.log.levels.WARN)
+    return
+  end
+
+  local current_xp = M.current_stats.xp
+  local current_level = M.current_stats.level
+  local next_level_xp = stats_module.xp_for_next_level(current_level)
+  local prev_level_xp = current_level > 1 and stats_module.xp_for_next_level(current_level - 1) or 0
+  local xp_in_level = current_xp - prev_level_xp
+  local xp_needed = next_level_xp - prev_level_xp
+  local progress = math.floor((xp_in_level / xp_needed) * 100)
+
+  vim.notify(
+    string.format(
+      '󰓏 Level %d\n\nCurrent XP: %d / %d\nProgress: %d%%\nXP to next level: %d',
+      current_level,
+      xp_in_level,
+      xp_needed,
+      progress,
+      next_level_xp - current_xp
+    ),
+    vim.log.levels.INFO,
+    { title = ' Triforce Debug', timeout = 5000 }
+  )
+end
+
+---Debug: Show random achievement notification (for testing)
+function M.debug_achievement()
+  if not M.current_stats then
+    vim.notify('No stats loaded', vim.log.levels.WARN)
+    return
+  end
+
+  local achievements = stats_module.get_all_achievements(M.current_stats)
+
+  -- Pick a random achievement
+  local random_idx = math.random(1, #achievements)
+  local achievement = achievements[random_idx]
+
+  -- Show notification
+  M.notify_achievement(achievement.name, achievement.desc, achievement.icon)
+
+  -- Also show status in separate notification
+  local status = achievement.check and "✓ Unlocked" or "✗ Locked"
+  vim.notify(
+    string.format('Test notification for: %s\n\nStatus: %s', achievement.name, status),
+    vim.log.levels.INFO,
+    { title = ' Debug Info', timeout = 2000 }
+  )
+end
+
+---Debug: Fix level/XP mismatch by recalculating level from XP
+function M.debug_fix_level()
+  if not M.current_stats then
+    vim.notify('No stats loaded', vim.log.levels.WARN)
+    return
+  end
+
+  local old_level = M.current_stats.level
+  local current_xp = M.current_stats.xp
+  local calculated_level = stats_module.calculate_level(current_xp)
+
+  if old_level == calculated_level then
+    vim.notify(
+      string.format('✓ No mismatch detected!\n\nLevel %d matches %d XP', old_level, current_xp),
+      vim.log.levels.INFO,
+      { title = ' Triforce Debug' }
+    )
+  else
+    M.current_stats.level = calculated_level
+    M.dirty = true
+    stats_module.save(M.current_stats)
+
+    vim.notify(
+      string.format(
+        '✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d',
+        old_level,
+        calculated_level,
+        current_xp
+      ),
+      vim.log.levels.WARN,
+      { title = ' Triforce Debug', timeout = 5000 }
+    )
+  end
+end
+
 return M

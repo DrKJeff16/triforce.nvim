@@ -155,4 +155,37 @@ function M.save_stats()
   end
 end
 
+---Debug: Show current XP progress
+function M.debug_xp()
+  if not M.config.gamification_enabled then
+    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+    return
+  end
+
+  local tracker = require('triforce.tracker')
+  tracker.debug_xp()
+end
+
+---Debug: Test achievement notification
+function M.debug_achievement()
+  if not M.config.gamification_enabled then
+    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+    return
+  end
+
+  local tracker = require('triforce.tracker')
+  tracker.debug_achievement()
+end
+
+---Debug: Fix level/XP mismatch
+function M.debug_fix_level()
+  if not M.config.gamification_enabled then
+    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+    return
+  end
+
+  local tracker = require('triforce.tracker')
+  tracker.debug_fix_level()
+end
+
 return M

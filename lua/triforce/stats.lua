@@ -114,7 +114,28 @@ function M.load()
   end
 
   -- Merge with defaults to ensure all fields exist
-  return vim.tbl_deep_extend('force', vim.deepcopy(M.default_stats), stats)
+  local merged = vim.tbl_deep_extend('force', vim.deepcopy(M.default_stats), stats)
+
+  -- Recalculate level from XP to fix any inconsistencies
+  -- (e.g., if user changed level progression config after playing)
+  if merged.xp and merged.xp > 0 then
+    local calculated_level = M.calculate_level(merged.xp)
+    if calculated_level ~= merged.level then
+      vim.notify(
+        string.format(
+          'Level mismatch detected! Recalculating from XP.\nOld level: %d → New level: %d (based on %d XP)',
+          merged.level,
+          calculated_level,
+          merged.xp
+        ),
+        vim.log.levels.WARN,
+        { title = ' Triforce' }
+      )
+      merged.level = calculated_level
+    end
+  end
+
+  return merged
 end
 
 ---Save stats to disk
@@ -220,14 +241,14 @@ function M.calculate_level(xp)
   local tier_2_total = tier_2_range * config.tier_2.xp_per_level
   if xp <= accumulated_xp + tier_2_total then
     local xp_in_tier = xp - accumulated_xp
-    return level + math.floor(xp_in_tier / config.tier_2.xp_per_level)
+    return (level + 1) + math.floor(xp_in_tier / config.tier_2.xp_per_level)
   end
   accumulated_xp = accumulated_xp + tier_2_total
   level = config.tier_2.max_level
 
   -- Tier 3: Levels 21+ (1000 XP each)
   local xp_in_tier = xp - accumulated_xp
-  return level + math.floor(xp_in_tier / config.tier_3.xp_per_level)
+  return (level + 1) + math.floor(xp_in_tier / config.tier_3.xp_per_level)
 end
 
 ---Calculate XP needed for next level
