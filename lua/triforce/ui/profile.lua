@@ -111,7 +111,7 @@ local function build_activity_heatmap(stats)
     end
 
     local double_digits = function(day)
-        return day > 10 and day or "0" .. day
+        return day >= 10 and day or "0" .. day
     end
 
     local months_i = current_month - 6
