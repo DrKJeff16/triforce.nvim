@@ -1,4 +1,12 @@
-# 🔱 Triforce.nvim
+# 🕹️ triforce.nvim
+
+## 💭 Why I Made This
+
+I have ADHD, and coding can sometimes feel boring and hard to stay consistent with, especially when you're struggling with task initiation and motivation. That's why I love Neovim—it's highly customizable and makes the development experience actually *fun*. I made Triforce to gamify my coding workflow, turning those grinding sessions into something rewarding. Seeing that XP bar fill up, unlocking achievements, and tracking my progress in real-time? That's the dopamine hit that keeps me coding!
+
+**Huge inspiration to [nvzone/typr](https://github.com/nvzone/typr) and most of siduck's creations**—his design work is absolutely gorgeous, and I shamelessly drew heavy inspiration from the beautiful aesthetics and thoughtful UI patterns he's created. The Volt.nvim framework is a game-changer for building clean, polished interfaces.
+
+---
 
 **Gamify your Neovim coding experience!** Track your progress, unlock achievements, and level up as you code.
 
@@ -33,7 +41,7 @@ Triforce transforms your coding sessions into an RPG-like adventure with XP, lev
 {
   "gisketch/triforce.nvim",
   dependencies = {
-    "NvChad/volt.nvim",
+    "nvzone/volt",
   },
   config = function()
     require("triforce").setup({
@@ -51,7 +59,7 @@ Triforce transforms your coding sessions into an RPG-like adventure with XP, lev
 ```lua
 use {
   "gisketch/triforce.nvim",
-  requires = { "NvChad/volt.nvim" },
+  requires = { "nvzone/volt" },
   config = function()
     require("triforce").setup({
       keymap = {
@@ -65,7 +73,7 @@ use {
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'NvChad/volt.nvim'
+Plug 'nvzone/volt'
 Plug 'gisketch/triforce.nvim'
 
 lua << EOF
@@ -376,8 +384,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- **[NvChad/volt.nvim](https://github.com/NvChad/volt.nvim)**: Beautiful UI framework
-- **GitHub**: Activity heatmap design inspiration
+- **[nvzone/volt](https://github.com/nvzone/volt)**: Beautiful UI framework
+- **[Typr](https://github.com/nvzone/typr)**: Beautiful Grid Design Component Inspiration
+- **[Gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim)**: Another cool gamify plugin, good inspiration for achievements
 
 ---
 
