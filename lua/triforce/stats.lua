@@ -9,7 +9,7 @@
 ---@field last_session_start number Timestamp of session start
 ---@field achievements table<string, boolean> Unlocked achievements
 ---@field chars_by_language table<string, number> Characters typed per language
----@field daily_activity table<string, boolean> Dates with activity (YYYY-MM-DD format)
+---@field daily_activity table<string, number> Lines typed per day (YYYY-MM-DD format)
 ---@field current_streak number Current consecutive day streak
 ---@field longest_streak number Longest ever streak
 
@@ -92,6 +92,16 @@ function M.load()
   if stats.chars_by_language then
     if vim.isarray(stats.chars_by_language) then
       stats.chars_by_language = {}
+    end
+  end
+
+  -- Migrate daily_activity from boolean to number (old format compatibility)
+  if stats.daily_activity then
+    for date, value in pairs(stats.daily_activity) do
+      if type(value) == 'boolean' then
+        -- Old format: true → 0 (can't recover historical line counts)
+        stats.daily_activity[date] = value and 0 or 0
+      end
     end
   end
 
@@ -206,10 +216,12 @@ function M.calculate_streaks(stats)
     return 0, 0
   end
 
-  -- Get sorted dates
+  -- Get sorted dates (only those with activity > 0)
   local dates = {}
-  for date in pairs(stats.daily_activity) do
-    table.insert(dates, date)
+  for date, lines in pairs(stats.daily_activity) do
+    if lines > 0 then
+      table.insert(dates, date)
+    end
   end
   table.sort(dates)
 
@@ -269,13 +281,14 @@ end
 
 ---Record activity for today
 ---@param stats Stats
-function M.record_daily_activity(stats)
+---@param lines_today number Number of lines typed today
+function M.record_daily_activity(stats, lines_today)
   if not stats.daily_activity then
     stats.daily_activity = {}
   end
 
   local today = get_date_string()
-  stats.daily_activity[today] = true
+  stats.daily_activity[today] = (stats.daily_activity[today] or 0) + lines_today
 
   -- Update streaks
   local current, longest = M.calculate_streaks(stats)

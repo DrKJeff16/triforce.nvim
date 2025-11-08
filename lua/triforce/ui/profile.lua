@@ -67,6 +67,139 @@ local function format_time(secs)
     return string.format("%dh %dm", hours, minutes)
 end
 
+---Get activity level highlight based on lines typed
+---@param lines number
+---@return string
+local function get_activity_hl(lines)
+    if lines == 0 then
+        return "LineNr"
+    elseif lines <= 50 then
+        return "TriforceHeat3" -- Lightest
+    elseif lines <= 150 then
+        return "TriforceHeat2" -- Light-medium
+    elseif lines <= 300 then
+        return "TriforceHeat1" -- Medium-bright
+    else
+        return "TriforceHeat0" -- Brightest
+    end
+end
+
+---Build activity heatmap (copied from typr structure)
+---@param stats Stats
+---@return table
+local function build_activity_heatmap(stats)
+    if not stats or not stats.daily_activity then
+        return { { { "  No activity data yet", "Comment" } } }
+    end
+
+    local year = os.date("%Y")
+    local current_month = tonumber(os.date("%m"))
+
+    local months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
+    local days_in_months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+    local days = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }
+
+    -- Leap year check
+    local is_leap = (tonumber(year) % 4 == 0 and tonumber(year) % 100 ~= 0) or (tonumber(year) % 400 == 0)
+    if is_leap then
+        days_in_months[2] = 29
+    end
+
+    -- Helper functions (copied from typr)
+    local getday_i = function(day, month)
+        return tonumber(os.date("%w", os.time({ year = tostring(year), month = month, day = day }))) + 1
+    end
+
+    local double_digits = function(day)
+        return day > 10 and day or "0" .. day
+    end
+
+    local months_i = current_month - 6
+    if months_i < 1 then
+        months_i = months_i + 12
+    end
+    local months_end = current_month
+    local months_to_show = 7
+    local squares_len = months_to_show * 4
+
+    -- Build lines structure (typr style)
+    local lines = {
+        { { "   ", "TriforceGreen" }, { "  " } },
+        {},
+    }
+
+    -- Month headers
+    for i = months_i, months_end do
+        local month_idx = i > 12 and (i - 12) or i
+        table.insert(lines[1], { "  " .. months[month_idx] .. "  ", "TriforceRed" })
+        table.insert(lines[1], { i == months_end and "" or "  " })
+    end
+
+    -- Separator line
+    local hrline = voltui.separator("─", squares_len * 2 + (months_to_show - 1 + 5), "Comment")
+    table.insert(lines[2], hrline[1])
+
+    -- Day labels
+    for day = 1, 7 do
+        local line = { { days[day], "Comment" }, { " │ ", "Comment" } }
+        table.insert(lines, line)
+    end
+
+    -- Fill in activity data
+    for i = months_i, months_end do
+        local month_idx = i > 12 and (i - 12) or i
+        local month_year = year
+
+        -- Handle year boundary
+        if months_i > months_end and i < months_end then
+            month_year = tostring(tonumber(year) + 1)
+        elseif months_i > months_end and i > current_month then
+            month_year = tostring(tonumber(year) - 1)
+        end
+
+        local start_day = getday_i(1, month_idx)
+
+        -- Empty cells before month starts (only for first month)
+        if i == months_i and start_day ~= 1 then
+            for n = 1, start_day - 1 do
+                table.insert(lines[n + 2], { "  " })
+            end
+        end
+
+        -- Activity squares for each day
+        for day_num = 1, days_in_months[month_idx] do
+            local day_of_week = getday_i(day_num, month_idx)
+            local date_key = string.format("%s-%s-%s", month_year, double_digits(month_idx), double_digits(day_num))
+
+            local activity = stats.daily_activity[date_key] or 0
+            local hl = get_activity_hl(activity)
+
+            table.insert(lines[day_of_week + 2], { "󱓻 ", hl })
+        end
+    end
+
+    -- Add border (typr style)
+    voltui.border(lines)
+
+    -- Header with legend (typr style)
+    local header = {
+        { " 󰃭 Activity" },
+        { "_pad_" },
+        { "    Less " },
+    }
+
+    local hlgroups = { "LineNr", "TriforceHeat4", "TriforceHeat3", "TriforceHeat2", "TriforceHeat1" }
+
+    for _, hl in ipairs(hlgroups) do
+        table.insert(header, { "󱓻 ", hl })
+    end
+
+    table.insert(header, { " More" })
+    table.insert(lines, 1, voltui.hpad(header, M.width - (2 * M.xpad) - 4))
+
+    return lines
+end
+
 ---Get streak with proper calculation
 ---@param stats Stats
 ---@return number
@@ -134,7 +267,7 @@ local function build_stats_tab()
 
     -- 1. Level progress
     local level_stats = {
-        { { " 󰓏", "TriforceYellow" }, { "  Level ~ " }, { tostring(stats.level), "TriforceYellow" } },
+        { { " 󰓏", "TriforceYellow" }, { " Level ~ " }, { tostring(stats.level), "TriforceYellow" } },
         {},
         voltui.progressbar {
             w = barlen,
@@ -146,7 +279,7 @@ local function build_stats_tab()
 
     -- 2. Session milestone progress
     local session_stats = {
-        { { "󰪺", "TriforceRed" }, { "  Sessions ~ " }, { tostring(stats.sessions) .. " / " .. tostring(session_goal), "TriforceRed" } },
+        { { "󰪺", "TriforceRed" }, { " Sessions ~ " }, { tostring(stats.sessions) .. " / " .. tostring(session_goal), "TriforceRed" } },
         {},
         voltui.progressbar {
             w = barlen,
@@ -158,7 +291,7 @@ local function build_stats_tab()
 
     -- 3. Time goal progress
     local time_stats = {
-        { { "󱑈", "TriforceBlue" }, { "  Time ~ " }, { tostring(math.floor(current_hours)) .. "h / " .. tostring(time_goal_hours) .. "h", "TriforceBlue" } },
+        { { "󱑈", "TriforceBlue" }, { " Time ~ " }, { tostring(math.floor(current_hours)) .. "h / " .. tostring(time_goal_hours) .. "h", "TriforceBlue" } },
         {},
         voltui.progressbar {
             w = barlen,
@@ -194,6 +327,15 @@ local function build_stats_tab()
 
     local table_ui = voltui.table(stats_table, M.width - M.xpad * 2, "String")
 
+    -- Activity heatmap
+    local heatmap_lines = build_activity_heatmap(stats)
+    local heatmap_row = voltui.grid_col(
+        {
+            { lines = {},            w = 1 },
+            { lines = heatmap_lines, w = M.width - M.xpad * 2 },
+        }
+    )
+
     -- Footer
     local footer = {
         {},
@@ -207,6 +349,9 @@ local function build_stats_tab()
         progress_section,
         { {} },
         table_ui,
+        { {} },
+        heatmap_row,
+        -- heatmap_lines,
         footer,
     })
 end
@@ -454,7 +599,7 @@ local function build_languages_tab()
     if display_count > 0 then
         local summary_parts = {
             { " You code primarily in " },
-            { languages.get_display_name(lang_data[1].lang), "TriforceRed"},
+            { languages.get_display_name(lang_data[1].lang), "TriforceRed" },
         }
 
         if display_count >= 2 then
@@ -490,6 +635,7 @@ end
 local function setup_highlights()
     local api = vim.api
     local get_hl = require("volt.utils").get_hl
+    local mix = require("volt.color").mix
 
     -- Get base colors
     local normal_bg = get_hl("Normal").bg
@@ -498,6 +644,8 @@ local function setup_highlights()
     if normal_bg then
         api.nvim_set_hl(M.ns, "TriforceNormal", { bg = normal_bg })
         api.nvim_set_hl(M.ns, "TriforceBorder", { link = "String" })
+    else
+        normal_bg = "#000000" -- Fallback for transparent backgrounds
     end
 
     -- Create Triforce highlight groups - change these to customize colors
@@ -506,6 +654,16 @@ local function setup_highlights()
     api.nvim_set_hl(M.ns, "TriforceRed", { link = "Keyword" })
     api.nvim_set_hl(M.ns, "TriforceBlue", { link = "Identifier" })
     api.nvim_set_hl(M.ns, "TriforcePurple", { link = "Number" })
+
+    -- Activity heatmap gradient (using mix function like typr)
+    -- Get green color from String highlight (or fallback)
+    local red_fg = get_hl("Keyword").fg
+
+    api.nvim_set_hl(M.ns, "TriforceHeat0", { fg = mix(red_fg, normal_bg, 0) })
+    api.nvim_set_hl(M.ns, "TriforceHeat1", { fg = mix(red_fg, normal_bg, 20) })
+    api.nvim_set_hl(M.ns, "TriforceHeat2", { fg = mix(red_fg, normal_bg, 50) })
+    api.nvim_set_hl(M.ns, "TriforceHeat3", { fg = mix(red_fg, normal_bg, 70) })
+    api.nvim_set_hl(M.ns, "TriforceHeat4", { fg = mix(red_fg, normal_bg, 80) })
 
     -- Link to standard highlights
     api.nvim_set_hl(M.ns, "FloatBorder", { link = "TriforceBorder" })

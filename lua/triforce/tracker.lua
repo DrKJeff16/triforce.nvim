@@ -14,6 +14,12 @@ M.autocmd_group = nil
 ---@type table<number, number>
 M.buffer_line_counts = {}
 
+-- Track lines typed today
+M.lines_today = 0
+
+-- Track current date to detect day rollover
+M.current_date = os.date('%Y-%m-%d')
+
 -- Flag to track if stats need saving
 M.dirty = false
 
@@ -29,8 +35,9 @@ local XP_REWARDS = {
 ---Initialize the tracker
 function M.setup()
   M.current_stats = stats_module.load()
+  M.current_date = os.date('%Y-%m-%d')
+  M.lines_today = 0
   stats_module.start_session(M.current_stats)
-  stats_module.record_daily_activity(M.current_stats)
   M.autocmd_group = vim.api.nvim_create_augroup('TriforceTracker', { clear = true })
   vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI' }, {
     group = M.autocmd_group,
@@ -71,11 +78,27 @@ function M.setup()
   )
 end
 
+---Check if date has rolled over and update daily activity
+local function check_date_rollover()
+  local today = os.date('%Y-%m-%d')
+  if today ~= M.current_date then
+    -- Day changed - record yesterday's lines and reset
+    if M.lines_today > 0 and M.current_stats then
+      stats_module.record_daily_activity(M.current_stats, M.lines_today)
+    end
+    M.current_date = today
+    M.lines_today = 0
+  end
+end
+
 ---Track characters typed (called on text change)
 function M.on_text_changed()
   if not M.current_stats then
     return
   end
+
+  -- Check for day rollover
+  check_date_rollover()
 
   local bufnr = vim.api.nvim_get_current_buf()
   local current_line_count = vim.api.nvim_buf_line_count(bufnr)
@@ -85,6 +108,7 @@ function M.on_text_changed()
   if current_line_count > previous_line_count then
     local new_lines = current_line_count - previous_line_count
     M.current_stats.lines_typed = M.current_stats.lines_typed + new_lines
+    M.lines_today = M.lines_today + new_lines
     stats_module.add_xp(M.current_stats, XP_REWARDS.line * new_lines)
   end
 
@@ -186,6 +210,11 @@ end
 function M.shutdown()
   if not M.current_stats then
     return
+  end
+
+  -- Record today's lines before shutdown
+  if M.lines_today > 0 then
+    stats_module.record_daily_activity(M.current_stats, M.lines_today)
   end
 
   stats_module.end_session(M.current_stats)
