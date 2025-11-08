@@ -238,14 +238,17 @@ require("triforce").setup({
 
 Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display your coding stats right in your statusline.
 
+<img width="378" height="74" alt="image" src="https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f" />
+
+
 ### Available Components
 
-| Component | Default Display | Description |
+| Component | Default Display (uses NerdFont) | Description |
 |-----------|----------------|-------------|
 | `level` | `Lv.27 ████░░` | Level + XP progress bar |
-| `achievements` | ` 12/18` | Unlocked/total achievements |
-| `streak` | ` 5` | Current coding streak (days) |
-| `session_time` | ` 2h 34m` | Current session duration |
+| `achievements` | `🏆 12/18` | Unlocked/total achievements |
+| `streak` | `🔥 5` | Current coding streak (days) |
+| `session_time` | `⏰ 2h 34m` | Current session duration |
 
 ### Basic Setup
 
