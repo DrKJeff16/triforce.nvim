@@ -8,6 +8,7 @@
 ---@field time_coding number Total time in seconds
 ---@field last_session_start number Timestamp of session start
 ---@field achievements table<string, boolean> Unlocked achievements
+---@field chars_by_language table<string, number> Characters typed per language
 
 local M = {}
 
@@ -21,6 +22,7 @@ M.default_stats = {
   time_coding = 0,
   last_session_start = 0,
   achievements = {},
+  chars_by_language = {},
 }
 
 ---Get the stats file path
@@ -30,59 +32,114 @@ local function get_stats_path()
   return data_path .. '/triforce_stats.json'
 end
 
+---Prepare stats for JSON encoding (handle empty tables)
+---@param stats Stats
+---@return Stats
+local function prepare_for_save(stats)
+  local copy = vim.deepcopy(stats)
+
+  -- Use vim.empty_dict() to ensure empty tables encode as {} not []
+  if vim.tbl_isempty(copy.achievements) then
+    copy.achievements = vim.empty_dict()
+  end
+
+  if vim.tbl_isempty(copy.chars_by_language) then
+    copy.chars_by_language = vim.empty_dict()
+  end
+
+  return copy
+end
+
 ---Load stats from disk
 ---@return Stats
 function M.load()
   local path = get_stats_path()
-  local file = io.open(path, 'r')
 
-  if not file then
+  -- Check if file exists
+  if vim.fn.filereadable(path) == 0 then
     return vim.deepcopy(M.default_stats)
   end
 
-  local content = file:read('*a')
-  file:close()
+  -- Read file using vim.fn for cross-platform compatibility
+  local lines = vim.fn.readfile(path)
+  if not lines or #lines == 0 then
+    return vim.deepcopy(M.default_stats)
+  end
 
+  local content = table.concat(lines, '\n')
+
+  -- Parse JSON
   local ok, stats = pcall(vim.json.decode, content)
-  if not ok then
-    vim.notify('Failed to parse stats file, using defaults', vim.log.levels.WARN)
+  if not ok or type(stats) ~= 'table' then
+    -- Backup corrupted file
+    local backup = path .. '.backup.' .. os.time()
+    vim.fn.writefile(lines, backup)
+    vim.notify('Corrupted stats backed up to: ' .. backup, vim.log.levels.WARN)
     return vim.deepcopy(M.default_stats)
   end
 
-  -- Merge with defaults to handle new fields
-  return vim.tbl_deep_extend('force', M.default_stats, stats)
+  -- Fix chars_by_language if it was saved as array
+  if stats.chars_by_language then
+    if vim.isarray(stats.chars_by_language) then
+      stats.chars_by_language = {}
+    end
+  end
+
+  -- Merge with defaults to ensure all fields exist
+  return vim.tbl_deep_extend('force', vim.deepcopy(M.default_stats), stats)
 end
 
 ---Save stats to disk
 ---@param stats Stats
+---@return boolean success
 function M.save(stats)
-  local path = get_stats_path()
-  local content = vim.json.encode(stats)
-
-  local file = io.open(path, 'w')
-  if not file then
-    vim.notify('Failed to save stats', vim.log.levels.ERROR)
-    return
+  if not stats then
+    return false
   end
 
-  file:write(content)
-  file:close()
+  local path = get_stats_path()
+
+  -- Prepare data
+  local data_to_save = prepare_for_save(stats)
+
+  -- Encode to JSON
+  local ok, json = pcall(vim.json.encode, data_to_save)
+  if not ok then
+    vim.notify('Failed to encode stats to JSON', vim.log.levels.ERROR)
+    return false
+  end
+
+  -- Create backup of existing file
+  if vim.fn.filereadable(path) == 1 then
+    local backup_path = path .. '.bak'
+    vim.fn.writefile(vim.fn.readfile(path), backup_path)
+  end
+
+  -- Write to file using vim.fn.writefile (more reliable on Windows)
+  local write_ok = vim.fn.writefile({json}, path)
+
+  if write_ok == -1 then
+    vim.notify('Failed to write stats file to: ' .. path, vim.log.levels.ERROR)
+    return false
+  end
+
+  return true
 end
 
 ---Calculate level from XP
+---Level formula: level = floor(sqrt(xp / 100)) + 1
+---Level 2 = 100 XP, Level 3 = 400 XP, Level 4 = 900 XP, etc.
 ---@param xp number
 ---@return number level
 function M.calculate_level(xp)
-  -- Level formula: level = floor(sqrt(xp / 100)) + 1
-  -- This means: Level 2 = 100 XP, Level 3 = 400 XP, Level 4 = 900 XP, etc.
   return math.floor(math.sqrt(xp / 100)) + 1
 end
 
 ---Calculate XP needed for next level
+---XP needed = (level ^ 2) * 100
 ---@param current_level number
 ---@return number xp_needed
 function M.xp_for_next_level(current_level)
-  -- XP needed = (level ^ 2) * 100
   return (current_level ^ 2) * 100
 end
 
@@ -93,8 +150,6 @@ end
 function M.add_xp(stats, amount)
   local old_level = stats.level
   stats.xp = stats.xp + amount
-
-  -- Recalculate level
   stats.level = M.calculate_level(stats.xp)
 
   return stats.level > old_level
@@ -123,6 +178,12 @@ end
 function M.check_achievements(stats)
   local newly_unlocked = {}
 
+  -- Count unique languages
+  local unique_languages = 0
+  for _ in pairs(stats.chars_by_language or {}) do
+    unique_languages = unique_languages + 1
+  end
+
   local achievements = {
     { id = 'first_100', check = stats.chars_typed >= 100, name = 'First Steps' },
     { id = 'first_1000', check = stats.chars_typed >= 1000, name = 'Getting Started' },
@@ -131,6 +192,10 @@ function M.check_achievements(stats)
     { id = 'level_10', check = stats.level >= 10, name = 'Expert Coder' },
     { id = 'sessions_10', check = stats.sessions >= 10, name = 'Regular Visitor' },
     { id = 'sessions_50', check = stats.sessions >= 50, name = 'Creature of Habit' },
+    { id = 'polyglot_3', check = unique_languages >= 3, name = 'Polyglot Beginner' },
+    { id = 'polyglot_5', check = unique_languages >= 5, name = 'Polyglot' },
+    { id = 'polyglot_10', check = unique_languages >= 10, name = 'Master Polyglot' },
+    { id = 'polyglot_15', check = unique_languages >= 15, name = 'Language Virtuoso' },
   }
 
   for _, achievement in ipairs(achievements) do

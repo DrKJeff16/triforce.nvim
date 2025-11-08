@@ -22,8 +22,6 @@ M.config = vim.deepcopy(defaults)
 ---@param opts TriforceConfig|nil User configuration options
 function M.setup(opts)
   M.config = vim.tbl_deep_extend('force', vim.deepcopy(defaults), opts or {})
-
-  -- Initialize gamification if enabled
   if M.config.enabled and M.config.gamification_enabled then
     local tracker = require('triforce.tracker')
     tracker.setup()
@@ -32,13 +30,10 @@ end
 
 ---Show profile UI
 function M.show_profile()
-  -- Check if gamification is enabled
   if not M.config.gamification_enabled then
     vim.notify('Gamification is not enabled in config', vim.log.levels.WARN)
     return
   end
-
-  -- Lazy init tracker if not already done
   local tracker = require('triforce.tracker')
   if not tracker.current_stats then
     tracker.setup()
@@ -64,6 +59,39 @@ function M.reset_stats()
 
   local tracker = require('triforce.tracker')
   tracker.reset_stats()
+end
+
+---Debug language tracking
+function M.debug_languages()
+  if not M.config.gamification_enabled then
+    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+    return
+  end
+
+  local tracker = require('triforce.tracker')
+  tracker.debug_languages()
+end
+
+---Force save stats
+function M.save_stats()
+  if not M.config.gamification_enabled then
+    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+    return
+  end
+
+  local tracker = require('triforce.tracker')
+  local stats_module = require('triforce.stats')
+
+  if tracker.current_stats then
+    local ok = stats_module.save(tracker.current_stats)
+    if ok then
+      vim.notify('Stats saved successfully!', vim.log.levels.INFO)
+    else
+      vim.notify('Failed to save stats!', vim.log.levels.ERROR)
+    end
+  else
+    vim.notify('No stats to save', vim.log.levels.WARN)
+  end
 end
 
 return M

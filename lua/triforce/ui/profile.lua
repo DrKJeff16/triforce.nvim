@@ -5,6 +5,7 @@ local voltstate = require("volt.state")
 
 local stats_module = require("triforce.stats")
 local tracker = require("triforce.tracker")
+local languages = require("triforce.languages")
 
 local M = {}
 
@@ -14,6 +15,9 @@ M.win = nil
 M.dim_win = nil
 M.dim_buf = nil
 M.ns = vim.api.nvim_create_namespace("TriforceProfile")
+M.achievements_page = 1
+M.achievements_per_page = 5
+M.max_language_entries = 13
 M.current_tab = " Stats"
 
 -- Dimensions
@@ -210,6 +214,12 @@ end
 ---@param stats Stats
 ---@return table
 local function get_all_achievements(stats)
+    -- Count unique languages
+    local unique_languages = 0
+    for _ in pairs(stats.chars_by_language or {}) do
+        unique_languages = unique_languages + 1
+    end
+
     return {
         { id = "first_100", name = "First Steps", desc = "Type 100 characters", icon = "🌱", check = stats.chars_typed >= 100 },
         { id = "first_1000", name = "Getting Started", desc = "Type 1,000 characters", icon = "⚔️", check = stats.chars_typed >= 1000 },
@@ -225,6 +235,10 @@ local function get_all_achievements(stats)
         { id = "time_1h", name = "First Hour", desc = "Code for 1 hour total", icon = "⏰", check = stats.time_coding >= 3600 },
         { id = "time_10h", name = "Committed", desc = "Code for 10 hours total", icon = "⌛", check = stats.time_coding >= 36000 },
         { id = "time_100h", name = "Veteran", desc = "Code for 100 hours total", icon = "🕐", check = stats.time_coding >= 360000 },
+        { id = "polyglot_3", name = "Polyglot Beginner", desc = "Code in 3 different languages", icon = "🌍", check = unique_languages >= 3 },
+        { id = "polyglot_5", name = "Polyglot", desc = "Code in 5 different languages", icon = "🌎", check = unique_languages >= 5 },
+        { id = "polyglot_10", name = "Master Polyglot", desc = "Code in 10 different languages", icon = "🌏", check = unique_languages >= 10 },
+        { id = "polyglot_15", name = "Language Virtuoso", desc = "Code in 15 different languages", icon = "🗺️", check = unique_languages >= 15 },
     }
 end
 
@@ -246,17 +260,35 @@ local function build_achievements_tab()
         return a.check and not b.check
     end)
 
+    -- Calculate pagination
+    local total_achievements = #achievements
+    local total_pages = math.ceil(total_achievements / M.achievements_per_page)
+
+    -- Ensure current page is within bounds
+    if M.achievements_page > total_pages then
+        M.achievements_page = total_pages
+    end
+    if M.achievements_page < 1 then
+        M.achievements_page = 1
+    end
+
+    -- Get achievements for current page
+    local start_idx = (M.achievements_page - 1) * M.achievements_per_page + 1
+    local end_idx = math.min(start_idx + M.achievements_per_page - 1, total_achievements)
+
     -- Build table rows with virtual text for custom highlighting
     -- Each cell with custom hl must be an array of {text, hl} pairs
     local table_data = {
         { "Status", "Achievement", "Description" }, -- Header (plain strings)
     }
 
-    for _, achievement in ipairs(achievements) do
+    for i = start_idx, end_idx do
+        local achievement = achievements[i]
         local unlocked = achievement.check
         local status_icon = unlocked and "✓" or "✗"
         local status_hl = unlocked and "String" or "Comment"
-        local text_hl = unlocked and "Normal" or "Comment"
+        local text_hl = unlocked and "TriforceYellow" or "Comment"
+        local desc_hl = unlocked and "Normal" or "Comment"
 
         -- Only show icon if unlocked
         local name_display = unlocked and (achievement.icon .. " " .. achievement.name) or achievement.name
@@ -264,7 +296,7 @@ local function build_achievements_tab()
         table.insert(table_data, {
             { { status_icon, status_hl } }, -- Array of virt text chunks
             { { name_display, text_hl } },
-            { { achievement.desc, text_hl } },
+            { { achievement.desc, desc_hl } },
         })
     end
 
@@ -272,20 +304,121 @@ local function build_achievements_tab()
 
     local unlocked_count = 0
     for _, a in ipairs(achievements) do
-            if a.check then unlocked_count = unlocked_count + 1 end
-        end
+        if a.check then unlocked_count = unlocked_count + 1 end
+    end
 
     -- Compact achievement info
     local achievement_info = {
         {
-            { " Hey, listen!", "Identifier" },
+            { " Hey, listen!",          "Identifier" },
             { " You've unlocked " },
-            { tostring(unlocked_count),                          "String" },
+            { tostring(unlocked_count), "String" },
             { " out of " },
-            { tostring(#achievements), "Number" },
+            { tostring(#achievements),  "Number" },
             { " achievements!" },
         },
         {},
+    }
+
+    -- Footer with pagination info
+    local footer = {
+        {},
+        {},
+        {
+            { "  Tab: Switch Tabs    ", "Comment" },
+            { "H/L or ◀/▶: ", "Comment" },
+            { "Page " .. tostring(M.achievements_page) .. "/" .. tostring(total_pages), "String" },
+            { "    q: Close", "Comment" }
+        },
+        {},
+    }
+
+    return voltui.grid_row({
+        achievement_info,
+        achievement_table,
+        footer,
+    })
+end
+
+---Build Languages tab content
+---@return table
+local function build_languages_tab()
+    local stats = tracker.get_stats()
+    if not stats then
+        return { { { "No stats available", "Comment" } } }
+    end
+
+    -- Get language data and sort by character count
+    local lang_data = {}
+    for lang, count in pairs(stats.chars_by_language or {}) do
+        table.insert(lang_data, { lang = lang, count = count })
+    end
+
+    table.sort(lang_data, function(a, b)
+        return a.count > b.count
+    end)
+
+    -- Limit to max entries
+    local display_count = math.min(#lang_data, M.max_language_entries)
+
+    -- Prepare data for bar graph
+    local graph_values = {}
+    local max_chars = 0
+
+    -- Get max for scaling
+    for i = 1, display_count do
+        if lang_data[i].count > max_chars then
+            max_chars = lang_data[i].count
+        end
+    end
+
+    -- Fill graph values (scale to 100)
+    for i = 1, M.max_language_entries do
+        if i <= display_count then
+            local percentage = max_chars > 0 and math.floor((lang_data[i].count / max_chars) * 100) or 0
+            table.insert(graph_values, percentage)
+        else
+            table.insert(graph_values, 0) -- Empty entries
+        end
+    end
+
+    -- Create labels with icons
+    local labels = {}
+    for i = 1, M.max_language_entries do
+        if i <= display_count then
+            local icon = languages.get_icon(lang_data[i].lang)
+            labels[i] = icon ~= "" and icon or lang_data[i].lang:sub(1, 1)
+        else
+            labels[i] = "·" -- Empty slot
+        end
+    end
+
+    -- Calculate graph width (narrower for centering)
+    local graph_width = math.min(M.max_language_entries * 4, M.width - M.xpad * 2)
+
+    local graph_data = {
+        val = graph_values,
+        -- footer_label = { " Character count by language" },
+        format_labels = function(x)
+            if max_chars == 0 then return "0" end
+            return tostring(math.floor((x / 100) * max_chars))
+        end,
+        baropts = {
+            w = 3,
+            gap = 2,
+            hl = "TriforceYellow",
+        },
+    }
+
+    local graph_lines = voltui.graphs.bar(graph_data)
+
+    -- Center the graph by calculating left padding
+    local left_pad = 2
+
+    -- Centered graph section
+    local centered_graph = voltui.grid_col {
+        { lines = { {} },      w = left_pad }, -- Left spacing
+        { lines = graph_lines, w = graph_width },
     }
 
     -- Footer
@@ -296,9 +429,58 @@ local function build_achievements_tab()
         {},
     }
 
+    local graph_x_axis_parts = { { "        " } } -- Start with 8 spaces
+    for i = 1, math.min(M.max_language_entries, #lang_data) do
+        local icon = languages.get_icon(lang_data[i].lang)
+        local hl = "Comment"
+        table.insert(graph_x_axis_parts, { icon ~= "" and icon or "", icon ~= "" and hl or "Comment" })
+        if i < math.min(M.max_language_entries, #lang_data) then
+            table.insert(graph_x_axis_parts, { "    " }) -- 4 spaces between icons
+        end
+    end
+
+    local graph_x_axis = { graph_x_axis_parts }
+
+    if display_count == 0 then
+        graph_x_axis = {
+            {},
+            { { "  No language data yet. Start coding!", "Comment" } },
+        }
+    end
+
+    -- Language summary info
+    local language_info = {}
+    if display_count > 0 then
+        local summary_parts = {
+            { " You code primarily in " },
+            { languages.get_display_name(lang_data[1].lang), "TriforceRed"},
+        }
+
+        if display_count >= 2 then
+            table.insert(summary_parts, { ", with " })
+            table.insert(summary_parts, { languages.get_display_name(lang_data[2].lang), "TriforceBlue" })
+        end
+
+        if display_count >= 3 then
+            table.insert(summary_parts, { " and " })
+            table.insert(summary_parts, { languages.get_display_name(lang_data[3].lang), "TriforcePurple" })
+        end
+
+        if display_count >= 2 then
+            table.insert(summary_parts, { " close behind", "Normal" })
+        end
+
+        language_info = { summary_parts, {} }
+    else
+        language_info = {
+            {}
+        }
+    end
+
     return voltui.grid_row({
-        achievement_info,
-        achievement_table,
+        language_info,
+        centered_graph,
+        graph_x_axis,
         footer,
     })
 end
@@ -335,6 +517,7 @@ local function get_layout()
     local components = {
         [" Stats"] = build_stats_tab,
         ["󰌌 Achievements"] = build_achievements_tab,
+        ["0 Languages"] = build_languages_tab,
     }
 
     return {
@@ -346,7 +529,7 @@ local function get_layout()
         },
         {
             lines = function()
-                local tabs = { " Stats", "󰌌 Achievements" }
+                local tabs = { " Stats", "󰌌 Achievements", "0 Languages" }
                 return voltui.tabs(tabs, M.width - M.xpad * 2, { active = M.current_tab })
             end,
             name = "tabs",
@@ -449,7 +632,14 @@ function M.open()
 
     -- Tab switching
     vim.keymap.set("n", "<Tab>", function()
-        M.current_tab = M.current_tab == " Stats" and "󰌌 Achievements" or " Stats"
+        -- Cycle through tabs
+        if M.current_tab == " Stats" then
+            M.current_tab = "󰌌 Achievements"
+        elseif M.current_tab == "󰌌 Achievements" then
+            M.current_tab = "0 Languages"
+        else
+            M.current_tab = " Stats"
+        end
 
         -- Make buffer modifiable
         vim.bo[M.buf].modifiable = true
@@ -493,6 +683,61 @@ function M.open()
         volt.redraw(M.buf, "all")
         vim.bo[M.buf].modifiable = false
     end, { buffer = M.buf })
+
+    -- Helper function to redraw achievements tab
+    local function redraw_achievements()
+        if M.current_tab ~= "󰌌 Achievements" then
+            return
+        end
+
+        vim.bo[M.buf].modifiable = true
+        volt.gen_data({
+            { buf = M.buf, layout = get_layout(), xpad = M.xpad, ns = M.ns },
+        })
+
+        local new_height = voltstate[M.buf].h
+        local current_lines = api.nvim_buf_line_count(M.buf)
+
+        if current_lines < new_height then
+            local empty_lines = {}
+            for _ = 1, (new_height - current_lines) do
+                table.insert(empty_lines, "")
+            end
+            api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
+        elseif current_lines > new_height then
+            api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
+        end
+
+        volt.redraw(M.buf, "all")
+        vim.bo[M.buf].modifiable = false
+    end
+
+    -- Pagination keymaps for achievements
+    local pagination_keys = { "h", "H", "<Left>", "l", "L", "<Right>" }
+    for _, key in ipairs(pagination_keys) do
+        vim.keymap.set("n", key, function()
+            if M.current_tab ~= "󰌌 Achievements" then
+                return
+            end
+
+            if key == "h" or key == "H" or key == "<Left>" then
+                if M.achievements_page > 1 then
+                    M.achievements_page = M.achievements_page - 1
+                    redraw_achievements()
+                end
+            elseif key == "l" or key == "L" or key == "<Right>" then
+                local stats = tracker.get_stats()
+                if stats then
+                    local achievements = get_all_achievements(stats)
+                    local total_pages = math.ceil(#achievements / M.achievements_per_page)
+                    if M.achievements_page < total_pages then
+                        M.achievements_page = M.achievements_page + 1
+                        redraw_achievements()
+                    end
+                end
+            end
+        end, { buffer = M.buf })
+    end
 
     -- Set filetype
     vim.bo[M.buf].filetype = "triforce-profile"
