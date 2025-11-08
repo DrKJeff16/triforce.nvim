@@ -14,7 +14,7 @@ M.win = nil
 M.dim_win = nil
 M.dim_buf = nil
 M.ns = vim.api.nvim_create_namespace("TriforceProfile")
-M.current_tab = "Stats"
+M.current_tab = " Stats"
 
 -- Dimensions
 M.width = 80
@@ -97,34 +97,77 @@ local function build_stats_tab()
     {},
   }
 
-  -- Title table (single cell)
-  local title_table = {
-    { "Title" },
-    { level_title },
-  }
+  -- Three progress bars section
+  local barlen = (M.width - M.xpad * 2) / 3 - 1
 
-  -- Progress bar for level
-  local barlen = (M.width - M.xpad * 2) / 2 - 8
-  local progress_section = {
-    {
-      { "", "String" },
-      { "  Level " },
-      { tostring(stats.level), "Number" },
-    },
+  -- Dynamic session goal (increments by 100)
+  local session_goal = math.ceil(stats.sessions / 100) * 100
+  if session_goal == stats.sessions then
+    session_goal = session_goal + 100
+  end
+  local session_progress = (stats.sessions / session_goal) * 100
+
+  -- Dynamic time goal (10h -> 25h -> 50h -> 100h -> 200h -> 300h...)
+  local current_hours = stats.time_coding / 3600
+  local time_goal_hours
+  if current_hours < 10 then
+    time_goal_hours = 10
+  elseif current_hours < 25 then
+    time_goal_hours = 25
+  elseif current_hours < 50 then
+    time_goal_hours = 50
+  elseif current_hours < 100 then
+    time_goal_hours = 100
+  else
+    time_goal_hours = math.ceil(current_hours / 100) * 100
+    if time_goal_hours == current_hours then
+      time_goal_hours = time_goal_hours + 100
+    end
+  end
+  local time_goal = time_goal_hours * 3600
+  local time_progress = (stats.time_coding / time_goal) * 100
+
+  -- 1. Level progress
+  local level_stats = {
+    { { " 󰓏", "Question" }, { "  Level ~ " }, { tostring(stats.level), "Question" } },
     {},
-    voltui.progressbar({
+    voltui.progressbar {
       w = barlen,
-      val = math.floor(xp_progress),
-      hl = { on = "String" },
+      val = xp_progress > 100 and 100 or xp_progress,
       icon = { on = "┃", off = "┃" },
-    }),
+      hl = { on = "Question", off = "Comment" },
+    },
   }
 
-  -- Level and title in columns using grid_col
-  local level_title_section = voltui.grid_col({
-    { lines = voltui.table(title_table, "fit", "String"), w = (M.width - M.xpad * 2) / 2, pad = 2 },
-    { lines = progress_section, w = (M.width - M.xpad * 2) / 2 },
-  })
+  -- 2. Session milestone progress
+  local session_stats = {
+    { { "󰪺", "Keyword" }, { "  Sessions ~ " }, { tostring(stats.sessions) .. " / " .. tostring(session_goal) } },
+    {},
+    voltui.progressbar {
+      w = barlen,
+      val = session_progress > 100 and 100 or session_progress,
+      icon = { on = "┃", off = "┃" },
+      hl = { on = "Keyword", off = "Comment" },
+    },
+  }
+
+  -- 3. Time goal progress
+  local time_stats = {
+    { { "󱑈", "Identifier" }, { "  Time ~ " }, { tostring(math.floor(current_hours)) .. "h / " .. tostring(time_goal_hours) .. "h" } },
+    {},
+    voltui.progressbar {
+      w = barlen,
+      val = time_progress > 100 and 100 or time_progress,
+      icon = { on = "┃", off = "┃" },
+      hl = { on = "Identifier", off = "Comment" },
+    },
+  }
+
+  local progress_section = voltui.grid_col {
+    { lines = level_stats, w = barlen, pad = 2 },
+    { lines = session_stats, w = barlen, pad = 2 },
+    { lines = time_stats, w = barlen },
+  }
 
   -- Stats table
   local stats_table = {
@@ -132,8 +175,8 @@ local function build_stats_tab()
       " Sessions",
       " Characters",
       " Lines",
-      " Time Coding",
-      " Total XP",
+      " Time",
+      " XP",
     },
     {
       tostring(stats.sessions),
@@ -150,12 +193,13 @@ local function build_stats_tab()
   local footer = {
     {},
     {},
-    { { "  Tab: Switch Tabs  •  q: Close", "Comment" } },
+    { { "  Tab: Switch Tabs    q: Close", "Comment" } },
+    {},
   }
 
   return voltui.grid_row({
     streak_section,
-    level_title_section,
+    progress_section,
     { {} },
     table_ui,
     footer,
@@ -205,7 +249,7 @@ local function build_achievements_tab()
   -- Build table rows with virtual text for custom highlighting
   -- Each cell with custom hl must be an array of {text, hl} pairs
   local table_data = {
-    { "Status", "Icon", "Achievement", "Description" }, -- Header (plain strings)
+    { "Status", "Achievement", "Description" }, -- Header (plain strings)
   }
 
   for _, achievement in ipairs(achievements) do
@@ -216,8 +260,8 @@ local function build_achievements_tab()
 
     table.insert(table_data, {
       { { status_icon, status_hl } }, -- Array of virt text chunks
-      { { achievement.icon, status_hl } },
-      { { achievement.name, text_hl } },
+      -- { { achievement.icon, status_hl } },
+      { { achievement.icon .. " " .. achievement.name, text_hl } },
       { { achievement.desc, text_hl } },
     })
   end
@@ -228,11 +272,11 @@ local function build_achievements_tab()
   local footer = {
     {},
     {},
-    { { "  Tab: Switch Tabs  •  q: Close", "Comment" } },
+    { { "  Tab: Switch Tabs    q: Close", "Comment" } },
+    {},
   }
 
   return voltui.grid_row({
-    { { { "Achievements", "Title" } }, {}, {} },
     achievement_table,
     footer,
   })
@@ -248,6 +292,9 @@ local function setup_highlights()
   local string_fg = get_hl("String").fg
   local number_fg = get_hl("Number").fg
   local comment_fg = get_hl("Comment").fg
+  local identifier_fg = get_hl("Identifier").fg
+  local keyword_fg = get_hl("Keyword").fg
+  local question_fg = get_hl("Question").fg
 
   -- Set custom highlights for Triforce
   if normal_bg then
@@ -255,9 +302,12 @@ local function setup_highlights()
     api.nvim_set_hl(M.ns, "TriforceBorder", { fg = string_fg, bg = normal_bg })
   end
 
+  -- Create custom highlight groups using existing colors
   api.nvim_set_hl(M.ns, "TriforceGreen", { fg = string_fg })
-  api.nvim_set_hl(M.ns, "TriforceYellow", { fg = number_fg })
-  api.nvim_set_hl(M.ns, "TriforceMuted", { fg = comment_fg })
+  api.nvim_set_hl(M.ns, "TriforcePurple", { fg = number_fg })
+  api.nvim_set_hl(M.ns, "TriforceYellow", { fg = question_fg })
+  api.nvim_set_hl(M.ns, "TriforceRed", { fg = keyword_fg })
+  api.nvim_set_hl(M.ns, "TriforceBlue", { fg = identifier_fg })
 
   -- Link to standard highlights
   api.nvim_set_hl(M.ns, "FloatBorder", { link = "TriforceBorder" })
@@ -268,14 +318,20 @@ end
 ---@return table
 local function get_layout()
   local components = {
-    Stats = build_stats_tab,
-    Achievements = build_achievements_tab,
+    [" Stats"] = build_stats_tab,
+    ["󰌌 Achievements"] = build_achievements_tab,
   }
 
   return {
     {
       lines = function()
-        local tabs = { "Stats", "Achievements" }
+        return { {} }
+      end,
+      name = "top-separator",
+    },
+    {
+      lines = function()
+        local tabs = { " Stats", "󰌌 Achievements" }
         return voltui.tabs(tabs, M.width - M.xpad * 2, { active = M.current_tab })
       end,
       name = "tabs",
@@ -378,7 +434,7 @@ function M.open()
 
   -- Tab switching
   vim.keymap.set("n", "<Tab>", function()
-    M.current_tab = M.current_tab == "Stats" and "Achievements" or "Stats"
+    M.current_tab = M.current_tab == " Stats" and "󰌌 Achievements" or " Stats"
 
     -- Make buffer modifiable
     vim.bo[M.buf].modifiable = true
