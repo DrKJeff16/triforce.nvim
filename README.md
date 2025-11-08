@@ -1,5 +1,7 @@
 # 🕹️ triforce.nvim
 
+<img width="1224" height="970" alt="image" src="https://github.com/user-attachments/assets/91848cb8-16e6-4ab2-9a18-e488d4341e96" />
+
 ## 💭 Why I Made This
 
 I have ADHD, and coding can sometimes feel boring and hard to stay consistent with, especially when you're struggling with task initiation and motivation. That's why I love Neovim—it's highly customizable and makes the development experience actually *fun*. I made Triforce to gamify my coding workflow, turning those grinding sessions into something rewarding. Seeing that XP bar fill up, unlocking achievements, and tracking my progress in real-time? That's the dopamine hit that keeps me coding!
@@ -191,15 +193,24 @@ The profile has **3 tabs**:
    - Session/time milestone progress
    - Activity heatmap (7 months)
    - Quick stats overview
+  
+<img width="1224" height="970" alt="image" src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e" />
+
 
 2. **🏆 Achievements Tab**
    - View all unlocked achievements
    - See locked achievements with unlock requirements
    - Paginate through achievements (H/L or arrow keys)
 
+<img width="1219" height="774" alt="image" src="https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77" />
+
+
 3. **💻 Languages Tab**
    - Bar graph showing your most-used languages
    - See character count breakdown by language
+
+<img width="1210" height="784" alt="image" src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81" />
+
 
 **Keybindings in Profile:**
 - `Tab`: Cycle between tabs
