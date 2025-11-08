@@ -137,9 +137,10 @@ function M.on_text_changed()
   if leveled_up then
     M.notify_level_up()
   end
+
   local achievements = stats_module.check_achievements(M.current_stats)
   for _, achievement in ipairs(achievements) do
-    M.notify_achievement(achievement)
+    M.notify_achievement(achievement.name, achievement.desc, achievement.icon)
   end
 end
 
@@ -183,20 +184,49 @@ function M.notify_level_up()
     return
   end
 
+  local config = require('triforce.init').config
+  if not (config.notifications.enabled and config.notifications.level_up) then
+    return
+  end
+
+  local level = M.current_stats.level
+  local xp = M.current_stats.xp
+  local stats_module = require('triforce.stats')
+  local next_xp = stats_module.xp_for_next_level(level)
+
   vim.notify(
-    string.format('Level Up! You are now level %d!', M.current_stats.level),
+    string.format(
+      '󰓏 Level %d Achieved!\n\n%d XP earned • %d XP to next level',
+      level,
+      xp,
+      next_xp - xp
+    ),
     vim.log.levels.INFO,
-    { title = 'Triforce' }
+    { title = ' Triforce', timeout = 3000 }
   )
 end
 
 ---Notify user of achievement unlock
 ---@param achievement_name string
-function M.notify_achievement(achievement_name)
+---@param achievement_desc string|nil
+---@param achievement_icon string|nil
+function M.notify_achievement(achievement_name, achievement_desc, achievement_icon)
+  local config = require('triforce.init').config
+  if not (config.notifications.enabled and config.notifications.achievements) then
+    return
+  end
+
+  local icon = achievement_icon or '🏆'
+  local message = icon .. ' ' .. achievement_name
+
+  if achievement_desc then
+    message = message .. '\n\n' .. achievement_desc
+  end
+
   vim.notify(
-    string.format('Achievement Unlocked: %s!', achievement_name),
+    message,
     vim.log.levels.INFO,
-    { title = 'Triforce' }
+    { title = ' Achievement Unlocked', timeout = 3500 }
   )
 end
 

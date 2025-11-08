@@ -1,8 +1,14 @@
 ---@class TriforceConfig
 ---@field enabled boolean Enable the plugin
 ---@field gamification_enabled boolean Enable gamification features (stats, XP, achievements)
----@field notifications_enabled boolean Show level up and achievement notifications
+---@field notifications table Notification configuration
+---@field notifications.enabled boolean Show level up and achievement notifications
+---@field notifications.level_up boolean Show level up notifications
+---@field notifications.achievements boolean Show achievement unlock notifications
 ---@field auto_save_interval number Auto-save stats interval in seconds (default: 300)
+---@field keymap table|nil Keymap configuration
+---@field keymap.show_profile string|nil Keymap for showing profile (default: nil = no keymap)
+---@field custom_languages table<string, table>|nil Custom language definitions { filetype = { icon = "", name = "" } }
 
 local M = {}
 
@@ -11,8 +17,16 @@ local M = {}
 local defaults = {
   enabled = true,
   gamification_enabled = true,
-  notifications_enabled = true,
+  notifications = {
+    enabled = true,
+    level_up = true,
+    achievements = true,
+  },
   auto_save_interval = 300,
+  keymap = {
+    show_profile = nil, -- Set to a keymap like "<leader>tp" to enable
+  },
+  custom_languages = nil, -- { rust = { icon = "", name = "Rust" } }
 }
 
 ---@type TriforceConfig
@@ -22,6 +36,20 @@ M.config = vim.deepcopy(defaults)
 ---@param opts TriforceConfig|nil User configuration options
 function M.setup(opts)
   M.config = vim.tbl_deep_extend('force', vim.deepcopy(defaults), opts or {})
+
+  -- Register custom languages if provided
+  if M.config.custom_languages then
+    local languages = require('triforce.languages')
+    languages.register_custom_languages(M.config.custom_languages)
+  end
+
+  -- Set up keymap if provided
+  if M.config.keymap and M.config.keymap.show_profile then
+    vim.keymap.set('n', M.config.keymap.show_profile, function()
+      M.show_profile()
+    end, { desc = 'Show Triforce Profile', silent = true })
+  end
+
   if M.config.enabled and M.config.gamification_enabled then
     local tracker = require('triforce.tracker')
     tracker.setup()

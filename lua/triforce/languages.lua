@@ -185,4 +185,17 @@ function M.get_full_display(filetype)
     return name
 end
 
+---Register custom languages
+---@param custom_langs table<string, table> { filetype = { icon = "", name = "" } }
+function M.register_custom_languages(custom_langs)
+    for filetype, config in pairs(custom_langs) do
+        if config.icon then
+            M.language_icons[filetype] = config.icon
+        end
+        if config.name then
+            M.language_display_names[filetype] = config.name
+        end
+    end
+end
+
 return M

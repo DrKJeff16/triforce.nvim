@@ -298,7 +298,7 @@ end
 
 ---Check and unlock achievements
 ---@param stats Stats
----@return table<string> newly_unlocked
+---@return table newly_unlocked List of achievement objects { name, desc, icon }
 function M.check_achievements(stats)
   local newly_unlocked = {}
 
@@ -309,23 +309,34 @@ function M.check_achievements(stats)
   end
 
   local achievements = {
-    { id = 'first_100', check = stats.chars_typed >= 100, name = 'First Steps' },
-    { id = 'first_1000', check = stats.chars_typed >= 1000, name = 'Getting Started' },
-    { id = 'first_10000', check = stats.chars_typed >= 10000, name = 'Dedicated Coder' },
-    { id = 'level_5', check = stats.level >= 5, name = 'Rising Star' },
-    { id = 'level_10', check = stats.level >= 10, name = 'Expert Coder' },
-    { id = 'sessions_10', check = stats.sessions >= 10, name = 'Regular Visitor' },
-    { id = 'sessions_50', check = stats.sessions >= 50, name = 'Creature of Habit' },
-    { id = 'polyglot_3', check = unique_languages >= 3, name = 'Polyglot Beginner' },
-    { id = 'polyglot_5', check = unique_languages >= 5, name = 'Polyglot' },
-    { id = 'polyglot_10', check = unique_languages >= 10, name = 'Master Polyglot' },
-    { id = 'polyglot_15', check = unique_languages >= 15, name = 'Language Virtuoso' },
+    { id = 'first_100', check = stats.chars_typed >= 100, name = 'First Steps', desc = 'Typed your first 100 characters', icon = '🌱' },
+    { id = 'first_1000', check = stats.chars_typed >= 1000, name = 'Getting Started', desc = 'Reached 1,000 characters typed', icon = '⚔️' },
+    { id = 'first_10000', check = stats.chars_typed >= 10000, name = 'Dedicated Coder', desc = 'Typed 10,000 characters', icon = '🛡️' },
+    { id = 'first_100000', check = stats.chars_typed >= 100000, name = 'Master Scribe', desc = 'Reached 100,000 characters typed', icon = '📜' },
+    { id = 'level_5', check = stats.level >= 5, name = 'Rising Star', desc = 'Achieved level 5', icon = '⭐' },
+    { id = 'level_10', check = stats.level >= 10, name = 'Expert Coder', desc = 'Reached level 10', icon = '💎' },
+    { id = 'level_25', check = stats.level >= 25, name = 'Champion', desc = 'Achieved level 25', icon = '👑' },
+    { id = 'level_50', check = stats.level >= 50, name = 'Legend', desc = 'Reached the legendary level 50', icon = '🔱' },
+    { id = 'sessions_10', check = stats.sessions >= 10, name = 'Regular Visitor', desc = 'Completed 10 coding sessions', icon = '🔄' },
+    { id = 'sessions_50', check = stats.sessions >= 50, name = 'Creature of Habit', desc = 'Completed 50 coding sessions', icon = '📅' },
+    { id = 'sessions_100', check = stats.sessions >= 100, name = 'Dedicated Hero', desc = 'Reached 100 coding sessions', icon = '🏆' },
+    { id = 'time_1h', check = stats.time_coding >= 3600, name = 'First Hour', desc = 'Coded for 1 hour total', icon = '⏰' },
+    { id = 'time_10h', check = stats.time_coding >= 36000, name = 'Committed', desc = 'Coded for 10 hours total', icon = '⌛' },
+    { id = 'time_100h', check = stats.time_coding >= 360000, name = 'Veteran', desc = 'Coded for 100 hours total', icon = '🕐' },
+    { id = 'polyglot_3', check = unique_languages >= 3, name = 'Polyglot Beginner', desc = 'Coded in 3 different languages', icon = '🌍' },
+    { id = 'polyglot_5', check = unique_languages >= 5, name = 'Polyglot', desc = 'Coded in 5 different languages', icon = '🌎' },
+    { id = 'polyglot_10', check = unique_languages >= 10, name = 'Master Polyglot', desc = 'Coded in 10 different languages', icon = '🌏' },
+    { id = 'polyglot_15', check = unique_languages >= 15, name = 'Language Virtuoso', desc = 'Mastered 15 different languages', icon = '🗺️' },
   }
 
   for _, achievement in ipairs(achievements) do
     if achievement.check and not stats.achievements[achievement.id] then
       stats.achievements[achievement.id] = true
-      table.insert(newly_unlocked, achievement.name)
+      table.insert(newly_unlocked, {
+        name = achievement.name,
+        desc = achievement.desc,
+        icon = achievement.icon
+      })
     end
   end
 

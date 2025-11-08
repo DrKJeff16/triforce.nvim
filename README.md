@@ -1,166 +1,362 @@
-# triforce.nvim
+# 🔱 Triforce.nvim
 
-⚔️ Gamify your Neovim coding experience! Track your typing stats, earn XP, level up, and unlock achievements.
+**Gamify your Neovim coding experience!** Track your progress, unlock achievements, and level up as you code.
 
-## Features
+Triforce transforms your coding sessions into an RPG-like adventure with XP, levels, achievements, and detailed statistics—all while you focus on what matters: writing great code.
 
-- 📊 **Real-time Stats Tracking** - Monitor characters typed, lines written, and coding time
-- ⭐ **XP & Leveling System** - Earn experience points and level up as you code
-- 🏆 **Achievements** - Unlock achievements for reaching milestones
-- 📈 **Beautiful Profile UI** - View your stats in a clean, visual interface powered by nui.nvim
-- 💾 **Persistent Progress** - Stats are automatically saved and persist across sessions
+---
 
-## Requirements
+## ✨ Features
 
-- Neovim >= 0.9.0
-- [nui.nvim](https://github.com/MunifTanjim/nui.nvim) - UI component library
+- **📊 Detailed Statistics**: Track lines typed, characters, sessions, coding time, and more
+- **🎮 Gamification**: Earn XP and level up based on your coding activity
+- **🏆 Achievements**: Unlock achievements for milestones (first 1000 chars, 10 sessions, polyglot badges, etc.)
+- **📈 Activity Heatmap**: GitHub-style contribution graph showing your coding consistency
+- **🌍 Language Tracking**: See which programming languages you use most
+- **🎨 Beautiful UI**: Clean, themed interface powered by [Volt.nvim](https://github.com/NvChad/volt.nvim)
+- **⚙️ Highly Configurable**: Customize notifications, keymaps, and add custom languages
+- **💾 Auto-Save**: Your progress is automatically saved every 5 minutes
 
-## Installation
+---
 
-### [lazy.nvim](https://github.com/folke/lazy.nvim)
+## 📦 Installation
+
+### Requirements
+
+- **Neovim** >= 0.9.0
+- **[Volt.nvim](https://github.com/NvChad/volt.nvim)** (UI framework dependency)
+- A [Nerd Font](https://www.nerdfonts.com/) (for icons)
+
+### Using [lazy.nvim](https://github.com/folke/lazy.nvim) (Recommended)
 
 ```lua
 {
-  'gisketch/triforce.nvim',
+  "gisketch/triforce.nvim",
   dependencies = {
-    'MunifTanjim/nui.nvim',
+    "NvChad/volt.nvim",
   },
   config = function()
-    require('triforce').setup({
-      -- your configuration here
+    require("triforce").setup({
+      -- Optional: Add your configuration here
+      keymap = {
+        show_profile = "<leader>tp", -- Open profile with <leader>tp
+      },
     })
   end,
 }
 ```
 
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
 use {
-  'gisketch/triforce.nvim',
-  requires = { 'MunifTanjim/nui.nvim' },
+  "gisketch/triforce.nvim",
+  requires = { "NvChad/volt.nvim" },
   config = function()
-    require('triforce').setup()
-  end,
+    require("triforce").setup({
+      keymap = {
+        show_profile = "<leader>tp",
+      },
+    })
+  end
 }
 ```
 
-## Configuration
+### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
-Default configuration:
+```vim
+Plug 'NvChad/volt.nvim'
+Plug 'gisketch/triforce.nvim'
+
+lua << EOF
+require("triforce").setup({
+  keymap = {
+    show_profile = "<leader>tp",
+  },
+})
+EOF
+```
+
+---
+
+## ⚙️ Configuration
+
+Triforce comes with sensible defaults, but you can customize everything:
 
 ```lua
-require('triforce').setup({
-  enabled = true,
-  gamification_enabled = true,      -- Enable stats tracking and XP system
-  notifications_enabled = true,     -- Show level up and achievement notifications
-  auto_save_interval = 300,         -- Auto-save stats every 5 minutes
+require("triforce").setup({
+  enabled = true,              -- Enable/disable the entire plugin
+  gamification_enabled = true, -- Enable XP, levels, achievements
+
+  -- Notification settings
+  notifications = {
+    enabled = true,       -- Master toggle for all notifications
+    level_up = true,      -- Show level up notifications
+    achievements = true,  -- Show achievement unlock notifications
+  },
+
+  -- Keymap configuration
+  keymap = {
+    show_profile = "<leader>tp", -- Set to nil to disable default keymap
+  },
+
+  -- Auto-save interval (in seconds)
+  auto_save_interval = 300, -- Save stats every 5 minutes
+
+  -- Add custom language support
+  custom_languages = {
+    gleam = { icon = "✨", name = "Gleam" },
+    odin = { icon = "🔷", name = "Odin" },
+    -- Add more languages...
+  },
 })
 ```
 
-## Usage
+### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | `boolean` | `true` | Enable/disable the plugin |
+| `gamification_enabled` | `boolean` | `true` | Enable gamification features |
+| `notifications.enabled` | `boolean` | `true` | Master toggle for notifications |
+| `notifications.level_up` | `boolean` | `true` | Show level up notifications |
+| `notifications.achievements` | `boolean` | `true` | Show achievement notifications |
+| `auto_save_interval` | `number` | `300` | Auto-save interval in seconds |
+| `keymap.show_profile` | `string \| nil` | `nil` | Keymap for opening profile |
+| `custom_languages` | `table \| nil` | `nil` | Custom language definitions |
+
+---
+
+## 🎮 Usage
 
 ### Commands
 
-- `:Triforce profile` - Show your coding profile with stats and achievements
-- `:Triforce stats` - Alias for profile
-- `:Triforce reset` - Reset all stats (useful for testing)
+| Command | Description |
+|---------|-------------|
+| `:lua require("triforce").show_profile()` | Open the Triforce profile UI |
+| `:lua require("triforce").get_stats()` | Get current stats programmatically |
+| `:lua require("triforce").reset_stats()` | Reset all stats (useful for testing) |
+| `:lua require("triforce").save_stats()` | Force save stats immediately |
+| `:lua require("triforce").debug_languages()` | Debug language tracking |
 
-### Keymaps
+### Profile UI
 
-The plugin provides `<Plug>` mappings. Map them to your preferred keys:
+The profile has **3 tabs**:
+
+1. **📊 Stats Tab**
+   - Level progress bar
+   - Session/time milestone progress
+   - Activity heatmap (7 months)
+   - Quick stats overview
+
+2. **🏆 Achievements Tab**
+   - View all unlocked achievements
+   - See locked achievements with unlock requirements
+   - Paginate through achievements (H/L or arrow keys)
+
+3. **💻 Languages Tab**
+   - Bar graph showing your most-used languages
+   - See character count breakdown by language
+
+**Keybindings in Profile:**
+- `Tab`: Cycle between tabs
+- `H` / `L` or `←` / `→`: Navigate achievement pages
+- `q` / `Esc`: Close profile
+
+---
+
+## 🏆 Achievements
+
+Triforce includes **18 built-in achievements** across 5 categories:
+
+### 📝 Typing Milestones
+- 🌱 **First Steps**: Type 100 characters
+- ⚔️ **Getting Started**: Type 1,000 characters
+- 🛡️ **Dedicated Coder**: Type 10,000 characters
+- 📜 **Master Scribe**: Type 100,000 characters
+
+### 📈 Level Achievements
+- ⭐ **Rising Star**: Reach level 5
+- 💎 **Expert Coder**: Reach level 10
+- 👑 **Champion**: Reach level 25
+- 🔱 **Legend**: Reach level 50
+
+### 🔄 Session Achievements
+- 🔄 **Regular Visitor**: Complete 10 sessions
+- 📅 **Creature of Habit**: Complete 50 sessions
+- 🏆 **Dedicated Hero**: Complete 100 sessions
+
+### ⏰ Time Achievements
+- ⏰ **First Hour**: Code for 1 hour total
+- ⌛ **Committed**: Code for 10 hours total
+- 🕐 **Veteran**: Code for 100 hours total
+
+### 🌍 Polyglot Achievements
+- 🌍 **Polyglot Beginner**: Code in 3 languages
+- 🌎 **Polyglot**: Code in 5 languages
+- 🌏 **Master Polyglot**: Code in 10 languages
+- 🗺️ **Language Virtuoso**: Code in 15 languages
+
+---
+
+## 🎨 Customization
+
+### Adding Custom Languages
+
+Triforce supports 50+ programming languages out of the box, but you can add more:
 
 ```lua
--- Show profile
-vim.keymap.set('n', '<leader>tp', '<Plug>(TriforceProfile)')
+require("triforce").setup({
+  custom_languages = {
+    gleam = {
+      icon = "✨",
+      name = "Gleam"
+    },
+    zig = {
+      icon = "⚡",
+      name = "Zig"
+    },
+  },
+})
 ```
 
-### Lua API
+### Disabling Notifications
+
+Turn off all notifications or specific types:
 
 ```lua
-local triforce = require('triforce')
-
--- Show profile UI
-triforce.show_profile()
-
--- Get current stats
-local stats = triforce.get_stats()
-print('Level:', stats.level)
-print('XP:', stats.xp)
-print('Characters typed:', stats.chars_typed)
-
--- Reset stats
-triforce.reset_stats()
+require("triforce").setup({
+  notifications = {
+    enabled = true,       -- Keep enabled
+    level_up = false,     -- Disable level up notifications
+    achievements = true,  -- Keep achievement notifications
+  },
+})
 ```
 
-## How It Works
+### Disable Auto-Keymap
 
-### XP System
+If you prefer to set your own keymap:
 
-Earn XP by coding:
-- **1 XP** per character typed
-- **10 XP** per new line
-- **50 XP** per file save
+```lua
+require("triforce").setup({
+  keymap = {
+    show_profile = nil, -- Don't create default keymap
+  },
+})
 
-Level progression uses the formula: `level = floor(sqrt(xp / 100)) + 1`
-- Level 2: 100 XP
-- Level 3: 400 XP
-- Level 4: 900 XP
-- Level 5: 1,600 XP
-- And so on...
+-- Set your own keymap
+vim.keymap.set("n", "<C-s>", function()
+  require("triforce").show_profile()
+end, { desc = "Show Triforce Stats" })
+```
 
-### Achievements
+---
 
-Unlock achievements by reaching milestones:
-- 🎯 **First Steps** - Type 100 characters
-- ⭐ **Getting Started** - Type 1,000 characters
-- 💪 **Dedicated Coder** - Type 10,000 characters
-- 🌟 **Rising Star** - Reach level 5
-- 👑 **Expert Coder** - Reach level 10
-- 📅 **Regular Visitor** - Complete 10 sessions
-- 🔥 **Creature of Habit** - Complete 50 sessions
+## 📊 Data Storage
 
-### Stats Persistence
+Stats are saved to:
+```
+~/.local/share/nvim/triforce_stats.json
+```
 
-Stats are automatically saved to `~/.local/share/nvim/triforce_stats.json` and persist across sessions.
+The file is automatically backed up before each save to:
+```
+~/.local/share/nvim/triforce_stats.json.bak
+```
 
-## Health Check
+### Data Format
 
-Run `:checkhealth triforce` to verify the plugin is working correctly.
+```json
+{
+  "xp": 15420,
+  "level": 12,
+  "chars_typed": 45230,
+  "lines_typed": 1240,
+  "sessions": 42,
+  "time_coding": 14580,
+  "achievements": {
+    "first_100": true,
+    "level_10": true
+  },
+  "chars_by_language": {
+    "lua": 12000,
+    "python": 8500
+  },
+  "daily_activity": {
+    "2025-11-07": 145,
+    "2025-11-08": 203
+  },
+  "current_streak": 5,
+  "longest_streak": 12
+}
+```
 
-## Development
+---
 
-### Testing
+## 🗺️ Roadmap
+
+### Future Features
+
+- [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
+- [ ] **Leaderboards**: Compete with friends or the community
+- [ ] **Custom Achievements**: Define your own achievement criteria
+- [ ] **Export Stats**: Export to CSV, JSON, or markdown reports
+- [ ] **Weekly/Monthly Reports**: Automated summaries via notifications
+- [ ] **Themes**: Customizable color schemes for the profile UI
+- [ ] **Plugin API**: Expose hooks for other plugins to integrate
+
+**Have a feature idea?** Open an issue on GitHub!
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to help:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development
 
 ```bash
-# Install dependencies
-luarocks install --local busted
-luarocks install --local nlua
+# Clone the repo
+git clone https://github.com/gisketch/triforce.nvim.git
+cd triforce.nvim
 
-# Run tests
-busted
+# Symlink to Neovim config for testing
+ln -s $(pwd) ~/.local/share/nvim/site/pack/plugins/start/triforce.nvim
 ```
 
-### Linting
+---
 
-```bash
-# Install luacheck
-luarocks install --local luacheck
+## 📝 License
 
-# Run linter
-luacheck .
-```
+MIT License - see [LICENSE](LICENSE) for details.
 
-### Formatting
+---
 
-```bash
-# Install stylua
-cargo install stylua
+## 🙏 Acknowledgments
 
-# Format code
-stylua .
-```
+- **[NvChad/volt.nvim](https://github.com/NvChad/volt.nvim)**: Beautiful UI framework
+- **GitHub**: Activity heatmap design inspiration
 
-## License
+---
 
-MIT
+## 📮 Support
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/gisketch/triforce.nvim/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/gisketch/triforce.nvim/discussions)
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the Neovim community**
+
+⭐ Star this repo if you find it useful!
+
+</div>
