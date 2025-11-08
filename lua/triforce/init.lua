@@ -45,7 +45,7 @@ function M.show_profile()
   end
 
   local profile = require('triforce.ui.profile')
-  profile.show()
+  profile.open()
 end
 
 ---Get current stats
