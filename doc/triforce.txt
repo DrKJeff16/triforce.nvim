@@ -1,0 +1,91 @@
+*triforce.txt*  A Neovim plugin
+
+==============================================================================
+CONTENTS                                                    *triforce-contents*
+
+    1. Introduction ............................ |triforce-introduction|
+    2. Requirements ............................ |triforce-requirements|
+    3. Setup ................................... |triforce-setup|
+    4. Commands ................................ |triforce-commands|
+    5. Mappings ................................ |triforce-mappings|
+    6. Configuration ........................... |triforce-configuration|
+    7. API ..................................... |triforce-api|
+
+==============================================================================
+INTRODUCTION                                            *triforce-introduction*
+
+triforce.nvim is a Neovim plugin starter template that demonstrates modern
+Neovim plugin development best practices.
+
+==============================================================================
+REQUIREMENTS                                            *triforce-requirements*
+
+- Neovim >= 0.9.0
+
+==============================================================================
+SETUP                                                          *triforce-setup*
+
+Configure the plugin in your Neovim configuration:
+>lua
+    require('triforce').setup({
+      enabled = true,
+      message = "Triforce activated!",
+    })
+<
+
+==============================================================================
+COMMANDS                                                    *triforce-commands*
+
+:Triforce                                                          *:Triforce*
+    Run the hello function and display a message.
+
+==============================================================================
+MAPPINGS                                                    *triforce-mappings*
+
+<Plug>(TriforceHello)                                  *<Plug>(TriforceHello)*
+    Call the hello function. Map it to your preferred key:
+>lua
+    vim.keymap.set('n', '<leader>t', '<Plug>(TriforceHello)')
+<
+
+==============================================================================
+CONFIGURATION                                          *triforce-configuration*
+
+Default configuration:
+>lua
+    {
+      enabled = true,       -- Enable the plugin
+      message = "Triforce activated!",  -- Default message
+    }
+<
+
+                                                          *triforce.config*
+triforce.config~
+    Table containing the current configuration.
+
+==============================================================================
+API                                                              *triforce-api*
+
+triforce.setup({opts})                                      *triforce.setup()*
+    Configure the plugin.
+
+    Parameters: ~
+      {opts} (table|nil) Configuration options
+
+    Usage: ~
+>lua
+        require('triforce').setup({
+          enabled = false,
+        })
+<
+
+triforce.hello()                                            *triforce.hello()*
+    Display a hello message.
+
+    Usage: ~
+>lua
+        require('triforce').hello()
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
