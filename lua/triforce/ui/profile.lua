@@ -6,6 +6,7 @@ local voltstate = require("volt.state")
 local stats_module = require("triforce.stats")
 local tracker = require("triforce.tracker")
 local languages = require("triforce.languages")
+local random_stats = require("triforce.random_stats")
 
 local M = {}
 
@@ -66,12 +67,13 @@ local function format_time(secs)
     return string.format("%dh %dm", hours, minutes)
 end
 
----Calculate streak (placeholder - would need daily tracking)
+---Get streak with proper calculation
 ---@param stats Stats
 ---@return number
-local function calculate_streak(stats)
-    -- TODO: Implement actual streak tracking based on daily sessions
-    return math.min(stats.sessions, 7) -- Placeholder
+local function get_current_streak(stats)
+    -- Recalculate to ensure accuracy
+    local current, _ = stats_module.calculate_streaks(stats)
+    return current
 end
 
 ---Build Stats tab content
@@ -82,21 +84,20 @@ local function build_stats_tab()
         return { { { "No stats available", "Comment" } } }
     end
 
-    local streak = calculate_streak(stats)
+    local streak = get_current_streak(stats)
     local level_title = get_level_title(stats.level)
     local xp_current = stats.xp
     local xp_next = stats_module.xp_for_next_level(stats.level)
     local xp_prev = stats.level > 1 and stats_module.xp_for_next_level(stats.level - 1) or 0
     local xp_progress = ((xp_current - xp_prev) / (xp_next - xp_prev)) * 100
 
-    -- Compact streak info
-    local streak_section = {
+    -- Get random fact
+    local random_fact = random_stats.get_random_fact(stats)
+
+    -- Compact fact display with streak integration
+    local fact_section = {
         {
-            { " You're on a " },
-            { tostring(streak) .. " day streak", "String" },
-            { " and have typed " },
-            { tostring(stats.chars_typed),       "Number" },
-            { " characters!" },
+            { " " .. random_fact .. ".", "Normal" },
         },
         {},
     }
@@ -180,14 +181,14 @@ local function build_stats_tab()
             " Characters",
             " Lines",
             " Time",
-            " XP",
+            " Streak",
         },
         {
             tostring(stats.sessions),
             tostring(stats.chars_typed),
             tostring(stats.lines_typed),
             format_time(stats.time_coding),
-            tostring(stats.xp),
+            streak > 0 and (tostring(streak) .. " day" .. (streak > 1 and "s" or "")) or "0",
         },
     }
 
@@ -202,7 +203,7 @@ local function build_stats_tab()
     }
 
     return voltui.grid_row({
-        streak_section,
+        fact_section,
         progress_section,
         { {} },
         table_ui,

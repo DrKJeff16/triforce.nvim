@@ -30,6 +30,7 @@ local XP_REWARDS = {
 function M.setup()
   M.current_stats = stats_module.load()
   stats_module.start_session(M.current_stats)
+  stats_module.record_daily_activity(M.current_stats)
   M.autocmd_group = vim.api.nvim_create_augroup('TriforceTracker', { clear = true })
   vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI' }, {
     group = M.autocmd_group,

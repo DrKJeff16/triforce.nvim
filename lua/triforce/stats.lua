@@ -9,6 +9,9 @@
 ---@field last_session_start number Timestamp of session start
 ---@field achievements table<string, boolean> Unlocked achievements
 ---@field chars_by_language table<string, number> Characters typed per language
+---@field daily_activity table<string, boolean> Dates with activity (YYYY-MM-DD format)
+---@field current_streak number Current consecutive day streak
+---@field longest_streak number Longest ever streak
 
 local M = {}
 
@@ -23,6 +26,9 @@ M.default_stats = {
   last_session_start = 0,
   achievements = {},
   chars_by_language = {},
+  daily_activity = {},
+  current_streak = 0,
+  longest_streak = 0,
 }
 
 ---Get the stats file path
@@ -45,6 +51,10 @@ local function prepare_for_save(stats)
 
   if vim.tbl_isempty(copy.chars_by_language) then
     copy.chars_by_language = vim.empty_dict()
+  end
+
+  if vim.tbl_isempty(copy.daily_activity) then
+    copy.daily_activity = vim.empty_dict()
   end
 
   return copy
@@ -170,6 +180,107 @@ function M.end_session(stats)
     stats.time_coding = stats.time_coding + duration
     stats.last_session_start = 0
   end
+end
+
+---Get current date in YYYY-MM-DD format
+---@param timestamp? number Optional timestamp, defaults to current time
+---@return string
+local function get_date_string(timestamp)
+  return os.date('%Y-%m-%d', timestamp or os.time())
+end
+
+---Get timestamp for start of day
+---@param date_str string Date in YYYY-MM-DD format
+---@return number
+local function get_day_start(date_str)
+  local year, month, day = date_str:match('(%d+)-(%d+)-(%d+)')
+  return os.time({ year = year, month = month, day = day, hour = 0, min = 0, sec = 0 })
+end
+
+---Calculate streak from daily activity
+---@param stats Stats
+---@return number current_streak, number longest_streak
+function M.calculate_streaks(stats)
+  if not stats.daily_activity then
+    stats.daily_activity = {}
+    return 0, 0
+  end
+
+  -- Get sorted dates
+  local dates = {}
+  for date in pairs(stats.daily_activity) do
+    table.insert(dates, date)
+  end
+  table.sort(dates)
+
+  if #dates == 0 then
+    return 0, 0
+  end
+
+  local current_streak = 0
+  local longest_streak = 0
+  local streak = 0
+  local today = get_date_string()
+  local yesterday = get_date_string(os.time() - 86400)
+
+  -- Calculate streaks by iterating through sorted dates
+  for i = #dates, 1, -1 do
+    local date = dates[i]
+
+    if i == #dates then
+      -- Start with most recent date
+      if date == today or date == yesterday then
+        streak = 1
+        current_streak = 1
+      end
+    else
+      local current_time = get_day_start(date)
+      local next_time = get_day_start(dates[i + 1])
+      local diff_days = math.floor((next_time - current_time) / 86400)
+
+      if diff_days == 1 then
+        -- Consecutive day
+        streak = streak + 1
+        if i == #dates - 1 or (date == today or date == yesterday) then
+          current_streak = streak
+        end
+      else
+        -- Streak broken
+        if streak > longest_streak then
+          longest_streak = streak
+        end
+        streak = 1
+      end
+    end
+  end
+
+  -- Check final streak
+  if streak > longest_streak then
+    longest_streak = streak
+  end
+
+  -- If most recent activity wasn't today or yesterday, current streak is 0
+  if dates[#dates] ~= today and dates[#dates] ~= yesterday then
+    current_streak = 0
+  end
+
+  return current_streak, longest_streak
+end
+
+---Record activity for today
+---@param stats Stats
+function M.record_daily_activity(stats)
+  if not stats.daily_activity then
+    stats.daily_activity = {}
+  end
+
+  local today = get_date_string()
+  stats.daily_activity[today] = true
+
+  -- Update streaks
+  local current, longest = M.calculate_streaks(stats)
+  stats.current_streak = current
+  stats.longest_streak = longest
 end
 
 ---Check and unlock achievements
