@@ -749,6 +749,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left)](https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left)
+
+---
+
 <div align="center">
 
 **Made with ❤️ for the Neovim community**
