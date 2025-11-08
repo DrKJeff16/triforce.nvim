@@ -6,9 +6,15 @@
 
 ## 💭 Why I Made This
 
-I have ADHD, and coding can sometimes feel boring and hard to stay consistent with, especially when you're struggling with task initiation and motivation. That's why I love Neovim—it's highly customizable and makes the development experience actually *fun*. I made Triforce to gamify my coding workflow, turning those grinding sessions into something rewarding. Seeing that XP bar fill up, unlocking achievements, and tracking my progress in real-time? That's the dopamine hit that keeps me coding!
+I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent or even get started some days. That’s part of why I fell in love with Neovim: it’s customizable, expressive, and makes the act of writing code feel *fun* again.
 
-**Huge inspiration to [nvzone/typr](https://github.com/nvzone/typr) and most of [siduck's](https://github.com/siduck) creations**—his design work is absolutely gorgeous, and I shamelessly drew heavy inspiration from the beautiful aesthetics and thoughtful UI patterns he's created. The Volt.nvim framework is a game-changer for building clean, polished interfaces.
+**Triforce** is actually my **first-ever Neovim plugin** (and the first plugin I’ve ever built in general). I’d always wanted to make something of my own, but I never really knew where to start. Once I got into Neovim’s Lua ecosystem, I got completely hooked. I started experimenting, tinkering, breaking things, and slowly, Triforce came to life.
+
+I made it to **gamify my coding workflow** — to turn those long, sometimes frustrating coding sessions into something that feels rewarding. Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time gives me that little *dopamine boost* that helps me stay focused and motivated.
+
+I named it **Triforce** just because I love **The Legend of Zelda** — no deep reason beyond that. The name felt right: a symbol of balance, courage, and power — things I definitely need when coding 😅.
+
+The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous designs** and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas played a huge role in how this turned out. Building it with **Volt.nvim** made the process so much smoother and helped me focus on bringing those ideas to life.
 
 ---
 
