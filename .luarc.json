@@ -5,7 +5,8 @@
     "path": [
       "lua/?.lua",
       "lua/?/init.lua"
-    ]
+    ],
+    "pathStrict": true
   },
   "diagnostics": {
     "globals": [
@@ -15,7 +16,9 @@
   "workspace": {
     "library": [
       "${3rd}/luv/library",
-      "${3rd}/busted/library"
+      "${3rd}/busted/library",
+      "/usr/local/share/nvim/runtime",
+      "/usr/share/nvim/runtime"
     ],
     "checkThirdParty": false
   },
