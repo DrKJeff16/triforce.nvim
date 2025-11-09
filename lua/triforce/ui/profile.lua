@@ -638,14 +638,30 @@ local function setup_highlights()
   api.nvim_set_hl(M.ns, 'TriforcePurple', { link = 'Number' })
 
   -- Activity heatmap gradient (using mix function like typr)
-  -- Get green color from String highlight (or fallback)
   local red_fg = get_hl('Keyword').fg
 
-  api.nvim_set_hl(M.ns, 'TriforceHeat0', { fg = mix(red_fg, normal_bg, 0) })
-  api.nvim_set_hl(M.ns, 'TriforceHeat1', { fg = mix(red_fg, normal_bg, 20) })
-  api.nvim_set_hl(M.ns, 'TriforceHeat2', { fg = mix(red_fg, normal_bg, 50) })
-  api.nvim_set_hl(M.ns, 'TriforceHeat3', { fg = mix(red_fg, normal_bg, 70) })
-  api.nvim_set_hl(M.ns, 'TriforceHeat4', { fg = mix(red_fg, normal_bg, 80) })
+  -- Fallback color when theme doesn't provide red
+  local DEFAULT_RED = "#E66868"
+
+  -- Heat levels: index maps to highlight group number and mix percentage
+  local heat_levels = {
+    { name = 0, mix_pct = 0 },
+    { name = 1, mix_pct = 20 },
+    { name = 2, mix_pct = 50 },
+    { name = 3, mix_pct = 65 },
+    { name = 4, mix_pct = 80 },
+  }
+
+  local base_color = red_fg or DEFAULT_RED
+
+  for _, level in ipairs(heat_levels) do
+    api.nvim_set_hl(
+      M.ns,
+      string.format('TriforceHeat%d', level.name),
+      { fg = mix(base_color, normal_bg, level.mix_pct) }
+    )
+  end
+
 
   -- Link to standard highlights
   api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
