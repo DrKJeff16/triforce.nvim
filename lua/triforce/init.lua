@@ -85,26 +85,25 @@ function M.setup(opts)
 
   -- Apply custom level progression to stats module
   if M.config.level_progression then
-    local stats_module = require('triforce.stats')
-    stats_module.level_config = M.config.level_progression
+    require('triforce.stats').level_config = M.config.level_progression
   end
 
   -- Register custom languages if provided
   if M.config.custom_languages then
-    local languages = require('triforce.languages')
-    languages.register_custom_languages(M.config.custom_languages)
+    require('triforce.languages').register_custom_languages(M.config.custom_languages)
   end
 
   -- Set up keymap if provided
   if M.config.keymap and M.config.keymap.show_profile then
-    vim.keymap.set('n', M.config.keymap.show_profile, function()
-      M.show_profile()
-    end, { desc = 'Show Triforce Profile', silent = true })
+    vim.keymap.set('n', M.config.keymap.show_profile, M.show_profile, {
+      desc = 'Show Triforce Profile',
+      silent = true,
+      noremap = true,
+    })
   end
 
   if M.config.enabled and M.config.gamification_enabled then
-    local tracker = require('triforce.tracker')
-    tracker.setup()
+    require('triforce.tracker').setup()
   end
 end
 
@@ -119,16 +118,10 @@ function M.show_profile()
     tracker.setup()
   end
 
-  local profile = require('triforce.ui.profile')
-  profile.open()
+  require('triforce.ui.profile').open()
 end
 
----Get current stats
----@return Stats|nil
-function M.get_stats()
-  local tracker = require('triforce.tracker')
-  return tracker.get_stats()
-end
+M.get_stats = require('triforce.tracker').get_stats
 
 ---Reset all stats (useful for testing)
 function M.reset_stats()
@@ -136,8 +129,7 @@ function M.reset_stats()
     return
   end
 
-  local tracker = require('triforce.tracker')
-  tracker.reset_stats()
+  require('triforce.tracker').reset_stats()
 end
 
 ---Debug language tracking
@@ -146,8 +138,7 @@ function M.debug_languages()
     return
   end
 
-  local tracker = require('triforce.tracker')
-  tracker.debug_languages()
+  require('triforce.tracker').debug_languages()
 end
 
 ---Force save stats
@@ -157,17 +148,18 @@ function M.save_stats()
   end
 
   local tracker = require('triforce.tracker')
-  local stats_module = require('triforce.stats')
+  if not tracker.current_stats then
+    vim.notify('No stats to save', vim.log.levels.WARN)
+    return
+  end
 
   if tracker.current_stats then
-    local ok = stats_module.save(tracker.current_stats)
-    if ok then
+    if require('triforce.stats').save(tracker.current_stats) then
       vim.notify('Stats saved successfully!', vim.log.levels.INFO)
-    else
-      vim.notify('Failed to save stats!', vim.log.levels.ERROR)
+      return
     end
-  else
-    vim.notify('No stats to save', vim.log.levels.WARN)
+
+    vim.notify('Failed to save stats!', vim.log.levels.ERROR)
   end
 end
 
@@ -177,8 +169,7 @@ function M.debug_xp()
     return
   end
 
-  local tracker = require('triforce.tracker')
-  tracker.debug_xp()
+  require('triforce.tracker').debug_xp()
 end
 
 ---Debug: Test achievement notification
@@ -187,8 +178,7 @@ function M.debug_achievement()
     return
   end
 
-  local tracker = require('triforce.tracker')
-  tracker.debug_achievement()
+  require('triforce.tracker').debug_achievement()
 end
 
 ---Debug: Fix level/XP mismatch
@@ -197,8 +187,7 @@ function M.debug_fix_level()
     return
   end
 
-  local tracker = require('triforce.tracker')
-  tracker.debug_fix_level()
+  require('triforce.tracker').debug_fix_level()
 end
 
 return M
