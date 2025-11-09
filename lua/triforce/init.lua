@@ -13,20 +13,29 @@
 ---@field line number XP gained per new line (default: 1)
 ---@field save number XP gained per file save (default: 50)
 
----@class TriforceConfig
----@field enabled boolean Enable the plugin
----@field gamification_enabled boolean Enable gamification features (stats, XP, achievements)
----@field notifications table Notification configuration
----@field notifications.enabled boolean Show level up and achievement notifications
----@field notifications.level_up boolean Show level up notifications
----@field notifications.achievements boolean Show achievement unlock notifications
----@field auto_save_interval number Auto-save stats interval in seconds (default: 300)
----@field keymap table|nil Keymap configuration
----@field keymap.show_profile string|nil Keymap for showing profile (default: nil = no keymap)
----@field custom_languages table<string, table>|nil Custom language definitions { filetype = { icon = "", name = "" } }
----@field level_progression LevelProgression|nil Custom level progression tiers
----@field xp_rewards XPRewards|nil Custom XP reward amounts for different actions
+---@class TriforceLanguage
+---@field name string
+---@field icon string
 
+---@class TriforceConfig.Notifications
+---@field enabled? boolean Show level up and achievement notifications
+---@field level_up? boolean Show level up notifications
+---@field achievements? boolean Show achievement unlock notifications
+
+---@class TriforceConfig.Keymap
+---@field show_profile? string|nil Keymap for showing profile (default: nil = no keymap)
+
+---@class TriforceConfig
+---@field enabled? boolean Enable the plugin
+---@field gamification_enabled? boolean Enable gamification features (stats, XP, achievements)
+---@field notifications? TriforceConfig.Notifications Notification configuration
+---@field auto_save_interval? number Auto-save stats interval in seconds (default: 300)
+---@field keymap? TriforceConfig.Keymap|nil Keymap configuration
+---@field custom_languages? table<string, TriforceLanguage>|nil Custom language definitions { filetype = { icon = "", name = "" } }
+---@field level_progression? LevelProgression|nil Custom level progression tiers
+---@field xp_rewards? XPRewards|nil Custom XP reward amounts for different actions
+
+---@class Triforce
 local M = {}
 
 ---Default configuration
