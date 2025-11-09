@@ -6,32 +6,32 @@ local M = {}
 M.config = {
   -- Level component config
   level = {
-    prefix = 'Lv.',    -- Text prefix before level number
+    prefix = 'Lv.', -- Text prefix before level number
     show_level = true, -- Show level number
-    show_bar = true,   -- Show progress bar
+    show_bar = true, -- Show progress bar
     show_percent = false, -- Show percentage
-    show_xp = false,   -- Show XP numbers (current/needed)
-    bar_length = 6,    -- Length of progress bar
+    show_xp = false, -- Show XP numbers (current/needed)
+    bar_length = 6, -- Length of progress bar
     bar_chars = { filled = '█', empty = '░' }, -- Bar characters
   },
 
   -- Achievements component config
   achievements = {
-    icon = '',       -- Nerd Font trophy icon
+    icon = '', -- Nerd Font trophy icon
     show_count = true, -- Show unlocked/total count
   },
 
   -- Streak component config
   streak = {
-    icon = '',       -- Nerd Font flame icon
+    icon = '', -- Nerd Font flame icon
     show_days = true, -- Show number of days
   },
 
   -- Session time component config
   session_time = {
-    icon = '',       -- Nerd Font clock icon
+    icon = '', -- Nerd Font clock icon
     show_duration = true, -- Show time duration
-    format = 'short',     -- 'short' (2h 34m) or 'long' (2:34:12)
+    format = 'short', -- 'short' (2h 34m) or 'long' (2:34:12)
   },
 }
 
