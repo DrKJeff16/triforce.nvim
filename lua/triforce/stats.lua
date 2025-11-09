@@ -18,8 +18,8 @@ local M = {}
 -- Configurable level progression
 M.level_config = {
   -- XP required per level for each tier
-  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },   -- Levels 1-10: 300 XP each
-  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },  -- Levels 11-20: 500 XP each
+  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
+  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
   tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
 }
 
@@ -122,8 +122,7 @@ function M.load()
     local calculated_level = M.calculate_level(merged.xp)
     if calculated_level ~= merged.level then
       vim.notify(
-        string.format(
-          'Level mismatch detected! Recalculating from XP.\nOld level: %d → New level: %d (based on %d XP)',
+        ('Level mismatch detected! Recalculating from XP.\nOld level: %d → New level: %d (based on %d XP)'):format(
           merged.level,
           calculated_level,
           merged.xp
@@ -165,7 +164,7 @@ function M.save(stats)
   end
 
   -- Write to file using vim.fn.writefile (more reliable on Windows)
-  local write_ok = vim.fn.writefile({json}, path)
+  local write_ok = vim.fn.writefile({ json }, path)
 
   if write_ok == -1 then
     vim.notify('Failed to write stats file to: ' .. path, vim.log.levels.ERROR)
@@ -402,24 +401,108 @@ function M.get_all_achievements(stats)
   end
 
   return {
-    { id = 'first_100', name = 'First Steps', desc = 'Type 100 characters', icon = '🌱', check = stats.chars_typed >= 100 },
-    { id = 'first_1000', name = 'Getting Started', desc = 'Type 1,000 characters', icon = '⚔️', check = stats.chars_typed >= 1000 },
-    { id = 'first_10000', name = 'Dedicated Coder', desc = 'Type 10,000 characters', icon = '🛡️', check = stats.chars_typed >= 10000 },
-    { id = 'first_100000', name = 'Master Scribe', desc = 'Type 100,000 characters', icon = '📜', check = stats.chars_typed >= 100000 },
+    {
+      id = 'first_100',
+      name = 'First Steps',
+      desc = 'Type 100 characters',
+      icon = '🌱',
+      check = stats.chars_typed >= 100,
+    },
+    {
+      id = 'first_1000',
+      name = 'Getting Started',
+      desc = 'Type 1,000 characters',
+      icon = '⚔️',
+      check = stats.chars_typed >= 1000,
+    },
+    {
+      id = 'first_10000',
+      name = 'Dedicated Coder',
+      desc = 'Type 10,000 characters',
+      icon = '🛡️',
+      check = stats.chars_typed >= 10000,
+    },
+    {
+      id = 'first_100000',
+      name = 'Master Scribe',
+      desc = 'Type 100,000 characters',
+      icon = '📜',
+      check = stats.chars_typed >= 100000,
+    },
     { id = 'level_5', name = 'Rising Star', desc = 'Reach level 5', icon = '⭐', check = stats.level >= 5 },
     { id = 'level_10', name = 'Expert Coder', desc = 'Reach level 10', icon = '💎', check = stats.level >= 10 },
     { id = 'level_25', name = 'Champion', desc = 'Reach level 25', icon = '👑', check = stats.level >= 25 },
     { id = 'level_50', name = 'Legend', desc = 'Reach level 50', icon = '🔱', check = stats.level >= 50 },
-    { id = 'sessions_10', name = 'Regular Visitor', desc = 'Complete 10 sessions', icon = '🔄', check = stats.sessions >= 10 },
-    { id = 'sessions_50', name = 'Creature of Habit', desc = 'Complete 50 sessions', icon = '📅', check = stats.sessions >= 50 },
-    { id = 'sessions_100', name = 'Dedicated Hero', desc = 'Complete 100 sessions', icon = '🏆', check = stats.sessions >= 100 },
-    { id = 'time_1h', name = 'First Hour', desc = 'Code for 1 hour total', icon = '⏰', check = stats.time_coding >= 3600 },
-    { id = 'time_10h', name = 'Committed', desc = 'Code for 10 hours total', icon = '⌛', check = stats.time_coding >= 36000 },
-    { id = 'time_100h', name = 'Veteran', desc = 'Code for 100 hours total', icon = '🕐', check = stats.time_coding >= 360000 },
-    { id = 'polyglot_3', name = 'Polyglot Beginner', desc = 'Code in 3 different languages', icon = '🌍', check = unique_languages >= 3 },
-    { id = 'polyglot_5', name = 'Polyglot', desc = 'Code in 5 different languages', icon = '🌎', check = unique_languages >= 5 },
-    { id = 'polyglot_10', name = 'Master Polyglot', desc = 'Code in 10 different languages', icon = '🌏', check = unique_languages >= 10 },
-    { id = 'polyglot_15', name = 'Language Virtuoso', desc = 'Code in 15 different languages', icon = '🗺️', check = unique_languages >= 15 },
+    {
+      id = 'sessions_10',
+      name = 'Regular Visitor',
+      desc = 'Complete 10 sessions',
+      icon = '🔄',
+      check = stats.sessions >= 10,
+    },
+    {
+      id = 'sessions_50',
+      name = 'Creature of Habit',
+      desc = 'Complete 50 sessions',
+      icon = '📅',
+      check = stats.sessions >= 50,
+    },
+    {
+      id = 'sessions_100',
+      name = 'Dedicated Hero',
+      desc = 'Complete 100 sessions',
+      icon = '🏆',
+      check = stats.sessions >= 100,
+    },
+    {
+      id = 'time_1h',
+      name = 'First Hour',
+      desc = 'Code for 1 hour total',
+      icon = '⏰',
+      check = stats.time_coding >= 3600,
+    },
+    {
+      id = 'time_10h',
+      name = 'Committed',
+      desc = 'Code for 10 hours total',
+      icon = '⌛',
+      check = stats.time_coding >= 36000,
+    },
+    {
+      id = 'time_100h',
+      name = 'Veteran',
+      desc = 'Code for 100 hours total',
+      icon = '🕐',
+      check = stats.time_coding >= 360000,
+    },
+    {
+      id = 'polyglot_3',
+      name = 'Polyglot Beginner',
+      desc = 'Code in 3 different languages',
+      icon = '🌍',
+      check = unique_languages >= 3,
+    },
+    {
+      id = 'polyglot_5',
+      name = 'Polyglot',
+      desc = 'Code in 5 different languages',
+      icon = '🌎',
+      check = unique_languages >= 5,
+    },
+    {
+      id = 'polyglot_10',
+      name = 'Master Polyglot',
+      desc = 'Code in 10 different languages',
+      icon = '🌏',
+      check = unique_languages >= 10,
+    },
+    {
+      id = 'polyglot_15',
+      name = 'Language Virtuoso',
+      desc = 'Code in 15 different languages',
+      icon = '🗺️',
+      check = unique_languages >= 15,
+    },
   }
 end
 
@@ -436,7 +519,7 @@ function M.check_achievements(stats)
       table.insert(newly_unlocked, {
         name = achievement.name,
         desc = achievement.desc,
-        icon = achievement.icon
+        icon = achievement.icon,
       })
     end
   end

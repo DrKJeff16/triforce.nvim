@@ -7,7 +7,7 @@ function M.check()
   vim.health.start('triforce.nvim')
   local nvim_version = vim.version()
   if nvim_version.major == 0 and nvim_version.minor >= 9 then
-    vim.health.ok(string.format('Neovim version: %s.%s.%s', nvim_version.major, nvim_version.minor, nvim_version.patch))
+    vim.health.ok(('Neovim version: %s.%s.%s'):format(nvim_version.major, nvim_version.minor, nvim_version.patch))
   else
     vim.health.error('Neovim >= 0.9.0 is required')
   end

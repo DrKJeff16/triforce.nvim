@@ -127,7 +127,7 @@ function M.on_text_changed()
 
   -- Track character by language
   local filetype = vim.bo[bufnr].filetype
-  if filetype and filetype ~= "" then
+  if filetype and filetype ~= '' then
     if languages.should_track(filetype) then
       -- Initialize if needed
       if not M.current_stats.chars_by_language then
@@ -200,16 +200,10 @@ function M.notify_level_up()
 
   local level = M.current_stats.level
   local xp = M.current_stats.xp
-  local stats_module = require('triforce.stats')
   local next_xp = stats_module.xp_for_next_level(level)
 
   vim.notify(
-    string.format(
-      '󰓏 Level %d Achieved!\n\n%d XP earned • %d XP to next level',
-      level,
-      xp,
-      next_xp - xp
-    ),
+    ('󰓏 Level %d Achieved!\n\n%d XP earned • %d XP to next level'):format(level, xp, next_xp - xp),
     vim.log.levels.INFO,
     { title = ' Triforce', timeout = 3000 }
   )
@@ -232,11 +226,7 @@ function M.notify_achievement(achievement_name, achievement_desc, achievement_ic
     message = message .. '\n\n' .. achievement_desc
   end
 
-  vim.notify(
-    message,
-    vim.log.levels.INFO,
-    { title = ' Achievement Unlocked', timeout = 3500 }
-  )
+  vim.notify(message, vim.log.levels.INFO, { title = ' Achievement Unlocked', timeout = 3500 })
 end
 
 ---Get current stats
@@ -284,17 +274,17 @@ function M.debug_languages()
 
   local langs = M.current_stats.chars_by_language or {}
   local count = 0
-  local msg = "Languages tracked:\n"
+  local msg = 'Languages tracked:\n'
 
   for lang, chars in pairs(langs) do
-    msg = msg .. string.format("  %s: %d chars\n", lang, chars)
+    msg = msg .. ('  %s: %d chars\n'):format(lang, chars)
     count = count + 1
   end
 
   if count == 0 then
-    msg = "No languages tracked yet"
+    msg = 'No languages tracked yet'
   else
-    msg = msg .. string.format("\nTotal: %d languages", count)
+    msg = msg .. ('\nTotal: %d languages'):format(count)
   end
 
   vim.notify(msg, vim.log.levels.INFO)
@@ -302,7 +292,7 @@ function M.debug_languages()
   -- Also print to check current filetype
   local bufnr = vim.api.nvim_get_current_buf()
   local ft = vim.bo[bufnr].filetype
-  vim.notify(string.format("Current filetype: '%s'", ft or "none"), vim.log.levels.INFO)
+  vim.notify(("Current filetype: '%s'"):format(ft or 'none'), vim.log.levels.INFO)
 end
 
 ---Debug: Show current XP progress
@@ -321,8 +311,7 @@ function M.debug_xp()
   local progress = math.floor((xp_in_level / xp_needed) * 100)
 
   vim.notify(
-    string.format(
-      '󰓏 Level %d\n\nCurrent XP: %d / %d\nProgress: %d%%\nXP to next level: %d',
+    ('󰓏 Level %d\n\nCurrent XP: %d / %d\nProgress: %d%%\nXP to next level: %d'):format(
       current_level,
       xp_in_level,
       xp_needed,
@@ -351,9 +340,9 @@ function M.debug_achievement()
   M.notify_achievement(achievement.name, achievement.desc, achievement.icon)
 
   -- Also show status in separate notification
-  local status = achievement.check and "✓ Unlocked" or "✗ Locked"
+  local status = achievement.check and '✓ Unlocked' or '✗ Locked'
   vim.notify(
-    string.format('Test notification for: %s\n\nStatus: %s', achievement.name, status),
+    ('Test notification for: %s\n\nStatus: %s'):format(achievement.name, status),
     vim.log.levels.INFO,
     { title = ' Debug Info', timeout = 2000 }
   )
@@ -372,7 +361,7 @@ function M.debug_fix_level()
 
   if old_level == calculated_level then
     vim.notify(
-      string.format('✓ No mismatch detected!\n\nLevel %d matches %d XP', old_level, current_xp),
+      ('✓ No mismatch detected!\n\nLevel %d matches %d XP'):format(old_level, current_xp),
       vim.log.levels.INFO,
       { title = ' Triforce Debug' }
     )
@@ -382,12 +371,7 @@ function M.debug_fix_level()
     stats_module.save(M.current_stats)
 
     vim.notify(
-      string.format(
-        '✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d',
-        old_level,
-        calculated_level,
-        current_xp
-      ),
+      ('✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d'):format(old_level, calculated_level, current_xp),
       vim.log.levels.WARN,
       { title = ' Triforce Debug', timeout = 5000 }
     )
