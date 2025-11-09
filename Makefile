@@ -1,8 +1,9 @@
-.PHONY: test lint format check help
+.PHONY: all test lint format check help
+
+all: help
 
 help: ## Show this help message
-	@echo 'Usage: make [target]'
-	@echo ''
+	@echo -e "Usage: make [target]\n"
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
