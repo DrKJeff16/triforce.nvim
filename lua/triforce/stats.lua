@@ -319,7 +319,7 @@ function M.calculate_streaks(stats)
   end
   table.sort(dates)
 
-  if #dates == 0 then
+  if vim.tbl_isempty(dates) then
     return 0, 0
   end
 
@@ -366,7 +366,7 @@ function M.calculate_streaks(stats)
   end
 
   -- If most recent activity wasn't today or yesterday, current streak is 0
-  if dates[#dates] ~= today and dates[#dates] ~= yesterday then
+  if not vim.list_contains({ today, yesterday }, dates[#dates]) then
     current_streak = 0
   end
 
