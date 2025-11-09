@@ -57,8 +57,8 @@ end
 ---Generate progress bar
 ---@param current number Current value
 ---@param max number Maximum value
----@param length number Bar length
----@param chars table Characters for filled and empty
+---@param length integer Bar length
+---@param chars table<string, string> Characters for filled and empty
 ---@return string bar
 local function create_progress_bar(current, max, length, chars)
   if max == 0 then

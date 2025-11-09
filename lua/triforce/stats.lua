@@ -13,6 +13,7 @@
 ---@field current_streak number Current consecutive day streak
 ---@field longest_streak number Longest ever streak
 
+---@class Triforce.Stats
 local M = {}
 
 -- Configurable level progression
@@ -392,7 +393,7 @@ end
 
 ---Get all achievements with their unlock status
 ---@param stats Stats
----@return table achievements List of achievement objects { id, name, desc, icon, check }
+---@return { id: string, name: string, desc: string, icon: string, check: boolean }[] achievements List of achievement objects { id, name, desc, icon, check }
 function M.get_all_achievements(stats)
   -- Count unique languages
   local unique_languages = 0
