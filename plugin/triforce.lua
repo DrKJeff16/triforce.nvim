@@ -44,9 +44,10 @@ end, {
   desc = 'Triforce gamification commands',
   complete = function(_, line)
     local args = vim.split(line, '%s+', { trimempty = true })
-    if #args == 2 then
+    if #args == 1 then
       return { 'profile', 'stats', 'reset', 'debug' }
-    elseif #args == 3 and args[2] == 'debug' then
+    end
+    if #args == 2 and args[1] == 'debug' then
       return { 'xp', 'achievement', 'languages', 'fix' }
     end
     return {}
@@ -54,9 +55,7 @@ end, {
 })
 
 -- Create <Plug> mappings for users to map to their own keys
-vim.keymap.set('n', '<Plug>(TriforceProfile)', function()
-  require('triforce').show_profile()
-end, {
+vim.keymap.set('n', '<Plug>(TriforceProfile)', require('triforce').show_profile, {
   silent = true,
   desc = 'Triforce: Show profile',
 })
