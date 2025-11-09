@@ -38,6 +38,16 @@
 ---@class Triforce
 local M = {}
 
+---@return boolean
+function M.has_gamification()
+  if not M.config.gamification_enabled then
+    vim.notify('Gamification is not enabled in config', vim.log.levels.WARN)
+    return false
+  end
+
+  return true
+end
+
 ---Default configuration
 ---@type TriforceConfig
 local defaults = {
@@ -100,10 +110,10 @@ end
 
 ---Show profile UI
 function M.show_profile()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is not enabled in config', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
+
   local tracker = require('triforce.tracker')
   if not tracker.current_stats then
     tracker.setup()
@@ -122,8 +132,7 @@ end
 
 ---Reset all stats (useful for testing)
 function M.reset_stats()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
 
@@ -133,8 +142,7 @@ end
 
 ---Debug language tracking
 function M.debug_languages()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
 
@@ -144,8 +152,7 @@ end
 
 ---Force save stats
 function M.save_stats()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
 
@@ -166,8 +173,7 @@ end
 
 ---Debug: Show current XP progress
 function M.debug_xp()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
 
@@ -177,8 +183,7 @@ end
 
 ---Debug: Test achievement notification
 function M.debug_achievement()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
 
@@ -188,8 +193,7 @@ end
 
 ---Debug: Fix level/XP mismatch
 function M.debug_fix_level()
-  if not M.config.gamification_enabled then
-    vim.notify('Gamification is disabled', vim.log.levels.WARN)
+  if not M.has_gamification() then
     return
   end
 
