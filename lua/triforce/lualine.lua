@@ -162,7 +162,7 @@ function M.achievements(opts)
   local total = #all_achievements
   local unlocked = 0
 
-  for id, _ in pairs(stats.achievements or {}) do
+  for _, _ in ipairs(stats.achievements or {}) do
     unlocked = unlocked + 1
   end
 
