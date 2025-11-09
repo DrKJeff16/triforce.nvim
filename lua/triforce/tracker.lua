@@ -29,7 +29,7 @@ M.last_save_time = 0
 ---Get XP rewards from config
 ---@return table
 local function get_xp_rewards()
-  local config = require('triforce.init').config
+  local config = require('triforce').config
   return config.xp_rewards or {
     char = 1,
     line = 1,
@@ -193,7 +193,7 @@ function M.notify_level_up()
     return
   end
 
-  local config = require('triforce.init').config
+  local config = require('triforce').config
   if not (config.notifications.enabled and config.notifications.level_up) then
     return
   end
@@ -214,7 +214,7 @@ end
 ---@param achievement_desc string|nil
 ---@param achievement_icon string|nil
 function M.notify_achievement(achievement_name, achievement_desc, achievement_icon)
-  local config = require('triforce.init').config
+  local config = require('triforce').config
   if not (config.notifications.enabled and config.notifications.achievements) then
     return
   end
