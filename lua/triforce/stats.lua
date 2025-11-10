@@ -1,22 +1,8 @@
----Stats tracking and persistence module
----@class Stats
----@field xp number Total experience points
----@field level number Current level
----@field chars_typed number Total characters typed
----@field lines_typed number Total lines typed
----@field sessions number Total sessions
----@field time_coding number Total time in seconds
----@field last_session_start number Timestamp of session start
----@field achievements table<string, boolean> Unlocked achievements
----@field chars_by_language table<string, number> Characters typed per language
----@field daily_activity table<string, number> Lines typed per day (YYYY-MM-DD format)
----@field current_streak number Current consecutive day streak
----@field longest_streak number Longest ever streak
-
 ---@class Triforce.Stats
 local M = {}
 
--- Configurable level progression
+---Configurable level progression
+---@type LevelProgression
 M.level_config = {
   -- XP required per level for each tier
   tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
@@ -24,7 +10,20 @@ M.level_config = {
   tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
 }
 
----@type Stats
+---Stats tracking and persistence module
+---@class Stats
+---@field xp integer Total experience points
+---@field level integer Current level
+---@field chars_typed integer Total characters typed
+---@field lines_typed integer Total lines typed
+---@field sessions integer Total sessions
+---@field time_coding integer Total time in seconds
+---@field last_session_start integer Timestamp of session start
+---@field achievements table<string, boolean> Unlocked achievements
+---@field chars_by_language table<string, integer> Characters typed per language
+---@field daily_activity table<string, integer> Lines typed per day (YYYY-MM-DD format)
+---@field current_streak integer Current consecutive day streak
+---@field longest_streak integer Longest ever streak
 M.default_stats = {
   xp = 0,
   level = 1,
@@ -41,15 +40,12 @@ M.default_stats = {
 }
 
 ---Get the stats file path
----@return string
 local function get_stats_path()
-  local data_path = vim.fn.stdpath('data')
-  return data_path .. '/triforce_stats.json'
+  return vim.fn.stdpath('data') .. '/triforce_stats.json'
 end
 
 ---Prepare stats for JSON encoding (handle empty tables)
 ---@param stats Stats
----@return Stats
 local function prepare_for_save(stats)
   local copy = vim.deepcopy(stats)
 
@@ -70,7 +66,6 @@ local function prepare_for_save(stats)
 end
 
 ---Load stats from disk
----@return Stats
 function M.load()
   local path = get_stats_path()
 
@@ -176,8 +171,8 @@ function M.save(stats)
 end
 
 ---Calculate total XP needed to reach a specific level
----@param level number
----@return number total_xp
+---@param level integer
+---@return integer total_xp
 local function get_total_xp_for_level(level)
   if level <= 1 then
     return 0
@@ -217,8 +212,8 @@ end
 ---  Levels 1-10: 300 XP each
 ---  Levels 11-20: 500 XP each
 ---  Levels 21+: 1000 XP each
----@param xp number
----@return number level
+---@param xp integer
+---@return integer level
 function M.calculate_level(xp)
   if xp <= 0 then
     return 1
@@ -252,15 +247,15 @@ function M.calculate_level(xp)
 end
 
 ---Calculate XP needed for next level
----@param current_level number
----@return number xp_needed
+---@param current_level integer
+---@return integer xp_needed
 function M.xp_for_next_level(current_level)
   return get_total_xp_for_level(current_level + 1)
 end
 
 ---Add XP and update level
 ---@param stats Stats
----@param amount number
+---@param amount integer
 ---@return boolean leveled_up
 function M.add_xp(stats, amount)
   local old_level = stats.level
@@ -288,15 +283,13 @@ function M.end_session(stats)
 end
 
 ---Get current date in YYYY-MM-DD format
----@param timestamp? number Optional timestamp, defaults to current time
----@return string
+---@param timestamp integer|nil Optional timestamp, defaults to current time
 local function get_date_string(timestamp)
   return os.date('%Y-%m-%d', timestamp or os.time())
 end
 
 ---Get timestamp for start of day
 ---@param date_str string Date in YYYY-MM-DD format
----@return number
 local function get_day_start(date_str)
   local year, month, day = date_str:match('(%d+)-(%d+)-(%d+)')
   return os.time({ year = year, month = month, day = day, hour = 0, min = 0, sec = 0 })
@@ -304,7 +297,8 @@ end
 
 ---Calculate streak from daily activity
 ---@param stats Stats
----@return number current_streak, number longest_streak
+---@return integer current_streak
+---@return integer longest_streak
 function M.calculate_streaks(stats)
   if not stats.daily_activity then
     stats.daily_activity = {}
@@ -376,7 +370,7 @@ end
 
 ---Record activity for today
 ---@param stats Stats
----@param lines_today number Number of lines typed today
+---@param lines_today integer Number of lines typed today
 function M.record_daily_activity(stats, lines_today)
   if not stats.daily_activity then
     stats.daily_activity = {}
@@ -509,7 +503,7 @@ end
 
 ---Check and unlock achievements
 ---@param stats Stats
----@return table newly_unlocked List of achievement objects { name, desc, icon }
+---@return table newly_unlocked List of achievement objects { name, desc, icon, id, check }
 function M.check_achievements(stats)
   local newly_unlocked = {}
   local achievements = M.get_all_achievements(stats)
@@ -518,6 +512,8 @@ function M.check_achievements(stats)
     if achievement.check and not stats.achievements[achievement.id] then
       stats.achievements[achievement.id] = true
       table.insert(newly_unlocked, {
+        id = achievement.id,
+        check = achievement.check,
         name = achievement.name,
         desc = achievement.desc,
         icon = achievement.icon,

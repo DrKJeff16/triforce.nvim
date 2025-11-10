@@ -27,7 +27,7 @@ M.height = 30
 M.xpad = 2
 
 ---Get Zelda-themed title based on level
----@param level number
+---@param level integer
 ---@return string
 local function get_level_title(level)
   local titles = {
@@ -68,7 +68,7 @@ local function format_time(secs)
 end
 
 ---Get activity level highlight based on lines typed
----@param lines number
+---@param lines integer
 ---@return string
 local function get_activity_hl(lines)
   if lines == 0 then

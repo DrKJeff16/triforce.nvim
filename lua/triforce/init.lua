@@ -1,7 +1,7 @@
 ---@class LevelTier
----@field min_level number Starting level for this tier
----@field max_level number Ending level for this tier (use math.huge for infinite)
----@field xp_per_level number XP required per level in this tier
+---@field min_level integer Starting level for this tier
+---@field max_level integer Ending level for this tier (use math.huge for infinite)
+---@field xp_per_level integer XP required per level in this tier
 
 ---@class LevelProgression
 ---@field tier_1 LevelTier Levels 1-10
@@ -9,9 +9,9 @@
 ---@field tier_3 LevelTier Levels 21+
 
 ---@class XPRewards
----@field char number XP gained per character typed (default: 1)
----@field line number XP gained per new line (default: 1)
----@field save number XP gained per file save (default: 50)
+---@field char integer XP gained per character typed (default: 1)
+---@field line integer XP gained per new line (default: 1)
+---@field save integer XP gained per file save (default: 50)
 
 ---@class TriforceLanguage
 ---@field name string
@@ -24,16 +24,6 @@
 
 ---@class TriforceConfig.Keymap
 ---@field show_profile? string|nil Keymap for showing profile (default: nil = no keymap)
-
----@class TriforceConfig
----@field enabled? boolean Enable the plugin
----@field gamification_enabled? boolean Enable gamification features (stats, XP, achievements)
----@field notifications? TriforceConfig.Notifications Notification configuration
----@field auto_save_interval? number Auto-save stats interval in seconds (default: 300)
----@field keymap? TriforceConfig.Keymap|nil Keymap configuration
----@field custom_languages? table<string, TriforceLanguage>|nil Custom language definitions { filetype = { icon = "", name = "" } }
----@field level_progression? LevelProgression|nil Custom level progression tiers
----@field xp_rewards? XPRewards|nil Custom XP reward amounts for different actions
 
 ---@class Triforce
 local M = {}
@@ -49,7 +39,15 @@ function M.has_gamification()
 end
 
 ---Default configuration
----@type TriforceConfig
+---@class TriforceConfig
+---@field enabled? boolean Enable the plugin
+---@field gamification_enabled? boolean Enable gamification features (stats, XP, achievements)
+---@field notifications? TriforceConfig.Notifications Notification configuration
+---@field auto_save_interval? number Auto-save stats interval in seconds (default: 300)
+---@field keymap? TriforceConfig.Keymap|nil Keymap configuration
+---@field custom_languages? table<string, TriforceLanguage>|nil Custom language definitions { filetype = { icon = "", name = "" } }
+---@field level_progression? LevelProgression|nil Custom level progression tiers
+---@field xp_rewards? XPRewards|nil Custom XP reward amounts for different actions
 local defaults = {
   enabled = true,
   gamification_enabled = true,

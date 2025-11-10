@@ -1,4 +1,5 @@
 ---Language configuration and icons
+---@class Triforce.Languages
 local M = {}
 
 ---Language to icon mapping for popular programming languages
@@ -168,14 +169,12 @@ M.language_display_names = {
 
 ---Get display name for language
 ---@param filetype string
----@return string
 function M.get_display_name(filetype)
   return M.language_display_names[filetype] or filetype
 end
 
 ---Get full display with icon
 ---@param filetype string
----@return string
 function M.get_full_display(filetype)
   local icon = M.get_icon(filetype)
   local name = M.get_display_name(filetype)
@@ -186,7 +185,7 @@ function M.get_full_display(filetype)
 end
 
 ---Register custom languages
----@param custom_langs table<string, table> { filetype = { icon = "", name = "" } }
+---@param custom_langs table<string, { icon: string, name: string }>
 function M.register_custom_languages(custom_langs)
   for filetype, config in pairs(custom_langs) do
     if config.icon then

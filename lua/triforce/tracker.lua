@@ -2,16 +2,17 @@
 local stats_module = require('triforce.stats')
 local languages = require('triforce.languages')
 
+---@class Triforce.Tracker
 local M = {}
 
 ---@type Stats|nil
 M.current_stats = nil
 
----@type number|nil
+---@type integer|nil
 M.autocmd_group = nil
 
 -- Track line count per buffer to detect new lines
----@type table<number, number>
+---@type table<integer, integer>
 M.buffer_line_counts = {}
 
 -- Track lines typed today
@@ -221,7 +222,6 @@ function M.notify_achievement(achievement_name, achievement_desc, achievement_ic
 
   local icon = achievement_icon or '🏆'
   local message = icon .. ' ' .. achievement_name
-
   if achievement_desc then
     message = message .. '\n\n' .. achievement_desc
   end
