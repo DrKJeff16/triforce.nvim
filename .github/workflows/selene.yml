@@ -1,0 +1,26 @@
+name: Selene Lint
+
+on:
+  push:
+    paths:
+      - '**.lua'
+  pull_request:
+    types:
+      - opened
+    paths:
+      - '**.lua'
+
+jobs:
+  selene_check:
+    name: Lint With Selene
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+
+      - name: Lint Lua code with Selene
+        uses: AlejandroSuero/selene-linter-action@v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --display-style=quiet .
