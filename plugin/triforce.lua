@@ -17,28 +17,38 @@ vim.g.loaded_triforce = 1
 vim.api.nvim_create_user_command('Triforce', function(opts)
   local subcommand = opts.fargs[1]
   local subcommand2 = opts.fargs[2]
+  local triforce = require('triforce')
 
-  if subcommand == 'profile' then
-    require('triforce').show_profile()
-  elseif subcommand == 'stats' then
-    require('triforce').show_profile()
-  elseif subcommand == 'reset' then
-    require('triforce').reset_stats()
-  elseif subcommand == 'debug' then
-    if subcommand2 == 'xp' then
-      require('triforce').debug_xp()
-    elseif subcommand2 == 'achievement' then
-      require('triforce').debug_achievement()
-    elseif subcommand2 == 'languages' then
-      require('triforce').debug_languages()
-    elseif subcommand2 == 'fix' then
-      require('triforce').debug_fix_level()
-    else
-      vim.notify('Usage: :Triforce debug xp | achievement | languages | fix', vim.log.levels.INFO)
-    end
-  else
-    vim.notify('Usage: :Triforce profile | stats | reset | debug', vim.log.levels.INFO)
+  if vim.list_contains({ 'profile', 'stats' }, subcommand) then
+    triforce.show_profile()
+    return
   end
+  if subcommand == 'reset' then
+    triforce.reset_stats()
+    return
+  end
+
+  -- Plan B: If subcommand value is not valid then abort and print usage
+  if subcommand ~= 'debug' then
+    vim.notify('Usage: :Triforce profile | stats | reset | debug', vim.log.levels.INFO)
+    return
+  end
+
+  local debug_ops = {
+    xp = triforce.debug_xp,
+    achievement = triforce.debug_achievement,
+    languages = triforce.debug_languages,
+    fix = triforce.debug_fix_level,
+  }
+
+  -- Plan B: If subcommand2 value is not valid then abort and print usage
+  if not vim.list_contains(vim.tbl_keys(debug_ops), subcommand2) then
+    vim.notify('Usage: :Triforce debug xp | achievement | languages | fix', vim.log.levels.INFO)
+    return
+  end
+
+  local operation = debug_ops[subcommand2]
+  operation()
 end, {
   nargs = '*',
   desc = 'Triforce gamification commands',
