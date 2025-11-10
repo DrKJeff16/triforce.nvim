@@ -1,6 +1,7 @@
 ---Activity tracker module - monitors typing and awards XP
 local stats_module = require('triforce.stats')
 local languages = require('triforce.languages')
+local uv = vim.uv or vim.loop
 
 ---@class Triforce.Tracker
 local M = {}
@@ -60,7 +61,11 @@ function M.setup()
     end,
   })
   -- Auto-save timer (every 30 seconds if dirty)
-  local timer = vim.loop.new_timer()
+  local timer = uv.new_timer()
+  if not timer then
+    return
+  end
+
   timer:start(
     30000,
     30000,
