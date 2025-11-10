@@ -13,6 +13,9 @@ test: ## Run tests with busted
 lint: ## Run luacheck linter
 	luacheck .
 
+lint-selene: ## Run selene linter
+	selene .
+
 format: ## Format code with stylua
 	stylua --check .
 
