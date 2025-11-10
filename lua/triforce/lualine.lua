@@ -159,8 +159,7 @@ function M.achievements(opts)
   end
 
   -- Count achievements
-  local stats_module = require('triforce.stats')
-  local all_achievements = stats_module.get_all_achievements(stats)
+  local all_achievements = require('triforce.stats').get_all_achievements(stats)
   local total = #all_achievements
   local unlocked = 0
 
@@ -231,10 +230,9 @@ function M.session_time(opts)
     return '' -- No active session
   end
 
-  local duration = os.time() - session_start
-
   -- Build component
   local parts = {} ---@type string[]
+  local duration = os.time() - session_start
 
   if config.icon ~= '' then
     table.insert(parts, config.icon)
@@ -248,25 +246,11 @@ function M.session_time(opts)
 end
 
 ---Convenience function to get all components at once
----@param opts table|nil Configuration for all components
----@return table components Table with level, achievements, streak, session_time functions
+---@param opts Triforce.Lualine.Config|nil Configuration for all components
+---@return Triforce.Lualine.Config components Table with level, achievements, streak, session_time functions
 function M.components(opts)
   M.setup(opts)
-
-  return {
-    level = function()
-      return M.level()
-    end,
-    achievements = function()
-      return M.achievements()
-    end,
-    streak = function()
-      return M.streak()
-    end,
-    session_time = function()
-      return M.session_time()
-    end,
-  }
+  return { level = M.level, achievements = M.achievements, streak = M.streak, session_time = M.session_time }
 end
 
 return M

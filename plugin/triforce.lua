@@ -66,6 +66,7 @@ end, {
 
 -- Create <Plug> mappings for users to map to their own keys
 vim.keymap.set('n', '<Plug>(TriforceProfile)', require('triforce').show_profile, {
+  noremap = true,
   silent = true,
   desc = 'Triforce: Show profile',
 })

@@ -93,10 +93,8 @@ function M.load()
   end
 
   -- Fix chars_by_language if it was saved as array
-  if stats.chars_by_language then
-    if vim.isarray(stats.chars_by_language) then
-      stats.chars_by_language = {}
-    end
+  if stats.chars_by_language and vim.isarray(stats.chars_by_language) then
+    stats.chars_by_language = {}
   end
 
   -- Migrate daily_activity from boolean to number (old format compatibility)
@@ -141,10 +139,9 @@ function M.save(stats)
     return false
   end
 
-  local path = get_stats_path()
-
   -- Prepare data
   local data_to_save = prepare_for_save(stats)
+  local path = get_stats_path()
 
   -- Encode to JSON
   local ok, json = pcall(vim.json.encode, data_to_save)

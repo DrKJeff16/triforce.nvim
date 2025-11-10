@@ -155,7 +155,7 @@ function M.get_random_fact(stats)
   end
 
   -- Default fallback
-  if #facts == 0 then
+  if vim.tbl_isempty(facts) then
     table.insert(facts, 'Start coding to see interesting stats')
   end
 

@@ -51,11 +51,7 @@ end
 local defaults = {
   enabled = true,
   gamification_enabled = true,
-  notifications = {
-    enabled = true,
-    level_up = true,
-    achievements = true,
-  },
+  notifications = { enabled = true, level_up = true, achievements = true },
   auto_save_interval = 300,
   keymap = {
     show_profile = nil, -- Set to a keymap like "<leader>tp" to enable

@@ -31,11 +31,7 @@ M.last_save_time = 0
 ---@return table
 local function get_xp_rewards()
   local config = require('triforce').config
-  return config.xp_rewards or {
-    char = 1,
-    line = 1,
-    save = 50,
-  }
+  return config.xp_rewards or { char = 1, line = 1, save = 50 }
 end
 
 ---Initialize the tracker
@@ -69,17 +65,21 @@ function M.setup()
     30000,
     30000,
     vim.schedule_wrap(function()
-      if M.current_stats and M.dirty then
-        local now = os.time()
-        -- Debounce: only save if at least 5 seconds since last save
-        if now - M.last_save_time >= 5 then
-          local ok = stats_module.save(M.current_stats)
-          if ok then
-            M.dirty = false
-            M.last_save_time = now
-          end
-        end
+      if not (M.current_stats and M.dirty) then
+        return
       end
+
+      local now = os.time()
+      if now - M.last_save_time < 5 then -- Debounce: only save if at least 5 seconds since last save
+        return
+      end
+
+      if not stats_module.save(M.current_stats) then
+        return
+      end
+
+      M.dirty = false
+      M.last_save_time = now
     end)
   )
 end
@@ -87,14 +87,16 @@ end
 ---Check if date has rolled over and update daily activity
 local function check_date_rollover()
   local today = os.date('%Y-%m-%d')
-  if today ~= M.current_date then
-    -- Day changed - record yesterday's lines and reset
-    if M.lines_today > 0 and M.current_stats then
-      stats_module.record_daily_activity(M.current_stats, M.lines_today)
-    end
-    M.current_date = today
-    M.lines_today = 0
+  if today == M.current_date then
+    return
   end
+
+  -- Day changed - record yesterday's lines and reset
+  if M.lines_today > 0 and M.current_stats then
+    stats_module.record_daily_activity(M.current_stats, M.lines_today)
+  end
+  M.current_date = today
+  M.lines_today = 0
 end
 
 ---Track characters typed (called on text change)
@@ -128,15 +130,13 @@ function M.on_text_changed()
 
   -- Track character by language
   local filetype = vim.bo[bufnr].filetype
-  if filetype and filetype ~= '' then
-    if languages.should_track(filetype) then
-      -- Initialize if needed
-      if not M.current_stats.chars_by_language then
-        M.current_stats.chars_by_language = {}
-      end
-
-      M.current_stats.chars_by_language[filetype] = (M.current_stats.chars_by_language[filetype] or 0) + 1
+  if filetype and filetype ~= '' and languages.should_track(filetype) then
+    -- Initialize if needed
+    if not M.current_stats.chars_by_language then
+      M.current_stats.chars_by_language = {}
     end
+
+    M.current_stats.chars_by_language[filetype] = (M.current_stats.chars_by_language[filetype] or 0) + 1
   end
 
   local xp_rewards = get_xp_rewards()
@@ -179,12 +179,13 @@ function M.on_save()
 
   -- Save immediately on file save
   local now = os.time()
-  if now - M.last_save_time >= 2 then -- Prevent saves more than once per 2 seconds
-    local ok = stats_module.save(M.current_stats)
-    if ok then
-      M.dirty = false
-      M.last_save_time = now
-    end
+  if now - M.last_save_time < 2 then -- Prevent saves more than once per 2 seconds
+    return
+  end
+
+  if stats_module.save(M.current_stats) then
+    M.dirty = false
+    M.last_save_time = now
   end
 end
 
@@ -194,8 +195,8 @@ function M.notify_level_up()
     return
   end
 
-  local config = require('triforce').config
-  if not (config.notifications.enabled and config.notifications.level_up) then
+  local notifications = require('triforce').config.notifications
+  if not notifications or not (notifications.enabled and notifications.level_up) then
     return
   end
 
@@ -215,8 +216,8 @@ end
 ---@param achievement_desc string|nil
 ---@param achievement_icon string|nil
 function M.notify_achievement(achievement_name, achievement_desc, achievement_icon)
-  local config = require('triforce').config
-  if not (config.notifications.enabled and config.notifications.achievements) then
+  local notifications = require('triforce').config.notifications
+  if not notifications or not (notifications.enabled and notifications.achievements) then
     return
   end
 
@@ -249,13 +250,13 @@ function M.shutdown()
   stats_module.end_session(M.current_stats)
 
   -- Force save on shutdown, ignore debounce
-  local ok = stats_module.save(M.current_stats)
-  if ok then
-    M.dirty = false
-    M.last_save_time = os.time()
-  else
+  if not stats_module.save(M.current_stats) then
     vim.notify('Failed to save stats on shutdown!', vim.log.levels.ERROR)
+    return
   end
+
+  M.dirty = false
+  M.last_save_time = os.time()
 end
 
 ---Reset all stats (for testing)
@@ -281,12 +282,7 @@ function M.debug_languages()
     count = count + 1
   end
 
-  if count == 0 then
-    msg = 'No languages tracked yet'
-  else
-    msg = msg .. ('\nTotal: %d languages'):format(count)
-  end
-
+  msg = count == 0 and 'No languages tracked yet' or ('%s\nTotal: %d languages'):format(msg, count)
   vim.notify(msg, vim.log.levels.INFO)
 
   -- Also print to check current filetype
@@ -365,17 +361,18 @@ function M.debug_fix_level()
       vim.log.levels.INFO,
       { title = ' Triforce Debug' }
     )
-  else
-    M.current_stats.level = calculated_level
-    M.dirty = true
-    stats_module.save(M.current_stats)
-
-    vim.notify(
-      ('✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d'):format(old_level, calculated_level, current_xp),
-      vim.log.levels.WARN,
-      { title = ' Triforce Debug', timeout = 5000 }
-    )
+    return
   end
+
+  M.current_stats.level = calculated_level
+  M.dirty = true
+  stats_module.save(M.current_stats)
+
+  vim.notify(
+    ('✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d'):format(old_level, calculated_level, current_xp),
+    vim.log.levels.WARN,
+    { title = ' Triforce Debug', timeout = 5000 }
+  )
 end
 
 return M
