@@ -641,7 +641,7 @@ local function setup_highlights()
   local red_fg = get_hl('Keyword').fg
 
   -- Fallback color when theme doesn't provide red
-  local DEFAULT_RED = "#E66868"
+  local DEFAULT_RED = '#E66868'
 
   -- Heat levels: index maps to highlight group number and mix percentage
   local heat_levels = {
@@ -661,7 +661,6 @@ local function setup_highlights()
       { fg = mix(base_color, normal_bg, level.mix_pct) }
     )
   end
-
 
   -- Link to standard highlights
   api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
@@ -901,3 +900,4 @@ function M.open()
 end
 
 return M
+-- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

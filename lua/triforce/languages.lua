@@ -199,3 +199,4 @@ function M.register_custom_languages(custom_langs)
 end
 
 return M
+-- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

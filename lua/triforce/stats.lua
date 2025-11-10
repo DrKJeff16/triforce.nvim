@@ -529,3 +529,4 @@ function M.check_achievements(stats)
 end
 
 return M
+-- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
