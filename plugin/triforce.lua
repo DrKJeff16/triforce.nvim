@@ -57,7 +57,7 @@ end, {
     if #args == 1 then
       return { 'profile', 'stats', 'reset', 'debug' }
     end
-    if #args == 2 and args[1] == 'debug' then
+    if #args == 2 and args[2] == 'debug' then
       return { 'xp', 'achievement', 'languages', 'fix' }
     end
     return {}
