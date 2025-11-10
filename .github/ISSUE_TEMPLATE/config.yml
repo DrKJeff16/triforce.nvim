@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Have a question?
+    url: https://github.com/gisketch/triforce.nvim/discussions
+    about: Use GitHub Discussions instead
