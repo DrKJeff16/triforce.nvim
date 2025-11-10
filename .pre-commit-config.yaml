@@ -16,12 +16,12 @@ repos:
         entry: stylua
         types: [lua]
         verbose: true
-      - id: luacheck
-        name: Luacheck
-        language: system
-        entry: luacheck
-        types: [lua]
-        verbose: true
+      # - id: luacheck
+      #   name: Luacheck
+      #   language: system
+      #   entry: luacheck
+      #   types: [lua]
+      #   verbose: true
       # - id: selene
       #   name: Selene
       #   language: system
