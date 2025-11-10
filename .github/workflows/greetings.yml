@@ -18,9 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Greeting
-        uses: actions/first-interaction@v3
+        uses: actions/first-interaction@v3.1.0
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
           issue-message: |
             ### Automated Greeting
 
