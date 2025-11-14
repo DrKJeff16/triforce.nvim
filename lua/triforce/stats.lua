@@ -24,6 +24,7 @@ M.level_config = {
 ---@field daily_activity table<string, integer> Lines typed per day (YYYY-MM-DD format)
 ---@field current_streak integer Current consecutive day streak
 ---@field longest_streak integer Longest ever streak
+---@field db_path string
 M.default_stats = {
   xp = 0,
   level = 1,
@@ -37,11 +38,16 @@ M.default_stats = {
   daily_activity = {},
   current_streak = 0,
   longest_streak = 0,
+  db_path = nil,
 }
 
 ---Get the stats file path
 local function get_stats_path()
-  return vim.fn.stdpath('data') .. '/triforce_stats.json'
+  if M.default_stats.db_path == nil then
+    return vim.fn.stdpath('data') .. '/triforce_stats.json'
+  else
+    return M.default_stats.db_path
+  end
 end
 
 ---Prepare stats for JSON encoding (handle empty tables)

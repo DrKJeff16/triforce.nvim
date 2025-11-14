@@ -48,6 +48,7 @@ end
 ---@field custom_languages? table<string, TriforceLanguage>|nil Custom language definitions { filetype = { icon = "", name = "" } }
 ---@field level_progression? LevelProgression|nil Custom level progression tiers
 ---@field xp_rewards? XPRewards|nil Custom XP reward amounts for different actions
+---@field db_path? string
 local defaults = {
   enabled = true,
   gamification_enabled = true,
@@ -67,6 +68,7 @@ local defaults = {
     line = 1, -- XP per new line (changed from 10 to 1)
     save = 50, -- XP per file save
   },
+  db_path = vim.fn.stdpath('data') .. '/triforce_stats.json', -- custom path for data file
 }
 
 ---@type TriforceConfig
@@ -87,16 +89,17 @@ function M.setup(opts)
     require('triforce.languages').register_custom_languages(M.config.custom_languages)
   end
 
+  -- Setup custom path if provided
+  if M.config.db_path then
+    require('triforce.stats').db_path = M.config.db_path
+  end
+
   -- Set up keymap if provided
   if M.config.keymap and M.config.keymap.show_profile then
     vim.keymap.set('n', M.config.keymap.show_profile, M.show_profile, {
       desc = 'Show Triforce Profile',
       silent = true,
-      noremap = true,
-    })
-  end
-
-  if M.config.enabled and M.config.gamification_enabled then
+      noremap  M.config.enabled and M.config.gamification_enabled then
     require('triforce.tracker').setup()
   end
 end
