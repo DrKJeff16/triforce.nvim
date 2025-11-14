@@ -45,7 +45,6 @@ M.default_stats = {
 
 ---Get the stats file path
 local function get_stats_path()
-  vim.notify(M.db_path, vim.log.levels.WARN)
   if M.db_path then
     return M.db_path
   else

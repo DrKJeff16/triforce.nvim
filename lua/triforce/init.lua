@@ -91,7 +91,6 @@ function M.setup(opts)
 
   -- Setup custom path if provided
   if M.config.db_path then
-    vim.notify(M.config.db_path, vim.log.levels.WARN)
     require('triforce.stats').db_path = M.config.db_path
   end
 
