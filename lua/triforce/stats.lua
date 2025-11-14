@@ -10,6 +10,8 @@ M.level_config = {
   tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
 }
 
+M.db_path = nil
+
 ---Stats tracking and persistence module
 ---@class Stats
 ---@field xp integer Total experience points
@@ -38,13 +40,14 @@ M.default_stats = {
   daily_activity = {},
   current_streak = 0,
   longest_streak = 0,
-  db_path = nil,
+  db_path = vim.fn.stdpath('data') .. '/triforce_stats.json',
 }
 
 ---Get the stats file path
 local function get_stats_path()
-  if M.default_stats.db_path == nil then
-    return vim.fn.stdpath('data') .. '/triforce_stats.json'
+  vim.notify(M.db_path, vim.log.levels.WARN)
+  if M.db_path then
+    return M.db_path
   else
     return M.default_stats.db_path
   end

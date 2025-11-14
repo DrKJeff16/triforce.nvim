@@ -91,6 +91,7 @@ function M.setup(opts)
 
   -- Setup custom path if provided
   if M.config.db_path then
+    vim.notify(M.config.db_path, vim.log.levels.WARN)
     require('triforce.stats').db_path = M.config.db_path
   end
 
@@ -99,7 +100,11 @@ function M.setup(opts)
     vim.keymap.set('n', M.config.keymap.show_profile, M.show_profile, {
       desc = 'Show Triforce Profile',
       silent = true,
-      noremap  M.config.enabled and M.config.gamification_enabled then
+      noremap = true,
+    })
+  end
+
+  if M.config.enabled and M.config.gamification_enabled then
     require('triforce.tracker').setup()
   end
 end
