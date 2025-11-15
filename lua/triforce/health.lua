@@ -12,12 +12,6 @@ function M.check()
     vim.health.error('Neovim >= 0.9.0 is required')
   end
 
-  if pcall(require, 'nui.popup') then
-    vim.health.ok('nui.nvim is installed')
-  else
-    vim.health.error('nui.nvim is not installed (required dependency)')
-  end
-
   local ok, triforce = pcall(require, 'triforce')
   if not ok then
     vim.health.error('Failed to load triforce module: ' .. tostring(triforce))
