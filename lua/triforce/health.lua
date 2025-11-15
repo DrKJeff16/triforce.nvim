@@ -11,34 +11,39 @@ function M.check()
   else
     vim.health.error('Neovim >= 0.9.0 is required')
   end
-  local nui_ok = pcall(require, 'nui.popup')
-  if nui_ok then
+
+  if pcall(require, 'nui.popup') then
     vim.health.ok('nui.nvim is installed')
   else
     vim.health.error('nui.nvim is not installed (required dependency)')
   end
+
   local ok, triforce = pcall(require, 'triforce')
-  if ok then
-    vim.health.ok('triforce module loaded successfully')
-    if triforce.config.enabled then
-      vim.health.ok('Plugin is enabled')
-    else
-      vim.health.warn('Plugin is disabled in configuration')
-    end
-    if triforce.config.gamification_enabled then
-      vim.health.ok('Gamification is enabled')
-      local stats_path = vim.fn.stdpath('data') .. '/triforce_stats.json'
-      if vim.fn.filereadable(stats_path) == 1 then
-        vim.health.ok('Stats file found: ' .. stats_path)
-      else
-        vim.health.info('Stats file not yet created (will be created on first use)')
-      end
-    else
-      vim.health.warn('Gamification is disabled')
-    end
-  else
+  if not ok then
     vim.health.error('Failed to load triforce module: ' .. tostring(triforce))
+    return
   end
+
+  vim.health.ok('triforce module loaded successfully')
+  if triforce.config.enabled then
+    vim.health.ok('Plugin is enabled')
+  else
+    vim.health.warn('Plugin is disabled in configuration')
+  end
+
+  if not triforce.config.gamification_enabled then
+    vim.health.warn('Gamification is disabled')
+    return
+  end
+
+  vim.health.ok('Gamification is enabled')
+  local stats_path = vim.fn.stdpath('data') .. '/triforce_stats.json'
+  if vim.fn.filereadable(stats_path) == 1 then
+    vim.health.ok('Stats file found: ' .. stats_path)
+    return
+  end
+
+  vim.health.info('Stats file not yet created (will be created on first use)')
 end
 
 return M

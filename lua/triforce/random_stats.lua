@@ -1,3 +1,5 @@
+local util = require('triforce.util')
+
 ---Random stat generator for displaying varied coding facts
 ---@class Triforce.RandomStats
 local M = {}
@@ -6,6 +8,8 @@ local M = {}
 ---@param stats Stats
 ---@return string fact
 function M.get_random_fact(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
   local facts = {} ---@type string[]
 
   -- Calculate derived metrics
@@ -168,6 +172,8 @@ end
 ---@param num number
 ---@return string
 function M.format_number(num)
+  util.validate({ num = { num, { 'number' } } })
+
   local formatted = tostring(num)
   local k
 
@@ -184,6 +190,8 @@ end
 ---Format language name for display
 ---@param filetype string
 function M.format_language_name(filetype)
+  util.validate({ filetype = { filetype, { 'string' } } })
+
   local language_names = {
     lua = 'Lua',
     python = 'Python',

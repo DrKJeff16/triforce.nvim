@@ -1,3 +1,12 @@
+---@class Achievement
+---@field id string
+---@field name string
+---@field check boolean
+---@field desc? string
+---@field icon? string
+
+local util = require('triforce.util')
+
 ---@class Triforce.Stats
 local M = {}
 
@@ -53,6 +62,8 @@ end
 ---Prepare stats for JSON encoding (handle empty tables)
 ---@param stats Stats
 local function prepare_for_save(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
   local copy = vim.deepcopy(stats)
 
   -- Use vim.empty_dict() to ensure empty tables encode as {} not []
@@ -138,9 +149,10 @@ function M.load()
 end
 
 ---Save stats to disk
----@param stats Stats
+---@param stats Stats|nil
 ---@return boolean success
 function M.save(stats)
+  util.validate({ stats = { stats, { 'table', 'nil' }, true } })
   if not stats then
     return false
   end
@@ -177,6 +189,7 @@ end
 ---@param level integer
 ---@return integer total_xp
 local function get_total_xp_for_level(level)
+  util.validate({ level = { level, { 'number' } } })
   if level <= 1 then
     return 0
   end
@@ -218,6 +231,7 @@ end
 ---@param xp integer
 ---@return integer level
 function M.calculate_level(xp)
+  util.validate({ xp = { xp, { 'number' } } })
   if xp <= 0 then
     return 1
   end
@@ -261,6 +275,11 @@ end
 ---@param amount integer
 ---@return boolean leveled_up
 function M.add_xp(stats, amount)
+  util.validate({
+    stats = { stats, { 'table' } },
+    amount = { amount, { 'number' } },
+  })
+
   local old_level = stats.level
   stats.xp = stats.xp + amount
   stats.level = M.calculate_level(stats.xp)
@@ -271,6 +290,8 @@ end
 ---Start a new session
 ---@param stats Stats
 function M.start_session(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
   stats.sessions = stats.sessions + 1
   stats.last_session_start = os.time()
 end
@@ -278,6 +299,8 @@ end
 ---End the current session
 ---@param stats Stats
 function M.end_session(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
   if stats.last_session_start > 0 then
     local duration = os.time() - stats.last_session_start
     stats.time_coding = stats.time_coding + duration
@@ -288,12 +311,15 @@ end
 ---Get current date in YYYY-MM-DD format
 ---@param timestamp integer|nil Optional timestamp, defaults to current time
 local function get_date_string(timestamp)
+  util.validate({ timestamp = { timestamp, { 'number', 'nil' }, true } })
   return os.date('%Y-%m-%d', timestamp or os.time())
 end
 
 ---Get timestamp for start of day
 ---@param date_str string Date in YYYY-MM-DD format
 local function get_day_start(date_str)
+  util.validate({ date_str = { date_str, { 'string' } } })
+
   local year, month, day = date_str:match('(%d+)-(%d+)-(%d+)')
   return os.time({ year = year, month = month, day = day, hour = 0, min = 0, sec = 0 })
 end
@@ -303,6 +329,8 @@ end
 ---@return integer current_streak
 ---@return integer longest_streak
 function M.calculate_streaks(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
   if not stats.daily_activity then
     stats.daily_activity = {}
     return 0, 0
@@ -375,6 +403,11 @@ end
 ---@param stats Stats
 ---@param lines_today integer Number of lines typed today
 function M.record_daily_activity(stats, lines_today)
+  util.validate({
+    stats = { stats, { 'table' } },
+    lines_today = { lines_today, { 'number' } },
+  })
+
   if not stats.daily_activity then
     stats.daily_activity = {}
   end
@@ -390,8 +423,10 @@ end
 
 ---Get all achievements with their unlock status
 ---@param stats Stats
----@return { id: string, name: string, desc: string, icon: string, check: boolean }[] achievements List of achievement objects { id, name, desc, icon, check }
+---@return Achievement[] achievements
 function M.get_all_achievements(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
   -- Count unique languages
   local unique_languages = 0
   for _ in pairs(stats.chars_by_language or {}) do
@@ -506,8 +541,11 @@ end
 
 ---Check and unlock achievements
 ---@param stats Stats
----@return table newly_unlocked List of achievement objects { name, desc, icon, id, check }
+---@return Achievement[] newly_unlocked List of achievement objects
 function M.check_achievements(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
+  ---@type Achievement[]
   local newly_unlocked = {}
   local achievements = M.get_all_achievements(stats)
 

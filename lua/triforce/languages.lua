@@ -1,3 +1,5 @@
+local util = require('triforce.util')
+
 ---Language configuration and icons
 ---@class Triforce.Languages
 local M = {}
@@ -81,6 +83,8 @@ M.language_icons = {
 ---@param filetype string
 ---@return string icon
 function M.get_icon(filetype)
+  util.validate({ filetype = { filetype, { 'string' } } })
+
   return M.language_icons[filetype] or ''
 end
 
@@ -88,6 +92,8 @@ end
 ---@param filetype string
 ---@return boolean
 function M.should_track(filetype)
+  util.validate({ filetype = { filetype, { 'string' } } })
+
   -- Track only if we have an icon for it or if user adds custom mapping
   return M.language_icons[filetype] ~= nil
 end
@@ -170,12 +176,16 @@ M.language_display_names = {
 ---Get display name for language
 ---@param filetype string
 function M.get_display_name(filetype)
+  util.validate({ filetype = { filetype, { 'string' } } })
+
   return M.language_display_names[filetype] or filetype
 end
 
 ---Get full display with icon
 ---@param filetype string
 function M.get_full_display(filetype)
+  util.validate({ filetype = { filetype, { 'string' } } })
+
   local icon = M.get_icon(filetype)
   local name = M.get_display_name(filetype)
   if icon ~= '' then
@@ -187,6 +197,8 @@ end
 ---Register custom languages
 ---@param custom_langs table<string, { icon: string, name: string }>
 function M.register_custom_languages(custom_langs)
+  util.validate({ custom_langs = { custom_langs, { 'table' } } })
+
   for filetype, config in pairs(custom_langs) do
     if config.icon then
       M.language_icons[filetype] = config.icon

@@ -1,3 +1,5 @@
+local util = require('triforce.util')
+
 ---Lualine integration components for Triforce
 ---Provides modular statusline components for level, achievements, streak, and session time
 ---@class Triforce.Lualine
@@ -40,6 +42,8 @@ M.config = {
 ---Setup lualine integration with custom config
 ---@param opts Triforce.Lualine.Config|nil User configuration
 function M.setup(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   if opts then
     M.config = vim.tbl_deep_extend('force', M.config, opts)
   end
@@ -63,6 +67,13 @@ end
 ---@param chars table<string, string> Characters for filled and empty
 ---@return string bar
 local function create_progress_bar(current, max, length, chars)
+  util.validate({
+    current = { current, { 'number' } },
+    max = { max, { 'number' } },
+    length = { length, { 'number' } },
+    chars = { chars, { 'table' } },
+  })
+
   if max == 0 then
     return chars.empty:rep(length)
   end
@@ -70,15 +81,20 @@ local function create_progress_bar(current, max, length, chars)
   local filled = math.floor((current / max) * length)
   filled = math.min(filled, length) -- Clamp to bar length
 
-  local bar = chars.filled:rep(filled) .. chars.empty:rep(length - filled)
-  return bar
+  return chars.filled:rep(filled) .. chars.empty:rep(length - filled)
 end
 
 ---Format time duration
----@param seconds number Total seconds
----@param format string 'short' or 'long'
+---@param seconds integer Total seconds
+---@param format 'short'|'long'
 ---@return string formatted
 local function format_time(seconds, format)
+  util.validate({
+    seconds = { seconds, { 'number' } },
+    format = { format, { 'string' } },
+  })
+  format = vim.list_contains({ 'short', 'long' }, format) and format or 'long'
+
   if seconds < 60 then
     return (format == 'short' and '%ds' or '0:00:%02d'):format(seconds)
   end
@@ -87,21 +103,23 @@ local function format_time(seconds, format)
   local minutes = math.floor((seconds % 3600) / 60)
   local secs = seconds % 60
 
-  if format == 'short' then
-    if hours > 0 then
-      return ('%dh %dm'):format(hours, minutes)
-    end
-
-    return ('%dm'):format(minutes)
+  if format == 'long' then
+    return ('%d:%02d:%02d'):format(hours, minutes, secs)
   end
 
-  return ('%d:%02d:%02d'):format(hours, minutes, secs)
+  if hours > 0 then
+    return ('%dh %dm'):format(hours, minutes)
+  end
+
+  return ('%dm'):format(minutes)
 end
 
 ---Level component - Shows level and XP progress
 ---@param opts table|nil Component-specific options
 ---@return string component
 function M.level(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   local config = vim.tbl_deep_extend('force', M.config.level, opts or {})
   local stats = get_stats()
 
@@ -151,6 +169,8 @@ end
 ---@param opts { icon: string, show_count: boolean }|nil Component-specific options
 ---@return string component
 function M.achievements(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   local config = vim.tbl_deep_extend('force', M.config.achievements, opts or {})
   local stats = get_stats()
 
@@ -185,6 +205,8 @@ end
 ---@param opts { icon: string, show_days: boolean }|nil Component-specific options
 ---@return string component
 function M.streak(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   local config = vim.tbl_deep_extend('force', M.config.streak, opts or {})
   local stats = get_stats()
 
@@ -217,6 +239,8 @@ end
 ---@param opts { format: string, icon: string, show_duration: boolean }|nil Component-specific options
 ---@return string component
 function M.session_time(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   local config = vim.tbl_deep_extend('force', M.config.session_time, opts or {})
   local stats = get_stats()
 
@@ -249,6 +273,8 @@ end
 ---@param opts Triforce.Lualine.Config|nil Configuration for all components
 ---@return Triforce.Lualine.Config components Table with level, achievements, streak, session_time functions
 function M.components(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   M.setup(opts)
   return { level = M.level, achievements = M.achievements, streak = M.streak, session_time = M.session_time }
 end
