@@ -61,7 +61,6 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 ### Requirements
 
 - **Neovim** >= 0.9.0
-- [**nui.nvim**](https://github.com/MunifTanjim/nui.nvim) (UI component library)
 - [**Volt.nvim**](https://github.com/NvChad/volt.nvim) (UI framework dependency)
 - A [Nerd Font](https://www.nerdfonts.com/) (for icons)
 
@@ -71,7 +70,6 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 {
   "gisketch/triforce.nvim",
   dependencies = {
-    "MunifTanjim/nui.nvim",
     "nvzone/volt",
   },
   config = function()
@@ -90,7 +88,7 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 ```lua
 use {
   "gisketch/triforce.nvim",
-  requires = { "nvzone/volt", "MunifTanjim/nui.nvim" },
+  requires = { "nvzone/volt" },
   config = function()
     require("triforce").setup({
       keymap = {
@@ -104,7 +102,6 @@ use {
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'MunifTanjim/nui.nvim'
 Plug 'nvzone/volt'
 Plug 'gisketch/triforce.nvim'
 
