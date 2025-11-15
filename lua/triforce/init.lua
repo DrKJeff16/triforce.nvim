@@ -68,7 +68,7 @@ local defaults = {
     line = 1, -- XP per new line (changed from 10 to 1)
     save = 50, -- XP per file save
   },
-  db_path = vim.fn.stdpath('data') .. '/triforce_stats.json', -- custom path for data file
+  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), '/triforce_stats.json'), -- custom path for data file
 }
 
 ---@type TriforceConfig
