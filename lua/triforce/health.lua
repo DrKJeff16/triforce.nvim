@@ -14,7 +14,7 @@ function M.check()
 
   local ok, triforce = pcall(require, 'triforce')
   if not ok then
-    vim.health.error('Failed to load triforce module: ' .. tostring(triforce))
+    vim.health.error('Failed to load triforce module: ' .. vim.inspect(triforce))
     return
   end
 
@@ -31,7 +31,7 @@ function M.check()
   end
 
   vim.health.ok('Gamification is enabled')
-  local stats_path = vim.fn.stdpath('data') .. '/triforce_stats.json'
+  local stats_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json')
   if vim.fn.filereadable(stats_path) == 1 then
     vim.health.ok('Stats file found: ' .. stats_path)
     return
