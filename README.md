@@ -2,7 +2,12 @@
 
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels, and achievements while you work.
 
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac" />
+<img
+width="1920"
+height="1080"
+alt="image"
+src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac"
+/>
 
 ## 📑 Table of Contents
 
@@ -56,7 +61,8 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 ### Requirements
 
 - **Neovim** >= 0.9.0
-- **[Volt.nvim](https://github.com/NvChad/volt.nvim)** (UI framework dependency)
+- [**nui.nvim**](https://github.com/MunifTanjim/nui.nvim) (UI component library)
+- [**Volt.nvim**](https://github.com/NvChad/volt.nvim) (UI framework dependency)
 - A [Nerd Font](https://www.nerdfonts.com/) (for icons)
 
 ### Using [lazy.nvim](https://github.com/folke/lazy.nvim) (Recommended)
@@ -65,6 +71,7 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 {
   "gisketch/triforce.nvim",
   dependencies = {
+    "MunifTanjim/nui.nvim",
     "nvzone/volt",
   },
   config = function()
@@ -83,7 +90,7 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 ```lua
 use {
   "gisketch/triforce.nvim",
-  requires = { "nvzone/volt" },
+  requires = { "nvzone/volt", "MunifTanjim/nui.nvim" },
   config = function()
     require("triforce").setup({
       keymap = {
@@ -97,6 +104,7 @@ use {
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
+Plug 'MunifTanjim/nui.nvim'
 Plug 'nvzone/volt'
 Plug 'gisketch/triforce.nvim'
 
@@ -160,18 +168,18 @@ require("triforce").setup({
 
 ### Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | `boolean` | `true` | Enable/disable the plugin |
-| `gamification_enabled` | `boolean` | `true` | Enable gamification features |
-| `notifications.enabled` | `boolean` | `true` | Master toggle for notifications |
-| `notifications.level_up` | `boolean` | `true` | Show level up notifications |
-| `notifications.achievements` | `boolean` | `true` | Show achievement notifications |
-| `auto_save_interval` | `number` | `300` | Auto-save interval in seconds |
-| `keymap.show_profile` | `string \| nil` | `nil` | Keymap for opening profile |
-| `custom_languages` | `table \| nil` | `nil` | Custom language definitions |
-| `level_progression` | `table \| nil` | See below | Custom XP requirements per level tier |
-| `xp_rewards` | `table \| nil` | See below | Custom XP rewards for actions |
+| Option                       | Type            | Default   | Description                           |
+|------------------------------|-----------------|-----------|---------------------------------------|
+| `enabled`                    | `boolean`       | `true`    | Enable/disable the plugin             |
+| `gamification_enabled`       | `boolean`       | `true`    | Enable gamification features          |
+| `notifications.enabled`      | `boolean`       | `true`    | Master toggle for notifications       |
+| `notifications.level_up`     | `boolean`       | `true`    | Show level up notifications           |
+| `notifications.achievements` | `boolean`       | `true`    | Show achievement notifications        |
+| `auto_save_interval`         | `number`        | `300`     | Auto-save interval in seconds         |
+| `keymap.show_profile`        | `string \| nil` | `nil`     | Keymap for opening profile            |
+| `custom_languages`           | `table \| nil`  | `nil`     | Custom language definitions           |
+| `level_progression`          | `table \| nil`  | See below | Custom XP requirements per level tier |
+| `xp_rewards`                 | `table \| nil`  | See below | Custom XP rewards for actions         |
 
 ### Level Progression
 
@@ -238,17 +246,22 @@ require("triforce").setup({
 
 Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display your coding stats right in your statusline.
 
-<img width="378" height="74" alt="image" src="https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f" />
+<img
+width="378"
+height="74"
+alt="image"
+src="https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f"
+/>
 
 
 ### Available Components
 
-| Component | Default Display (uses NerdFont) | Description |
-|-----------|----------------|-------------|
-| `level` | `Lv.27 ████░░` | Level + XP progress bar |
-| `achievements` | `🏆 12/18` | Unlocked/total achievements |
-| `streak` | `🔥 5` | Current coding streak (days) |
-| `session_time` | `⏰ 2h 34m` | Current session duration |
+| Component         | Default Display (uses NerdFont) | Description                  |
+|-------------------|---------------------------------|------------------------------|
+| `level`           | `Lv.27 ████░░`                  | Level + XP progress bar      |
+| `achievements`    | `🏆 12/18`                      | Unlocked/total achievements  |
+| `streak`          | `🔥 5`                          | Current coding streak (days) |
+| `session_time`    | `⏰ 2h 34m`                     | Current session duration     |
 
 ### Basic Setup
 
@@ -259,8 +272,8 @@ require('lualine').setup({
   sections = {
     lualine_x = {
       -- Add one or more components
-      function() return require('triforce.lualine').level() end,
-      function() return require('triforce.lualine').achievements() end,
+      require('triforce.lualine').level,
+      require('triforce.lualine').achievements,
       'encoding', 'fileformat', 'filetype'
     },
   }
@@ -391,7 +404,8 @@ end
 - `icon` (string): Icon to display (default: `''` - flame)
 - `show_days` (boolean): Show day count (default: `true`)
 
-**Note:** The streak component returns an empty string when streak is 0, so it won't clutter your statusline.
+> [!NOTE]
+> The streak component returns an empty string when streak is 0, so it won't clutter your statusline.
 
 #### Session Time Component
 
@@ -460,7 +474,7 @@ local triforce = require('triforce.lualine').components()
 require('lualine').setup({
   sections = {
     lualine_x = {
-      function() return require('triforce.lualine').level() end,
+      require('triforce.lualine').level,
     },
   }
 })
@@ -516,13 +530,13 @@ local triforce = require('triforce.lualine').components()
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
-| `:lua require("triforce").show_profile()` | Open the Triforce profile UI |
-| `:lua require("triforce").get_stats()` | Get current stats programmatically |
-| `:lua require("triforce").reset_stats()` | Reset all stats (useful for testing) |
-| `:lua require("triforce").save_stats()` | Force save stats immediately |
-| `:lua require("triforce").debug_languages()` | Debug language tracking |
+| Command                                      | Description                          |
+|----------------------------------------------|--------------------------------------|
+| `:lua require("triforce").show_profile()`    | Open the Triforce profile UI         |
+| `:lua require("triforce").get_stats()`       | Get current stats programmatically   |
+| `:lua require("triforce").reset_stats()`     | Reset all stats (useful for testing) |
+| `:lua require("triforce").save_stats()`      | Force save stats immediately         |
+| `:lua require("triforce").debug_languages()` | Debug language tracking              |
 
 ### Profile UI
 
@@ -534,23 +548,35 @@ The profile has **3 tabs**:
    - Activity heatmap (7 months)
    - Quick stats overview
 
-<img width="1224" height="970" alt="image" src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e" />
-
+<img
+width="1224"
+height="970"
+alt="image"
+src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e"
+/>
 
 2. **🏆 Achievements Tab**
    - View all unlocked achievements
    - See locked achievements with unlock requirements
    - Paginate through achievements (H/L or arrow keys)
 
-<img width="1219" height="774" alt="image" src="https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77" />
-
+<img
+width="1219"
+height="774"
+alt="image"
+src="https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77"
+/>
 
 3. **💻 Languages Tab**
    - Bar graph showing your most-used languages
    - See character count breakdown by language
 
-<img width="1210" height="784" alt="image" src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81" />
-
+<img
+width="1210"
+height="784"
+alt="image"
+src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81"
+/>
 
 **Keybindings in Profile:**
 - `Tab`: Cycle between tabs
@@ -564,28 +590,33 @@ The profile has **3 tabs**:
 Triforce includes **18 built-in achievements** across 5 categories:
 
 ### 📝 Typing Milestones
+
 - 🌱 **First Steps**: Type 100 characters
 - ⚔️ **Getting Started**: Type 1,000 characters
 - 🛡️ **Dedicated Coder**: Type 10,000 characters
 - 📜 **Master Scribe**: Type 100,000 characters
 
 ### 📈 Level Achievements
+
 - ⭐ **Rising Star**: Reach level 5
 - 💎 **Expert Coder**: Reach level 10
 - 👑 **Champion**: Reach level 25
 - 🔱 **Legend**: Reach level 50
 
 ### 🔄 Session Achievements
+
 - 🔄 **Regular Visitor**: Complete 10 sessions
 - 📅 **Creature of Habit**: Complete 50 sessions
 - 🏆 **Dedicated Hero**: Complete 100 sessions
 
 ### ⏰ Time Achievements
+
 - ⏰ **First Hour**: Code for 1 hour total
 - ⌛ **Committed**: Code for 10 hours total
 - 🕐 **Veteran**: Code for 100 hours total
 
 ### 🌍 Polyglot Achievements
+
 - 🌍 **Polyglot Beginner**: Code in 3 languages
 - 🌎 **Polyglot**: Code in 5 languages
 - 🌏 **Master Polyglot**: Code in 10 languages
@@ -649,15 +680,9 @@ end, { desc = "Show Triforce Stats" })
 
 ## 📊 Data Storage
 
-Stats are saved to:
-```
-~/.local/share/nvim/triforce_stats.json
-```
+Stats are saved to `~/.local/share/nvim/triforce_stats.json`.
 
-The file is automatically backed up before each save to:
-```
-~/.local/share/nvim/triforce_stats.json.bak
-```
+The file is automatically backed up before each save to `~/.local/share/nvim/triforce_stats.json.bak`.
 
 ### Data Format
 
@@ -751,14 +776,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left)](https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left)
-
----
-
 <div align="center">
 
 **Made with ❤️ for the Neovim community**
 
 ⭐ Star this repo if you find it useful!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left)](https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left)
 
 </div>
