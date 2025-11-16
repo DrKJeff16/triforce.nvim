@@ -47,10 +47,12 @@ function M.setup()
       M.on_text_changed()
     end,
   })
-  vim.api.nvim_create_autocmd('BufWritePost', {
+  vim.api.nvim_create_autocmd('BufWritePre', {
     group = M.autocmd_group,
-    callback = function()
-      M.on_save()
+    callback = function(ev)
+      if vim.api.nvim_get_option_value('modified', { buf = ev.buf }) then
+        M.on_save()
+      end
     end,
   })
   vim.api.nvim_create_autocmd('VimLeavePre', {
