@@ -4,3 +4,4 @@
 /.pre-commit-config.yaml @DrKJeff16
 /selene.toml @DrKJeff16
 /vim.yml @DrKJeff16
+/lua/triforce/util.lua @DrKJeff16
