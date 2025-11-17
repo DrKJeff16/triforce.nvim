@@ -96,10 +96,11 @@ function M.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   M.config = vim.tbl_deep_extend('force', vim.deepcopy(defaults), opts or {})
+  local stats_module = require('triforce.stats')
 
   -- Apply custom level progression to stats module
   if M.config.level_progression then
-    require('triforce.stats').level_config = M.config.level_progression
+    stats_module.level_config = M.config.level_progression
   end
 
   -- Register custom languages if provided
@@ -108,12 +109,10 @@ function M.setup(opts)
   end
 
   -- Setup custom path if provided
-  if M.config.db_path then
-    require('triforce.stats').db_path = M.config.db_path
-  end
+  stats_module.db_path = M.config.db_path
 
   -- Set up keymap if provided
-  if M.config.keymap and M.config.keymap.show_profile then
+  if M.config.keymap and M.config.keymap.show_profile and M.config.keymap.show_profile ~= '' then
     vim.keymap.set('n', M.config.keymap.show_profile, M.show_profile, {
       desc = 'Show Triforce Profile',
       silent = true,
@@ -121,7 +120,11 @@ function M.setup(opts)
     })
   end
 
-  if M.config.enabled and M.config.gamification_enabled then
+  if not M.config.enabled then
+    return
+  end
+
+  if M.config.gamification_enabled then
     require('triforce.tracker').setup()
   end
 end
