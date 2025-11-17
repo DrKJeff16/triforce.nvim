@@ -8,7 +8,7 @@ if vim.fn.has('nvim-0.9') == 0 then
 end
 
 -- Prevent loading twice
-if vim.g.loaded_triforce then
+if vim.g.loaded_triforce == 1 then
   return
 end
 vim.g.loaded_triforce = 1
