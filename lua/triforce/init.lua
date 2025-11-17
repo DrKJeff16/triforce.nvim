@@ -31,6 +31,8 @@
 ---Set to a keymap like `"<leader>tp"` to enable
 ---@field show_profile string|nil
 
+local util = require('triforce.util')
+
 ---@class Triforce
 local M = {}
 
@@ -91,6 +93,8 @@ M.config = {}
 ---Setup the plugin with user configuration
 ---@param opts TriforceConfig|nil User configuration options
 function M.setup(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   M.config = vim.tbl_deep_extend('force', vim.deepcopy(defaults), opts or {})
 
   -- Apply custom level progression to stats module
