@@ -8,34 +8,38 @@ local M = {}
 ---Default configuration for lualine components
 ---@class Triforce.Lualine.Config
 M.config = {
-  -- Level component config
+  ---Level component config
+  ---@class Triforce.Lualine.Config.Level
   level = {
-    prefix = 'Lv.', -- Text prefix before level number
-    show_level = true, -- Show level number
-    show_bar = true, -- Show progress bar
-    show_percent = false, -- Show percentage
-    show_xp = false, -- Show XP numbers (current/needed)
-    bar_length = 6, -- Length of progress bar
-    bar_chars = { filled = '█', empty = '░' }, -- Bar characters
+    prefix = 'Lv.', ---@type string Text prefix before level number
+    show_level = true, ---@type boolean Show level number
+    show_bar = true, ---@type boolean Show progress bar
+    show_percent = false, ---@type boolean Show percentage
+    show_xp = false, ---@type boolean Show XP numbers (current/needed)
+    bar_length = 8, ---@type integer Length of progress bar
+    bar_chars = { filled = '█', empty = '░' }, ---@type { filled: string, empty: string } Bar characters
   },
 
-  -- Achievements component config
+  ---Achievements component config
+  ---@class Triforce.Lualine.Config.Achievements
   achievements = {
-    icon = '', -- Nerd Font trophy icon
-    show_count = true, -- Show unlocked/total count
+    icon = '', ---@type string|'' Nerd Font trophy icon
+    show_count = true, ---@type boolean Show unlocked/total count
   },
 
-  -- Streak component config
+  ---Streak component config
+  ---@class Triforce.Lualine.Config.Streak
   streak = {
-    icon = '', -- Nerd Font flame icon
-    show_days = true, -- Show number of days
+    icon = '', ---@type string|'' Nerd Font flame icon
+    show_days = true, ---@type boolean Show number of days
   },
 
-  -- Session time component config
+  ---Session time component config
+  ---@class Triforce.Lualine.Config.SessionTime
   session_time = {
-    icon = '', -- Nerd Font clock icon
-    show_duration = true, -- Show time duration
-    format = 'short', -- 'short' (2h 34m) or 'long' (2:34:12)
+    icon = '', ---@type string|'' Nerd Font clock icon
+    show_duration = true, ---@type boolean Show time duration
+    format = 'short', ---@type 'short'|'long' 'short' (`2h 34m`) or 'long' (`2:34:12`)
   },
 }
 
