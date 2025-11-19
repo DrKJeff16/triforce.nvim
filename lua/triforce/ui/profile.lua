@@ -9,6 +9,15 @@ local tracker = require('triforce.tracker')
 local languages = require('triforce.languages')
 local random_stats = require('triforce.random_stats')
 
+-- Helper functions (copied from typr)
+local function getday_i(day, month, year)
+  return tonumber(os.date('%w', os.time({ year = tostring(year), month = month, day = day }))) + 1
+end
+
+local function double_digits(day)
+  return day >= 10 and day or '0' .. day
+end
+
 local M = {}
 
 -- UI state
@@ -106,15 +115,6 @@ local function build_activity_heatmap(stats)
     days_in_months[2] = 29
   end
 
-  -- Helper functions (copied from typr)
-  local getday_i = function(day, month)
-    return tonumber(os.date('%w', os.time({ year = tostring(year), month = month, day = day }))) + 1
-  end
-
-  local double_digits = function(day)
-    return day >= 10 and day or '0' .. day
-  end
-
   local months_i = current_month - 6
   if months_i < 1 then
     months_i = months_i + 12
@@ -158,7 +158,7 @@ local function build_activity_heatmap(stats)
       month_year = tostring(tonumber(year) - 1)
     end
 
-    local start_day = getday_i(1, month_idx)
+    local start_day = getday_i(1, month_idx, year)
 
     -- Empty cells before month starts (only for first month)
     if i == months_i and start_day ~= 1 then
@@ -169,7 +169,7 @@ local function build_activity_heatmap(stats)
 
     -- Activity squares for each day
     for day_num = 1, days_in_months[month_idx] do
-      local day_of_week = getday_i(day_num, month_idx)
+      local day_of_week = getday_i(day_num, month_idx, year)
       local date_key = ('%s-%s-%s'):format(month_year, double_digits(month_idx), double_digits(day_num))
 
       local activity = stats.daily_activity[date_key] or 0
