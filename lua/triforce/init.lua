@@ -12,9 +12,9 @@
 ---@field tier_3 LevelTier
 
 ---@class XPRewards
----@field char integer XP gained per character typed (default: `1`)
----@field line integer XP gained per new line (default: `1`)
----@field save integer XP gained per file save (default: `50`)
+---@field char number XP gained per character typed (default: `1`)
+---@field line number XP gained per new line (default: `1`)
+---@field save number XP gained per file save (default: `50`)
 
 ---@class TriforceLanguage
 ---@field name string
