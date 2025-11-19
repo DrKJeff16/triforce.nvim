@@ -1,5 +1,4 @@
 name: Selene Lint
-
 on:
   push:
     paths:
@@ -9,7 +8,6 @@ on:
       - opened
     paths:
       - '**.lua'
-
 jobs:
   selene_check:
     name: Lint With Selene
@@ -18,7 +16,6 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v5
-
       - name: Lint Lua code with Selene
         uses: AlejandroSuero/selene-linter-action@v1.0.0
         with:
