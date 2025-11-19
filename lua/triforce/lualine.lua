@@ -82,9 +82,7 @@ local function create_progress_bar(current, max, length, chars)
     return chars.empty:rep(length)
   end
 
-  local filled = math.floor((current / max) * length)
-  filled = math.min(filled, length) -- Clamp to bar length
-
+  local filled = math.min(math.floor((current / max) * length), length)
   return chars.filled:rep(filled) .. chars.empty:rep(length - filled)
 end
 
@@ -151,14 +149,12 @@ function M.level(opts)
 
   -- Progress bar
   if config.show_bar then
-    local bar = create_progress_bar(xp_progress, xp_needed, config.bar_length, config.bar_chars)
-    table.insert(parts, bar)
+    table.insert(parts, create_progress_bar(xp_progress, xp_needed, config.bar_length, config.bar_chars))
   end
 
   -- Percentage
   if config.show_percent then
-    local percent = math.floor((xp_progress / xp_needed) * 100)
-    table.insert(parts, ('%d%%'):format(percent))
+    table.insert(parts, ('%d%%'):format(math.floor(xp_progress / xp_needed) * 100))
   end
 
   -- XP numbers
