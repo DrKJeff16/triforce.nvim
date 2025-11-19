@@ -24,33 +24,20 @@ M.db_path = nil
 
 ---Stats tracking and persistence module
 ---@class Stats
----@field xp integer Total experience points
----@field level integer Current level
----@field chars_typed integer Total characters typed
----@field lines_typed integer Total lines typed
----@field sessions integer Total sessions
----@field time_coding integer Total time in seconds
----@field last_session_start integer Timestamp of session start
----@field achievements table<string, boolean> Unlocked achievements
----@field chars_by_language table<string, integer> Characters typed per language
----@field daily_activity table<string, integer> Lines typed per day (YYYY-MM-DD format)
----@field current_streak integer Current consecutive day streak
----@field longest_streak integer Longest ever streak
----@field db_path string
 M.default_stats = {
-  xp = 0,
-  level = 1,
-  chars_typed = 0,
-  lines_typed = 0,
-  sessions = 0,
-  time_coding = 0,
-  last_session_start = 0,
-  achievements = {},
-  chars_by_language = {},
-  daily_activity = {},
-  current_streak = 0,
-  longest_streak = 0,
-  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
+  xp = 0, ---@type integer Total experience points
+  level = 1, ---@type integer Current level
+  chars_typed = 0, ---@type integer Total characters typed
+  lines_typed = 0, ---@type integer Total lines typed
+  sessions = 0, ---@type integer Total sessions
+  time_coding = 0, ---@type integer Total time in seconds
+  last_session_start = 0, ---@type integer Timestamp of session start
+  achievements = {}, ---@type table<string, boolean> Unlocked achievements
+  chars_by_language = {}, ---@type table<string, integer> Characters typed per language
+  daily_activity = {}, ---@type table<string, integer> Lines typed per day (`YYYY-MM-DD` format)
+  current_streak = 0, ---@type integer Current consecutive day streak
+  longest_streak = 0, ---@type integer Longest ever streak
+  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
 }
 
 ---Get the stats file path
@@ -61,12 +48,13 @@ end
 
 ---Prepare stats for JSON encoding (handle empty tables)
 ---@param stats Stats
+---@return Stats copy
 local function prepare_for_save(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   local copy = vim.deepcopy(stats)
 
-  -- Use vim.empty_dict() to ensure empty tables encode as {} not []
+  -- Use `vim.empty_dict()` to ensure empty tables encode as `{}` not `[]`
   if vim.tbl_isempty(copy.achievements) then
     copy.achievements = vim.empty_dict()
   end
@@ -91,7 +79,8 @@ function M.load()
     return vim.deepcopy(M.default_stats)
   end
 
-  -- Read file using vim.fn for cross-platform compatibility
+  ---Read file using vim.fn for cross-platform compatibility
+  ---@type string[]
   local lines = vim.fn.readfile(path)
   if not lines or #lines == 0 then
     return vim.deepcopy(M.default_stats)
@@ -99,7 +88,8 @@ function M.load()
 
   local content = table.concat(lines, '\n')
 
-  -- Parse JSON
+  ---Parse JSON
+  ---@type boolean, Stats?
   local ok, stats = pcall(vim.json.decode, content)
   if not ok or type(stats) ~= 'table' then
     -- Backup corrupted file

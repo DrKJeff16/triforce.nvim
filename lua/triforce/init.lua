@@ -3,13 +3,16 @@
 ---@field max_level integer Ending level for this tier (use math.huge for infinite)
 ---@field xp_per_level integer XP required per level in this tier
 
+---@class LevelTier3: LevelTier
+---@field max_level number
+
 ---@class LevelProgression
 ---Default: Levels 1-10, 300 XP each
 ---@field tier_1 LevelTier
 ---Default: Levels 11-20, 500 XP each
 ---@field tier_2 LevelTier
 ---Default: Levels 21+, 1000 XP each
----@field tier_3 LevelTier
+---@field tier_3 LevelTier3
 
 ---@class XPRewards
 ---@field char number XP gained per character typed (default: `1`)
