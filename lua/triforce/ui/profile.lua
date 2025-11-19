@@ -4,6 +4,7 @@ local voltui = require('volt.ui')
 local voltstate = require('volt.state')
 
 local stats_module = require('triforce.stats')
+local achievement_module = require('triforce.achievement')
 local tracker = require('triforce.tracker')
 local languages = require('triforce.languages')
 local random_stats = require('triforce.random_stats')
@@ -370,7 +371,7 @@ local function build_achievements_tab()
     return { { { 'No stats available', 'Comment' } } }
   end
 
-  local achievements = stats_module.get_all_achievements(stats)
+  local achievements = achievement_module.get_all_achievements(stats)
 
   -- Sort: unlocked first
   table.sort(achievements, function(a, b)
@@ -884,7 +885,7 @@ function M.open()
       elseif key == 'l' or key == 'L' or key == '<Right>' then
         local stats = tracker.get_stats()
         if stats then
-          local achievements = stats_module.get_all_achievements(stats)
+          local achievements = achievement_module.get_all_achievements(stats)
           local total_pages = math.ceil(#achievements / M.achievements_per_page)
           if M.achievements_page < total_pages then
             M.achievements_page = M.achievements_page + 1

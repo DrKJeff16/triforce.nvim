@@ -112,6 +112,7 @@ function M.on_text_changed()
   end
 
   local stats_module = require('triforce.stats')
+  local achievement_module = require('triforce.achievement')
 
   -- Check for day rollover
   check_date_rollover()
@@ -150,7 +151,7 @@ function M.on_text_changed()
     M.notify_level_up()
   end
 
-  for _, achievement in ipairs(stats_module.check_achievements(M.current_stats)) do
+  for _, achievement in ipairs(achievement_module.check_achievements(M.current_stats)) do
     M.notify_achievement(achievement.name, achievement.desc, achievement.icon)
   end
 end
@@ -339,7 +340,7 @@ function M.debug_achievement()
     return
   end
 
-  local achievements = require('triforce.stats').get_all_achievements(M.current_stats)
+  local achievements = require('triforce.achievements').get_all_achievements(M.current_stats)
 
   -- Pick a random achievement
   local random_idx = math.random(1, #achievements)

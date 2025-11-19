@@ -179,7 +179,7 @@ function M.achievements(opts)
   end
 
   -- Count achievements
-  local all_achievements = require('triforce.stats').get_all_achievements(stats)
+  local all_achievements = require('triforce.achievement').get_all_achievements(stats)
   local total = #all_achievements
   local unlocked = 0
 
