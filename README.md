@@ -14,13 +14,13 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 - [Why I Made This](#-why-i-made-this)
 - [Features](#-features)
 - [Installation](#-installation)
-- [Configuration](#-configuration)
+- [Configuration](#%EF%B8%8F-configuration)
 - [Lualine Integration](#-lualine-integration)
 - [Usage](#-usage)
 - [Achievements](#-achievements)
 - [Customization](#-customization)
 - [Data Storage](#-data-storage)
-- [Roadmap](#-roadmap)
+- [Roadmap](#%EF%B8%8F-roadmap)
 - [Contributing](#-contributing)
 - [License](#-license)
 - [Acknowledgments](#-acknowledgments)
@@ -30,15 +30,28 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 
 ## 💭 Why I Made This
 
-I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent or even get started some days. That’s part of why I fell in love with Neovim: it’s customizable, expressive, and makes the act of writing code feel *fun* again.
+I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent
+or even get started some days.
+That’s part of why I fell in love with Neovim: it’s customizable, expressive,
+and makes the act of writing code feel _fun_ again.
 
-**Triforce** is actually my **first-ever Neovim plugin** (and the first plugin I’ve ever built in general). I’d always wanted to make something of my own, but I never really knew where to start. Once I got into Neovim’s Lua ecosystem, I got completely hooked. I started experimenting, tinkering, breaking things, and slowly, Triforce came to life.
+**Triforce** is actually my **first-ever Neovim plugin** (and the first plugin I’ve ever built in general).
+I’d always wanted to make something of my own, but I never really knew where to start.
+Once I got into Neovim’s Lua ecosystem I got completely hooked.
+I started experimenting, tinkering, breaking things, and slowly, Triforce came to life.
 
-I made it to **gamify my coding workflow** — to turn those long, sometimes frustrating coding sessions into something that feels rewarding. Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time gives me that little *dopamine boost* that helps me stay focused and motivated.
+I made it to **gamify my coding workflow** — to turn those long,
+sometimes frustrating coding sessions into something that feels rewarding.
+Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time
+gives me that little _dopamine boost_ that helps me stay focused and motivated.
 
-I named it **Triforce** just because I love **The Legend of Zelda** — no deep reason beyond that.
+I named it **Triforce** just because I love **The Legend of Zelda** — _no deep reason beyond that_.
 
-The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous designs** and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas played a huge role in how this turned out. Building it with **Volt.nvim** made the process so much smoother and helped me focus on bringing those ideas to life.
+The UI is **heavily inspired by [@siduck](https://github.com/siduck)’s gorgeous designs**
+and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas
+played a huge role in how this turned out.
+Building it with **volt.nvim** made the process so much smoother and helped me focus on
+bringing those ideas to life.
 
 ---
 
@@ -49,7 +62,7 @@ The UI is **heavily inspired by [siduck](https://github.com/siduck)’s gorgeous
 - **🏆 Achievements**: Unlock achievements for milestones (first 1000 chars, 10 sessions, polyglot badges, etc.)
 - **📈 Activity Heatmap**: GitHub-style contribution graph showing your coding consistency
 - **🌍 Language Tracking**: See which programming languages you use most
-- **🎨 Beautiful UI**: Clean, themed interface powered by [Volt.nvim](https://github.com/NvChad/volt.nvim)
+- **🎨 Beautiful UI**: Clean, themed interface powered by [volt.nvim](https://github.com/NvChad/volt.nvim)
 - **📊 Lualine Integration**: Optional modular statusline components (level, achievements, streak, session time)
 - **⚙️ Highly Configurable**: Customize notifications, keymaps, and add custom languages
 - **💾 Auto-Save**: Your progress is automatically saved every 5 minutes
@@ -187,13 +200,14 @@ By default, Triforce uses a **simple, easy-to-reach** leveling system:
 - **Levels 21+**: 1,000 XP per level
 
 **Example progression:**
-- Level 5: 1,500 XP (5 × 300)
-- Level 10: 3,000 XP (10 × 300)
-- Level 15: 5,500 XP (3,000 + 5 × 500)
-- Level 20: 8,000 XP (3,000 + 10 × 500)
-- Level 30: 18,000 XP (8,000 + 10 × 1,000)
+- **Level 5**: 1,500 XP (`5 × 300`)
+- **Level 10**: 3,000 XP (`10 × 300`)
+- **Level 15**: 5,500 XP (`3,000 + 5 × 500`)
+- **Level 20**: 8,000 XP (`3,000 + 10 × 500`)
+- **Level 30**: 18,000 XP (`8,000 + 10 × 1,000`)
 
-You can customize this by overriding `level_progression` in your setup. For example, to make it even easier:
+You can customize this by overriding `level_progression` in your setup.
+For example, to make it even easier:
 
 ```lua
 require("triforce").setup({
@@ -213,7 +227,8 @@ By default, Triforce awards XP for different coding activities:
 - **New line**: 1 XP
 - **File save**: 50 XP
 
-You can customize these values to match your preferences. For example, if you want to emphasize quality over quantity and reward saves more:
+You can customize these values to match your preferences.
+For example, if you want to emphasize quality over quantity and reward saves more:
 
 ```lua
 require("triforce").setup({
@@ -241,7 +256,8 @@ require("triforce").setup({
 
 ## 📊 Lualine Integration
 
-Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display your coding stats right in your statusline.
+Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim),
+letting you display your coding stats right in your statusline.
 
 <img
 width="378"
@@ -732,9 +748,18 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 Contributions are welcome! Here's how to help:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a feature branch:
+  ```bash
+  git checkout -b feature/amazing-feature
+  ```
+3. Commit your changes:
+  ```bash
+  git commit -m 'Add amazing feature'
+  ```
+4. Push to the branch:
+  ```bash
+  git push origin feature/amazing-feature
+  ```
 5. Open a Pull Request
 
 ### Development
@@ -752,15 +777,15 @@ ln -s $(pwd) ~/.local/share/nvim/site/pack/plugins/start/triforce.nvim
 
 ## 📝 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **[nvzone/volt](https://github.com/nvzone/volt)**: Beautiful UI framework
-- **[Typr](https://github.com/nvzone/typr)**: Beautiful Grid Design Component Inspiration
-- **[Gamify](https://github.com/GrzegorzSzczepanek/gamify.nvim)**: Another cool gamify plugin, good inspiration for achievements
+- [**nvzone/volt**](https://github.com/nvzone/volt): Beautiful UI framework
+- [**Typr**](https://github.com/nvzone/typr): Beautiful Grid Design Component Inspiration
+- [**Gamify**](https://github.com/GrzegorzSzczepanek/gamify.nvim): Another cool gamify plugin, good inspiration for achievements
 
 ---
 
