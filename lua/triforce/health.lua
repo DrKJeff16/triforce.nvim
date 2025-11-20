@@ -1,6 +1,7 @@
 ---Health check for triforce.nvim
----Run with :checkhealth triforce
-
+---
+---Run with `:checkhealth triforce`
+---@class Triforce.Health
 local M = {}
 
 function M.check()
@@ -17,7 +18,6 @@ function M.check()
     vim.health.error('Failed to load triforce module: ' .. vim.inspect(triforce))
     return
   end
-
   vim.health.ok('triforce module loaded successfully')
   if triforce.config.enabled then
     vim.health.ok('Plugin is enabled')
@@ -29,14 +29,12 @@ function M.check()
     vim.health.warn('Gamification is disabled')
     return
   end
-
   vim.health.ok('Gamification is enabled')
   local stats_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json')
   if vim.fn.filereadable(stats_path) == 1 then
     vim.health.ok('Stats file found: ' .. stats_path)
     return
   end
-
   vim.health.info('Stats file not yet created (will be created on first use)')
 end
 
