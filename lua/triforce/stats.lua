@@ -448,5 +448,48 @@ function M.export_to_json(stats, target, indent)
   uv.fs_close(fd)
 end
 
+---Export data to a specified Markdown file
+---@param stats Stats
+---@param target string
+function M.export_to_md(stats, target)
+  util.validate({
+    stats = { stats, { 'table' } },
+    target = { target, { 'string' } },
+  })
+
+  local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':p:h'))
+  if not parent_stat or parent_stat.type ~= 'directory' then
+    vim.notify(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
+    return
+  end
+
+  if vim.fn.isdirectory(target) == 1 then
+    vim.notify(('Target is a directory: `%s`'):format(target), vim.log.levels.ERROR)
+    return
+  end
+
+  local fd = uv.fs_open(target, 'w', tonumber('644', 8))
+  if not fd then
+    vim.notify(('Unable to open target `%s`'):format(target), vim.log.levels.ERROR)
+    return
+  end
+
+  local data = '# Triforce Stats\n'
+  for k, v in pairs(stats) do
+    data = ('%s\n## %s\n\n**Value**:'):format(data, k:sub(1, 1):upper() .. k:sub(2))
+    if type(v) == 'table' then
+      data = ('%s\n'):format(data)
+      for key, val in pairs(v) do
+        data = ('%s- **%s**: %s\n'):format(data, key, vim.inspect(val))
+      end
+    else
+      data = ('%s %s\n'):format(data, tostring(v))
+    end
+  end
+
+  uv.fs_write(fd, data)
+  uv.fs_close(fd)
+end
+
 return M
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
