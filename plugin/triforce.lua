@@ -2,7 +2,7 @@
 -- This file is loaded automatically when Neovim starts
 
 -- Check Neovim version compatibility
-if vim.fn.has('nvim-0.9') == 0 then
+if vim.fn.has('nvim-0.9') ~= 1 then
   vim.api.nvim_err_writeln('triforce.nvim requires Neovim >= 0.9.0') ---@diagnostic disable-line:deprecated
   return
 end

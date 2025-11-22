@@ -86,7 +86,7 @@ function M.load()
   local ok, stats = pcall(vim.json.decode, content)
   if not ok or type(stats) ~= 'table' then
     -- Backup corrupted file
-    local backup = path .. '.backup.' .. os.time()
+    local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
     vim.notify('Corrupted stats backed up to: ' .. backup, vim.log.levels.WARN)
     return vim.deepcopy(M.default_stats)
