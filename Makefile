@@ -1,3 +1,5 @@
+LUAROCKS_CMD = luarocks install --local
+
 .PHONY: all test lint format check help
 
 all: help
@@ -22,5 +24,6 @@ format-fix: ## Format code with stylua (fix)
 check: lint test ## Run linter and tests
 
 install-deps: ## Install development dependencies
-	luarocks install --local busted
-	luarocks install --local nlua
+	$(LUAROCKS_CMD) luassert
+	$(LUAROCKS_CMD) busted
+	$(LUAROCKS_CMD) nlua
