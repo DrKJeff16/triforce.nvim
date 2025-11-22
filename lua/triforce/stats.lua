@@ -18,7 +18,7 @@ M.db_path = nil
 ---Stats tracking and persistence module
 ---@class Stats
 M.default_stats = {
-  xp = 0, ---@type integer Total experience points
+  xp = 0, ---@type number Total experience points
   level = 1, ---@type integer Current level
   chars_typed = 0, ---@type integer Total characters typed
   lines_typed = 0, ---@type integer Total lines typed
@@ -211,7 +211,7 @@ end
 ---  Levels 1-10: 300 XP each
 ---  Levels 11-20: 500 XP each
 ---  Levels 21+: 1000 XP each
----@param xp integer
+---@param xp number
 ---@return integer level
 function M.calculate_level(xp)
   util.validate({ xp = { xp, { 'number' } } })
@@ -255,7 +255,7 @@ end
 
 ---Add XP and update level
 ---@param stats Stats
----@param amount integer
+---@param amount number
 ---@return boolean leveled_up
 function M.add_xp(stats, amount)
   util.validate({

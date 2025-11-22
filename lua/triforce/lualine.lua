@@ -1,7 +1,11 @@
 local util = require('triforce.util')
 
 ---Lualine integration components for Triforce
----Provides modular statusline components for level, achievements, streak, and session time
+---Provides the following modular statusline components:
+--- - level
+--- - achievements
+--- - streak
+--- - session time
 ---@class Triforce.Lualine
 local M = {}
 
@@ -48,9 +52,7 @@ M.config = {
 function M.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  if opts then
-    M.config = vim.tbl_deep_extend('force', M.config, opts)
-  end
+  M.config = vim.tbl_deep_extend('force', M.config, opts or {})
 end
 
 ---Get current stats safely
@@ -122,12 +124,12 @@ end
 function M.level(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  local config = vim.tbl_deep_extend('force', M.config.level, opts or {})
   local stats = get_stats()
-
   if not stats then
     return ''
   end
+
+  local config = vim.tbl_deep_extend('force', M.config.level, opts or {})
 
   -- Get XP info
   local stats_module = require('triforce.stats')
@@ -143,8 +145,7 @@ function M.level(opts)
 
   -- Prefix and level number
   if config.show_level then
-    local level_text = config.prefix and config.prefix .. level or tostring(level)
-    table.insert(parts, level_text)
+    table.insert(parts, not config.prefix and tostring(level) or (config.prefix .. level))
   end
 
   -- Progress bar
@@ -171,12 +172,12 @@ end
 function M.achievements(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  local config = vim.tbl_deep_extend('force', M.config.achievements, opts or {})
   local stats = get_stats()
-
   if not stats then
     return ''
   end
+
+  local config = vim.tbl_deep_extend('force', M.config.achievements, opts or {})
 
   -- Count achievements
   local all_achievements = require('triforce.achievement').get_all_achievements(stats)
@@ -207,9 +208,7 @@ end
 function M.streak(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  local config = vim.tbl_deep_extend('force', M.config.streak, opts or {})
   local stats = get_stats()
-
   if not stats then
     return ''
   end
@@ -220,6 +219,8 @@ function M.streak(opts)
   if streak == 0 then
     return ''
   end
+
+  local config = vim.tbl_deep_extend('force', M.config.streak, opts or {})
 
   -- Build component
   local parts = {} ---@type string[]
@@ -236,14 +237,12 @@ function M.streak(opts)
 end
 
 ---Session time component - Shows current session duration
----@param opts { format: 'long'|'short', icon: string, show_duration: boolean }|nil Component-specific options
+---@param opts Triforce.Lualine.Config.SessionTime|nil Component-specific options
 ---@return string component
 function M.session_time(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  local config = vim.tbl_deep_extend('force', M.config.session_time, opts or {})
   local stats = get_stats()
-
   if not stats then
     return ''
   end
@@ -253,6 +252,8 @@ function M.session_time(opts)
   if session_start == 0 then
     return '' -- No active session
   end
+
+  local config = vim.tbl_deep_extend('force', M.config.session_time, opts or {})
 
   -- Build component
   local parts = {} ---@type string[]
