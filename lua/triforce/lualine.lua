@@ -103,21 +103,21 @@ local function format_time(seconds, format)
 
   local hours = math.floor(seconds / 3600)
   local minutes = math.floor((seconds % 3600) / 60)
-  local secs = seconds % 60
-
+  local fmt
+  local items
   if format == 'long' then
-    return ('%d:%02d:%02d'):format(hours, minutes, secs)
+    fmt, items = '%d:%02d:%02d', { hours, minutes, seconds % 60 }
+  elseif hours > 0 then
+    fmt, items = '%dh %dm', { hours, minutes }
+  else
+    fmt, items = '%dm', { minutes }
   end
 
-  if hours > 0 then
-    return ('%dh %dm'):format(hours, minutes)
-  end
-
-  return ('%dm'):format(minutes)
+  return fmt:format(unpack(items))
 end
 
 ---Level component - Shows level and XP progress
----@param opts table|nil Component-specific options
+---@param opts Triforce.Lualine.Config.Level|nil Component-specific options
 ---@return string component
 function M.level(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -236,7 +236,7 @@ function M.streak(opts)
 end
 
 ---Session time component - Shows current session duration
----@param opts { format: string, icon: string, show_duration: boolean }|nil Component-specific options
+---@param opts { format: 'long'|'short', icon: string, show_duration: boolean }|nil Component-specific options
 ---@return string component
 function M.session_time(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
