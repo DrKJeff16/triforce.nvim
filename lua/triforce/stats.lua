@@ -284,11 +284,13 @@ end
 function M.end_session(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
-  if stats.last_session_start > 0 then
-    local duration = os.time() - stats.last_session_start
-    stats.time_coding = stats.time_coding + duration
-    stats.last_session_start = 0
+  if stats.last_session_start <= 0 then
+    return
   end
+
+  local duration = os.time() - stats.last_session_start
+  stats.time_coding = stats.time_coding + duration
+  stats.last_session_start = 0
 end
 
 ---Get current date in YYYY-MM-DD format
