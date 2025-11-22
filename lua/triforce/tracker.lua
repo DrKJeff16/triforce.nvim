@@ -118,6 +118,11 @@ function M.on_text_changed()
   check_date_rollover()
 
   local bufnr = vim.api.nvim_get_current_buf()
+  local buftype = vim.api.nvim_get_option_value('buftype', { buf = bufnr })
+  if vim.list_contains({ 'terminal', 'help', 'nowrite', 'nofile' }, buftype) then
+    return
+  end
+
   local current_line_count = vim.api.nvim_buf_line_count(bufnr)
   local previous_line_count = M.buffer_line_counts[bufnr] or current_line_count
 
@@ -137,7 +142,7 @@ function M.on_text_changed()
   M.dirty = true
 
   -- Track character by language
-  local filetype = vim.bo[bufnr].filetype
+  local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
   if filetype and filetype ~= '' and require('triforce.languages').should_track(filetype) then
     -- Initialize if needed
     if not M.current_stats.chars_by_language then
