@@ -8,6 +8,7 @@ local achievement_module = require('triforce.achievement')
 local tracker = require('triforce.tracker')
 local languages = require('triforce.languages')
 local random_stats = require('triforce.random_stats')
+local util = require('triforce.util')
 
 -- Helper functions (copied from typr)
 local function getday_i(day, month, year)
@@ -40,6 +41,8 @@ M.xpad = 2
 ---@param level integer
 ---@return string
 local function get_level_title(level)
+  util.validate({ level = { level, { 'number' } } })
+
   local titles = {
     { max = 10, title = 'Deku Scrub', icon = '🌱' },
     { max = 20, title = 'Kokiri', icon = '🌳' },
@@ -61,7 +64,7 @@ local function get_level_title(level)
 
   for _, tier in ipairs(titles) do
     if level <= tier.max then
-      return tier.icon .. ' ' .. tier.title
+      return ('%s %s'):format(tier.icon, tier.title)
     end
   end
 
@@ -83,15 +86,18 @@ end
 local function get_activity_hl(lines)
   if lines == 0 then
     return 'LineNr'
-  elseif lines <= 50 then
-    return 'TriforceHeat3' -- Lightest
-  elseif lines <= 150 then
-    return 'TriforceHeat2' -- Light-medium
-  elseif lines <= 300 then
-    return 'TriforceHeat1' -- Medium-bright
-  else
-    return 'TriforceHeat0' -- Brightest
   end
+  if lines <= 50 then
+    return 'TriforceHeat3' -- Lightest
+  end
+  if lines <= 150 then
+    return 'TriforceHeat2' -- Light-medium
+  end
+  if lines <= 300 then
+    return 'TriforceHeat1' -- Medium-bright
+  end
+
+  return 'TriforceHeat0' -- Brightest
 end
 
 ---Build activity heatmap (copied from typr structure)
@@ -153,9 +159,11 @@ local function build_activity_heatmap(stats)
 
     -- Handle year boundary
     if months_i > months_end and i < months_end then
-      month_year = tostring(tonumber(year) + 1)
-    elseif months_i > months_end and i > current_month then
-      month_year = tostring(tonumber(year) - 1)
+      if i < months_end then
+        month_year = tostring(tonumber(year) + 1)
+      elseif i > current_month then
+        month_year = tostring(tonumber(year) - 1)
+      end
     end
 
     local start_day = getday_i(1, month_idx, year)
@@ -203,7 +211,7 @@ end
 
 ---Get streak with proper calculation
 ---@param stats Stats
----@return number
+---@return integer current
 local function get_current_streak(stats)
   -- Recalculate to ensure accuracy
   local current, _ = stats_module.calculate_streaks(stats)
@@ -241,9 +249,7 @@ local function build_stats_tab()
 
   -- Dynamic session goal (increments by 100)
   local session_goal = math.ceil(stats.sessions / 100) * 100
-  if session_goal == stats.sessions then
-    session_goal = session_goal + 100
-  end
+  session_goal = session_goal == stats.sessions and (session_goal + 100) or session_goal
   local session_progress = (stats.sessions / session_goal) * 100
 
   -- Dynamic time goal (10h -> 25h -> 50h -> 100h -> 200h -> 300h...)
@@ -375,10 +381,7 @@ local function build_achievements_tab()
 
   -- Sort: unlocked first
   table.sort(achievements, function(a, b)
-    if a.check == b.check then
-      return a.name < b.name
-    end
-    return a.check and not b.check
+    return a.check == b.check and (a.name < b.name) or (a.check and not b.check)
   end)
 
   -- Calculate pagination
@@ -505,16 +508,16 @@ local function build_languages_tab()
     end
   end
 
-  -- Create labels with icons
-  local labels = {}
-  for i = 1, M.max_language_entries do
-    if i <= display_count then
-      local icon = languages.get_icon(lang_data[i].lang)
-      labels[i] = icon ~= '' and icon or lang_data[i].lang:sub(1, 1)
-    else
-      labels[i] = '·' -- Empty slot
-    end
-  end
+  -- -- Create labels with icons
+  -- local labels = {}
+  -- for i = 1, M.max_language_entries do
+  --   if i <= display_count then
+  --     local icon = languages.get_icon(lang_data[i].lang)
+  --     labels[i] = icon ~= '' and icon or lang_data[i].lang:sub(1, 1)
+  --   else
+  --     labels[i] = '·' -- Empty slot
+  --   end
+  -- end
 
   -- Calculate graph width (narrower for centering)
   local graph_width = math.min(M.max_language_entries * 4, M.width - M.xpad * 2)
@@ -616,7 +619,6 @@ end
 
 ---Set up custom highlights
 local function setup_highlights()
-  local api = vim.api
   local get_hl = require('volt.utils').get_hl
   local mix = require('volt.color').mix
 
@@ -625,18 +627,18 @@ local function setup_highlights()
 
   -- Set custom highlights for Triforce (linked to standard highlights)
   if normal_bg then
-    api.nvim_set_hl(M.ns, 'TriforceNormal', { bg = normal_bg })
-    api.nvim_set_hl(M.ns, 'TriforceBorder', { link = 'String' })
+    vim.api.nvim_set_hl(M.ns, 'TriforceNormal', { bg = normal_bg })
+    vim.api.nvim_set_hl(M.ns, 'TriforceBorder', { link = 'String' })
   else
     normal_bg = '#000000' -- Fallback for transparent backgrounds
   end
 
   -- Create Triforce highlight groups - change these to customize colors
-  api.nvim_set_hl(M.ns, 'TriforceGreen', { link = 'String' })
-  api.nvim_set_hl(M.ns, 'TriforceYellow', { link = 'Question' })
-  api.nvim_set_hl(M.ns, 'TriforceRed', { link = 'Keyword' })
-  api.nvim_set_hl(M.ns, 'TriforceBlue', { link = 'Identifier' })
-  api.nvim_set_hl(M.ns, 'TriforcePurple', { link = 'Number' })
+  vim.api.nvim_set_hl(M.ns, 'TriforceGreen', { link = 'String' })
+  vim.api.nvim_set_hl(M.ns, 'TriforceYellow', { link = 'Question' })
+  vim.api.nvim_set_hl(M.ns, 'TriforceRed', { link = 'Keyword' })
+  vim.api.nvim_set_hl(M.ns, 'TriforceBlue', { link = 'Identifier' })
+  vim.api.nvim_set_hl(M.ns, 'TriforcePurple', { link = 'Number' })
 
   -- Activity heatmap gradient (using mix function like typr)
   local red_fg = get_hl('Keyword').fg
@@ -656,16 +658,12 @@ local function setup_highlights()
   local base_color = red_fg or DEFAULT_RED
 
   for _, level in ipairs(heat_levels) do
-    api.nvim_set_hl(
-      M.ns,
-      string.format('TriforceHeat%d', level.name),
-      { fg = mix(base_color, normal_bg, level.mix_pct) }
-    )
+    vim.api.nvim_set_hl(M.ns, ('TriforceHeat%d'):format(level.name), { fg = mix(base_color, normal_bg, level.mix_pct) })
   end
 
   -- Link to standard highlights
-  api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
-  api.nvim_set_hl(M.ns, 'Normal', { link = 'TriforceNormal' })
+  vim.api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
+  vim.api.nvim_set_hl(M.ns, 'Normal', { link = 'TriforceNormal' })
 end
 
 ---Get layout for tab system
@@ -712,14 +710,12 @@ function M.open()
     return
   end
 
-  local api = vim.api
-
   -- Create buffer
-  M.buf = api.nvim_create_buf(false, true)
+  M.buf = vim.api.nvim_create_buf(false, true)
 
   -- Create dimmed background
-  M.dim_buf = api.nvim_create_buf(false, true)
-  M.dim_win = api.nvim_open_win(M.dim_buf, false, {
+  M.dim_buf = vim.api.nvim_create_buf(false, true)
+  M.dim_win = vim.api.nvim_open_win(M.dim_buf, false, {
     focusable = false,
     row = 0,
     col = 0,
@@ -742,7 +738,7 @@ function M.open()
   local row = math.floor((vim.o.lines - M.height) / 2)
   local col = math.floor((vim.o.columns - M.width) / 2)
 
-  M.win = api.nvim_open_win(M.buf, true, {
+  M.win = vim.api.nvim_open_win(M.buf, true, {
     row = row,
     col = col,
     width = M.width,
@@ -755,24 +751,24 @@ function M.open()
 
   -- Apply highlights
   setup_highlights()
-  api.nvim_win_set_hl_ns(M.win, M.ns)
+  vim.api.nvim_win_set_hl_ns(M.win, M.ns)
 
   -- Run Volt to render content
   volt.run(M.buf, { h = M.height, w = M.width - M.xpad * 2 })
 
   -- Set up keybindings
   local function close()
-    if M.win and api.nvim_win_is_valid(M.win) then
-      api.nvim_win_close(M.win, true)
+    if M.win and vim.api.nvim_win_is_valid(M.win) then
+      vim.api.nvim_win_close(M.win, true)
     end
-    if M.dim_win and api.nvim_win_is_valid(M.dim_win) then
-      api.nvim_win_close(M.dim_win, true)
+    if M.dim_win and vim.api.nvim_win_is_valid(M.dim_win) then
+      vim.api.nvim_win_close(M.dim_win, true)
     end
-    if M.buf and api.nvim_buf_is_valid(M.buf) then
-      api.nvim_buf_delete(M.buf, { force = true })
+    if M.buf and vim.api.nvim_buf_is_valid(M.buf) then
+      vim.api.nvim_buf_delete(M.buf, { force = true })
     end
-    if M.dim_buf and api.nvim_buf_is_valid(M.dim_buf) then
-      api.nvim_buf_delete(M.dim_buf, { force = true })
+    if M.dim_buf and vim.api.nvim_buf_is_valid(M.dim_buf) then
+      vim.api.nvim_buf_delete(M.dim_buf, { force = true })
     end
     M.buf = nil
     M.win = nil
@@ -808,7 +804,7 @@ function M.open()
 
     -- Get new height and ensure buffer has enough lines
     local new_height = voltstate[M.buf].h
-    local current_lines = api.nvim_buf_line_count(M.buf)
+    local current_lines = vim.api.nvim_buf_line_count(M.buf)
 
     -- Add more lines if needed
     if current_lines < new_height then
@@ -816,10 +812,10 @@ function M.open()
       for _ = 1, (new_height - current_lines) do
         table.insert(empty_lines, '')
       end
-      api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
+      vim.api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
     elseif current_lines > new_height then
       -- Remove extra lines if buffer is too big
-      api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
+      vim.api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
     end
 
     -- Update window height if needed
@@ -827,7 +823,7 @@ function M.open()
       M.height = new_height
       row = math.floor((vim.o.lines - M.height) / 2)
       col = math.floor((vim.o.columns - M.width) / 2)
-      api.nvim_win_set_config(M.win, {
+      vim.api.nvim_win_set_config(M.win, {
         row = row,
         col = col,
         width = M.width,
@@ -853,16 +849,16 @@ function M.open()
     })
 
     local new_height = voltstate[M.buf].h
-    local current_lines = api.nvim_buf_line_count(M.buf)
+    local current_lines = vim.api.nvim_buf_line_count(M.buf)
 
     if current_lines < new_height then
       local empty_lines = {}
       for _ = 1, (new_height - current_lines) do
         table.insert(empty_lines, '')
       end
-      api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
+      vim.api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
     elseif current_lines > new_height then
-      api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
+      vim.api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
     end
 
     volt.redraw(M.buf, 'all')
@@ -877,12 +873,12 @@ function M.open()
         return
       end
 
-      if key == 'h' or key == 'H' or key == '<Left>' then
+      if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
         if M.achievements_page > 1 then
           M.achievements_page = M.achievements_page - 1
           redraw_achievements()
         end
-      elseif key == 'l' or key == 'L' or key == '<Right>' then
+      elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
         local stats = tracker.get_stats()
         if stats then
           local achievements = achievement_module.get_all_achievements(stats)
