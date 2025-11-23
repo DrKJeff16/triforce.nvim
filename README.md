@@ -81,35 +81,35 @@ bringing those ideas to life.
 
 ```lua
 {
-  "gisketch/triforce.nvim",
-  dependencies = {
-    "nvzone/volt",
-  },
+  'gisketch/triforce.nvim',
+  dependencies = { 'nvzone/volt' },
   config = function()
-    require("triforce").setup({
+    require('triforce').setup({
       -- Optional: Add your configuration here
       keymap = {
-        show_profile = "<leader>tp", -- Open profile with <leader>tp
+        show_profile = '<leader>tp', -- Open profile with <leader>tp
       },
     })
   end,
 }
 ```
 
-### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+### Using [pckr.nvim](https://github.com/lewis6991/pckr.nvim)
 
 ```lua
-use {
-  "gisketch/triforce.nvim",
-  requires = { "nvzone/volt" },
-  config = function()
-    require("triforce").setup({
-      keymap = {
-        show_profile = "<leader>tp",
-      },
-    })
-  end
-}
+require('pckr').add({
+  {
+    'gisketch/triforce.nvim',
+    requires = { 'nvzone/volt' },
+    config = function()
+      require('triforce').setup({
+        keymap = {
+          show_profile = '<leader>tp',
+        },
+      })
+    end
+  }
+})
 ```
 
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
@@ -119,9 +119,9 @@ Plug 'nvzone/volt'
 Plug 'gisketch/triforce.nvim'
 
 lua << EOF
-require("triforce").setup({
+require('triforce').setup({
   keymap = {
-    show_profile = "<leader>tp",
+    show_profile = '<leader>tp',
   },
 })
 EOF
@@ -134,7 +134,7 @@ EOF
 Triforce comes with sensible defaults, but you can customize everything:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   enabled = true,              -- Enable/disable the entire plugin
   gamification_enabled = true, -- Enable XP, levels, achievements
 
@@ -147,7 +147,7 @@ require("triforce").setup({
 
   -- Keymap configuration
   keymap = {
-    show_profile = "<leader>tp", -- Set to nil to disable default keymap
+    show_profile = '<leader>tp', -- Set to nil to disable default keymap
   },
 
   -- Auto-save interval (in seconds)
@@ -155,8 +155,8 @@ require("triforce").setup({
 
   -- Add custom language support
   custom_languages = {
-    gleam = { icon = "✨", name = "Gleam" },
-    odin = { icon = "🔷", name = "Odin" },
+    gleam = { icon = '✨', name = 'Gleam' },
+    odin = { icon = '🔷', name = 'Odin' },
     -- Add more languages...
   },
 
@@ -178,18 +178,18 @@ require("triforce").setup({
 
 ### Configuration Options
 
-| Option                       | Type            | Default   | Description                           |
-|------------------------------|-----------------|-----------|---------------------------------------|
-| `enabled`                    | `boolean`       | `true`    | Enable/disable the plugin             |
-| `gamification_enabled`       | `boolean`       | `true`    | Enable gamification features          |
-| `notifications.enabled`      | `boolean`       | `true`    | Master toggle for notifications       |
-| `notifications.level_up`     | `boolean`       | `true`    | Show level up notifications           |
-| `notifications.achievements` | `boolean`       | `true`    | Show achievement notifications        |
-| `auto_save_interval`         | `number`        | `300`     | Auto-save interval in seconds         |
-| `keymap.show_profile`        | `string \| nil` | `nil`     | Keymap for opening profile            |
-| `custom_languages`           | `table \| nil`  | `nil`     | Custom language definitions           |
-| `level_progression`          | `table \| nil`  | See below | Custom XP requirements per level tier |
-| `xp_rewards`                 | `table \| nil`  | See below | Custom XP rewards for actions         |
+| Option                       | Type            | Default                         | Description                           |
+|------------------------------|-----------------|---------------------------------|---------------------------------------|
+| `enabled`                    | `boolean`       | `true`                          | Enable/disable the plugin             |
+| `gamification_enabled`       | `boolean`       | `true`                          | Enable gamification features          |
+| `notifications.enabled`      | `boolean`       | `true`                          | Master toggle for notifications       |
+| `notifications.level_up`     | `boolean`       | `true`                          | Show level up notifications           |
+| `notifications.achievements` | `boolean`       | `true`                          | Show achievement notifications        |
+| `auto_save_interval`         | `number`        | `300`                           | Auto-save interval in seconds         |
+| `keymap.show_profile`        | `string\|nil`   | `nil`                           | Keymap for opening profile            |
+| `custom_languages`           | `table\|nil`    | `nil`                           | Custom language definitions           |
+| `level_progression`          | `table\|nil`    | [See below](#level-progression) | Custom XP requirements per level tier |
+| `xp_rewards`                 | `table\|nil`    | [See below](#xp-rewards)        | Custom XP rewards for actions         |
 
 ### Level Progression
 
@@ -210,7 +210,7 @@ You can customize this by overriding `level_progression` in your setup.
 For example, to make it even easier:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   level_progression = {
     tier_1 = { min_level = 1, max_level = 15, xp_per_level = 200 },   -- Super easy early levels
     tier_2 = { min_level = 16, max_level = 30, xp_per_level = 400 },
@@ -231,7 +231,7 @@ You can customize these values to match your preferences.
 For example, if you want to emphasize quality over quantity and reward saves more:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   xp_rewards = {
     char = 0.5,  -- Less XP for characters
     line = 2,    -- More XP for new lines
@@ -243,7 +243,7 @@ require("triforce").setup({
 Or if you prefer to focus on typing volume:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   xp_rewards = {
     char = 2,    -- More XP per character
     line = 5,    -- Moderate XP for lines
@@ -287,7 +287,9 @@ require('lualine').setup({
       -- Add one or more components
       require('triforce.lualine').level,
       require('triforce.lualine').achievements,
-      'encoding', 'fileformat', 'filetype'
+      'encoding',
+      'fileformat',
+      'filetype',
     },
   }
 })
@@ -545,11 +547,11 @@ local triforce = require('triforce.lualine').components()
 
 | Command                                      | Description                          |
 |----------------------------------------------|--------------------------------------|
-| `:lua require("triforce").show_profile()`    | Open the Triforce profile UI         |
-| `:lua require("triforce").get_stats()`       | Get current stats programmatically   |
-| `:lua require("triforce").reset_stats()`     | Reset all stats (useful for testing) |
-| `:lua require("triforce").save_stats()`      | Force save stats immediately         |
-| `:lua require("triforce").debug_languages()` | Debug language tracking              |
+| `:lua require('triforce').show_profile()`    | Open the Triforce profile UI         |
+| `:lua require('triforce').get_stats()`       | Get current stats programmatically   |
+| `:lua require('triforce').reset_stats()`     | Reset all stats (useful for testing) |
+| `:lua require('triforce').save_stats()`      | Force save stats immediately         |
+| `:lua require('triforce').debug_languages()` | Debug language tracking              |
 
 ### Profile UI
 
@@ -644,15 +646,15 @@ Triforce includes **18 built-in achievements** across 5 categories:
 Triforce supports 50+ programming languages out of the box, but you can add more:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   custom_languages = {
     gleam = {
-      icon = "✨",
-      name = "Gleam"
+      icon = '✨',
+      name = 'Gleam'
     },
     zig = {
-      icon = "⚡",
-      name = "Zig"
+      icon = '⚡',
+      name = 'Zig'
     },
   },
 })
@@ -663,7 +665,7 @@ require("triforce").setup({
 Turn off all notifications or specific types:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   notifications = {
     enabled = true,       -- Keep enabled
     level_up = false,     -- Disable level up notifications
@@ -677,16 +679,16 @@ require("triforce").setup({
 If you prefer to set your own keymap:
 
 ```lua
-require("triforce").setup({
+require('triforce').setup({
   keymap = {
     show_profile = nil, -- Don't create default keymap
   },
 })
 
 -- Set your own keymap
-vim.keymap.set("n", "<C-s>", function()
-  require("triforce").show_profile()
-end, { desc = "Show Triforce Stats" })
+vim.keymap.set('n', '<C-s>', function()
+  require('triforce').show_profile()
+end, { desc = 'Show Triforce Stats' })
 ```
 
 ---
@@ -734,7 +736,7 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 - [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
 - [ ] **Leaderboards**: Compete with friends or the community
 - [ ] **Custom Achievements**: Define your own achievement criteria
-- [ ] **Export Stats**: Export to CSV, JSON, or markdown reports
+- [X] **Export Stats**: Export to JSON or Markdown reports
 - [ ] **Weekly/Monthly Reports**: Automated summaries via notifications
 - [ ] **Themes**: Customizable color schemes for the profile UI
 - [ ] **Plugin API**: Expose hooks for other plugins to integrate
