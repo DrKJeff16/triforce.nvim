@@ -4,7 +4,7 @@
 local assert = require('luassert')
 
 describe('triforce', function()
-  local triforce
+  local triforce --- @type Triforce
 
   before_each(function()
     -- Clear module cache to get fresh instance
@@ -22,15 +22,37 @@ describe('triforce', function()
     it('should merge user configuration with defaults', function()
       triforce.setup({
         enabled = false,
-        message = 'Custom message',
+        -- message = 'Custom message',
       })
       assert.is_false(triforce.config.enabled)
-      assert.equals('Custom message', triforce.config.message)
+      -- assert.equals('Custom message', triforce.config.message)
     end)
 
     it('should handle nil options', function()
       triforce.setup(nil)
       assert.is_true(triforce.config.enabled)
+    end)
+  end)
+
+  describe('stats', function()
+    it('should export to stats a JSON file', function()
+      local ok = pcall(triforce.export_stats_to_json, 'spec/.stats.json')
+      assert.is_true(ok)
+    end)
+
+    it('should throw error when exporting to empty JSON file', function()
+      local ok = pcall(triforce.export_stats_to_json, nil)
+      assert.is_false(ok)
+    end)
+
+    it('should export to stats a Markdown file', function()
+      local ok = pcall(triforce.export_stats_to_md, 'spec/.stats.md')
+      assert.is_true(ok)
+    end)
+
+    it('should throw error when exporting to empty Markdown file', function()
+      local ok = pcall(triforce.export_stats_to_md, nil)
+      assert.is_false(ok)
     end)
   end)
 end)

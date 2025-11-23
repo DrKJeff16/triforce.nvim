@@ -422,26 +422,22 @@ function M.export_to_json(stats, target, indent)
 
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':p:h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
-    vim.notify(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
-    return
+    error(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
   end
 
   if vim.fn.isdirectory(target) == 1 then
-    vim.notify(('Target is a directory: `%s`'):format(target), vim.log.levels.ERROR)
-    return
+    error(('Target is a directory: `%s`'):format(target), vim.log.levels.ERROR)
   end
 
   local fd = uv.fs_open(target, 'w', tonumber('644', 8))
   if not fd then
-    vim.notify(('Unable to open target `%s`'):format(target), vim.log.levels.ERROR)
-    return
+    error(('Unable to open target `%s`'):format(target), vim.log.levels.ERROR)
   end
 
   local ok, data = pcall(vim.json.encode, stats, { sort_keys = true, indent = indent })
   if not ok then
     uv.fs_close(fd)
-    vim.notify('Unable to encode stats!', vim.log.levels.ERROR)
-    return
+    error('Unable to encode stats!', vim.log.levels.ERROR)
   end
 
   uv.fs_write(fd, data)
