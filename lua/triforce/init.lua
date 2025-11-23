@@ -215,5 +215,18 @@ function M.debug_fix_level()
   require('triforce.tracker').debug_fix_level()
 end
 
+---Export stats to JSON
+---@param file string
+---@param indent? string
+function M.export_stats_to_json(file, indent)
+  require('triforce.stats').export_to_json(require('triforce.tracker').get_stats(), file, indent or nil)
+end
+
+---Export stats to Markdown
+---@param file string
+function M.export_stats_to_md(file)
+  require('triforce.stats').export_to_md(require('triforce.tracker').get_stats(), file)
+end
+
 return M
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
