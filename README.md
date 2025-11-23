@@ -545,13 +545,14 @@ local triforce = require('triforce.lualine').components()
 
 ### Commands
 
-| Command                                      | Description                          |
-|----------------------------------------------|--------------------------------------|
-| `:lua require('triforce').show_profile()`    | Open the Triforce profile UI         |
-| `:lua require('triforce').get_stats()`       | Get current stats programmatically   |
-| `:lua require('triforce').reset_stats()`     | Reset all stats (useful for testing) |
-| `:lua require('triforce').save_stats()`      | Force save stats immediately         |
-| `:lua require('triforce').debug_languages()` | Debug language tracking              |
+| Command                                                  | Description                                   |
+|----------------------------------------------------------|-----------------------------------------------|
+| `:lua require('triforce').show_profile()`                | Open the Triforce profile UI                  |
+| `:lua require('triforce').get_stats()`                   | Get current stats programmatically            |
+| `:lua require('triforce').reset_stats()`                 | Reset all stats (useful for testing)          |
+| `:lua require('triforce').save_stats()`                  | Force save stats immediately                  |
+| `:lua require('triforce').debug_languages()`             | Debug language tracking                       |
+| `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown              |
 
 ### Profile UI
 
