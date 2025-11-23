@@ -16,15 +16,52 @@ vim.g.loaded_triforce = 1
 -- Create user commands with subcommands
 vim.api.nvim_create_user_command('Triforce', function(opts)
   local subcommand = opts.fargs[1]
-  local subcommand2 = opts.fargs[2]
+  local subcommand2 = opts.fargs[2] or ''
+  local subcommand3 = opts.fargs[3] or ''
+  local subcommand4 = opts.fargs[4] or ''
   local triforce = require('triforce')
 
-  if vim.list_contains({ 'profile', 'stats' }, subcommand) then
+  if subcommand == 'profile' then
     triforce.show_profile()
     return
   end
   if subcommand == 'reset' then
     triforce.reset_stats()
+    return
+  end
+
+  if subcommand == 'stats' then
+    if subcommand2 == '' then
+      triforce.show_profile()
+      return
+    end
+
+    if subcommand2 ~= 'export' then
+      vim.notify('Usage: :Triforce stats [export json | markdown </path/to/file> ]', vim.log.levels.INFO)
+      return
+    end
+
+    if not vim.list_contains({ 'json', 'markdown' }, subcommand3) then
+      vim.notify('Usage: :Triforce stats export json | markdown </path/to/file>', vim.log.levels.INFO)
+      return
+    end
+
+    if subcommand3 == 'markdown' then
+      if subcommand4 == '' then
+        vim.notify('Usage: :Triforce stats export markdown </path/to/file>', vim.log.levels.INFO)
+        return
+      end
+
+      triforce.export_stats_to_md(subcommand4)
+      return
+    end
+
+    if subcommand4 == '' then
+      vim.notify('Usage: :Triforce stats export json </path/to/file>', vim.log.levels.INFO)
+      return
+    end
+
+    triforce.export_stats_to_json(subcommand4)
     return
   end
 
@@ -59,6 +96,12 @@ end, {
     end
     if #args == 2 and args[2] == 'debug' then
       return { 'xp', 'achievement', 'languages', 'fix' }
+    end
+    if #args == 2 and args[2] == 'stats' then
+      return { 'export' }
+    end
+    if #args == 3 and args[3] == 'export' then
+      return { 'json', 'markdown' }
     end
     return {}
   end,
