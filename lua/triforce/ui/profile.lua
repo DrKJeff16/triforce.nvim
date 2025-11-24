@@ -657,16 +657,14 @@ local function setup_highlights()
   for _, level in ipairs(heat_levels) do
     local hl = ('TriforceHeat%d'):format(level.name)
     local fg = heat_hls[hl]
+
+    -- If fg is a group name (string without leading '#'), link to that group.
+    -- Otherwise treat it as a color (hex string, number, etc.) and set fg.
     if fg then
-      if type(fg) == 'string' and fg:sub(1, 1) ~= '#' then
-        -- Allow linking to another hl group if user set a group name instead of a hex color
-        vim.api.nvim_set_hl(M.ns, hl, { link = fg })
-      else
-        vim.api.nvim_set_hl(M.ns, hl, { fg = fg })
-      end
+      local key = (type(fg) == 'string' and fg:sub(1, 1) ~= '#') and 'link' or 'fg'
+      vim.api.nvim_set_hl(M.ns, hl, { [key] = fg })
     end
   end
-
   -- Link to standard highlights
   vim.api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
   vim.api.nvim_set_hl(M.ns, 'Normal', { link = 'TriforceNormal' })
