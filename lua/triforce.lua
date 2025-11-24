@@ -88,12 +88,13 @@ local defaults = {
   ---@type string
   db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
   ---Default highlight groups for the heats
+  ---@class Triforce.Config.Heat
   heat_highlights = {
     TriforceHeat4 = '#707070',
     TriforceHeat3 = '#a0a0a0',
     TriforceHeat2 = '#f0a0a0',
     TriforceHeat1 = '#f0f0a0',
-  }
+  },
 }
 
 M.defaults = defaults

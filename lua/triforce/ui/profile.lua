@@ -628,7 +628,7 @@ local function setup_highlights()
 
   -- Set custom highlights for Triforce (linked to standard highlights)
   if normal_bg then
-    vim.api.nvim_set_hl(M.ns,'TriforceNormal', { bg = normal_bg })
+    vim.api.nvim_set_hl(M.ns, 'TriforceNormal', { bg = normal_bg })
     vim.api.nvim_set_hl(M.ns, 'TriforceBorder', { link = 'String' })
   else
     normal_bg = '#000000' -- Fallback for transparent backgrounds
@@ -649,7 +649,6 @@ local function setup_highlights()
     { name = 3, mix_pct = 65 },
     { name = 4, mix_pct = 80 },
   }
-
 
   local heat_hls = (triforce.config and triforce.config.heat_highlights)
     or (triforce.defaults and triforce.defaults.heat_highlights)
