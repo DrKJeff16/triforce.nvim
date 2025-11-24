@@ -16,16 +16,13 @@ describe('triforce', function()
     it('should set default configuration', function()
       triforce.setup()
       assert.is_true(triforce.config.enabled)
-      -- assert.equals('Triforce activated!', triforce.config.message)
     end)
 
     it('should merge user configuration with defaults', function()
       triforce.setup({
         enabled = false,
-        -- message = 'Custom message',
       })
       assert.is_false(triforce.config.enabled)
-      -- assert.equals('Custom message', triforce.config.message)
     end)
 
     it('should handle nil options', function()
@@ -42,6 +39,11 @@ describe('triforce', function()
       os.remove(fpath)
     end)
 
+    it('should throw error when path is not valid', function()
+      local ok = pcall(triforce.export_stats_to_json, '.anyarbitrarydirectory/specs.json')
+      assert.is_false(ok)
+    end)
+
     it('should throw error when nil path is passed', function()
       local ok = pcall(triforce.export_stats_to_json, nil)
       assert.is_false(ok)
@@ -54,6 +56,11 @@ describe('triforce', function()
       local ok = pcall(triforce.export_stats_to_md, fpath)
       assert.is_true(ok)
       os.remove(fpath)
+    end)
+
+    it('should throw error when path is not valid', function()
+      local ok = pcall(triforce.export_stats_to_md, '.anyarbitrarydirectory/specs.md')
+      assert.is_false(ok)
     end)
 
     it('should throw error when nil path is passed', function()
