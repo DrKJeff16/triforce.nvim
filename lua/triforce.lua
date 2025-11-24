@@ -50,7 +50,6 @@ function M.has_gamification()
 end
 
 ---Default configuration
----@class TriforceConfig
 local defaults = {
   ---Enable the plugin
   ---@type boolean
@@ -88,10 +87,19 @@ local defaults = {
   ---Custom path for data file
   ---@type string
   db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
+  ---Default highlight groups for the heats
+  heat_highlights = {
+    TriforceHeat4 = '#707070',
+    TriforceHeat3 = '#a0a0a0',
+    TriforceHeat2 = '#f0a0a0',
+    TriforceHeat1 = '#f0f0a0',
+  }
 }
 
+M.defaults = defaults
+
 ---@type TriforceConfig
-M.config = {}
+M.config = vim.deepcopy(defaults)
 
 ---Setup the plugin with user configuration
 ---@param opts TriforceConfig|nil User configuration options

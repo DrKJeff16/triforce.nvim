@@ -621,30 +621,28 @@ end
 local function setup_highlights()
   local get_hl = require('volt.utils').get_hl
   local mix = require('volt.color').mix
+  local triforce = require('triforce')
+  local function set_hl(name, opts)
+    vim.api.nvim_set_hl(M.ns, name, opts)
+  end
 
   -- Get base colors
   local normal_bg = get_hl('Normal').bg
 
   -- Set custom highlights for Triforce (linked to standard highlights)
   if normal_bg then
-    vim.api.nvim_set_hl(M.ns, 'TriforceNormal', { bg = normal_bg })
-    vim.api.nvim_set_hl(M.ns, 'TriforceBorder', { link = 'String' })
+    set_hl('TriforceNormal', { bg = normal_bg })
+    set_hl('TriforceBorder', { link = 'String' })
   else
     normal_bg = '#000000' -- Fallback for transparent backgrounds
   end
 
   -- Create Triforce highlight groups - change these to customize colors
-  vim.api.nvim_set_hl(M.ns, 'TriforceGreen', { link = 'String' })
-  vim.api.nvim_set_hl(M.ns, 'TriforceYellow', { link = 'Question' })
-  vim.api.nvim_set_hl(M.ns, 'TriforceRed', { link = 'Keyword' })
-  vim.api.nvim_set_hl(M.ns, 'TriforceBlue', { link = 'Identifier' })
-  vim.api.nvim_set_hl(M.ns, 'TriforcePurple', { link = 'Number' })
-
-  -- Activity heatmap gradient (using mix function like typr)
-  local red_fg = get_hl('Keyword').fg
-
-  -- Fallback color when theme doesn't provide red
-  local DEFAULT_RED = '#E66868'
+  set_hl('TriforceGreen', { link = 'String' })
+  set_hl('TriforceYellow', { link = 'Question' })
+  set_hl('TriforceRed', { link = 'Keyword' })
+  set_hl('TriforceBlue', { link = 'Identifier' })
+  set_hl('TriforcePurple', { link = 'Number' })
 
   -- Heat levels: index maps to highlight group number and mix percentage
   local heat_levels = {
@@ -655,15 +653,26 @@ local function setup_highlights()
     { name = 4, mix_pct = 80 },
   }
 
-  local base_color = red_fg or DEFAULT_RED
 
+  local heat_hls = (triforce.config and triforce.config.heat_highlights)
+    or (triforce.defaults and triforce.defaults.heat_highlights)
+    or {}
   for _, level in ipairs(heat_levels) do
-    vim.api.nvim_set_hl(M.ns, ('TriforceHeat%d'):format(level.name), { fg = mix(base_color, normal_bg, level.mix_pct) })
+    local hl = ('TriforceHeat%d'):format(level.name)
+    local fg = heat_hls[hl]
+    if fg then
+      if type(fg) == 'string' and fg:sub(1, 1) ~= '#' then
+        -- Allow linking to another hl group if user set a group name instead of a hex color
+        set_hl(hl, { link = fg })
+      else
+        set_hl(hl, { fg = fg })
+      end
+    end
   end
 
   -- Link to standard highlights
-  vim.api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
-  vim.api.nvim_set_hl(M.ns, 'Normal', { link = 'TriforceNormal' })
+  set_hl('FloatBorder', { link = 'TriforceBorder' })
+  set_hl('Normal', { link = 'TriforceNormal' })
 end
 
 ---Get layout for tab system

@@ -173,6 +173,16 @@ require('triforce').setup({
     line = 1,   -- XP per new line
     save = 50,  -- XP per file save
   },
+
+  -- Override heatmap highlight groups (hex colors or existing hl groups)
+  heat_highlights = {
+    TriforceHeat4 = '#707070',
+    TriforceHeat3 = '#a0a0a0',
+    TriforceHeat2 = '#f0a0a0',
+    TriforceHeat1 = '#f0f0a0',
+    -- Or link to your colorscheme's groups:
+    -- TriforceHeat1 = 'DiffText',
+  },
 })
 ```
 
@@ -190,6 +200,7 @@ require('triforce').setup({
 | `custom_languages`           | `table\|nil`    | `nil`                           | Custom language definitions           |
 | `level_progression`          | `table\|nil`    | [See below](#level-progression) | Custom XP requirements per level tier |
 | `xp_rewards`                 | `table\|nil`    | [See below](#xp-rewards)        | Custom XP rewards for actions         |
+| `heat_highlights`            | `table\|nil`    | Defaults shown above            | Override heatmap highlights (hex or links) |
 
 ### Level Progression
 
@@ -691,6 +702,26 @@ vim.keymap.set('n', '<C-s>', function()
   require('triforce').show_profile()
 end, { desc = 'Show Triforce Stats' })
 ```
+
+### Customize Heatmap Colors
+
+If your colorscheme uses unconventional highlight groups, point the heatmap to
+colors that fit your palette. You can mix hex colors and links to existing
+highlight groups:
+
+```lua
+require('triforce').setup({
+  heat_highlights = {
+    TriforceHeat4 = '#424242',
+    TriforceHeat3 = 'CursorLine',
+    TriforceHeat2 = 'DiagnosticVirtualTextWarn',
+    TriforceHeat1 = 'Error',
+  },
+})
+```
+
+Each key corresponds to a heat level used in the profile activity graph. If you
+omit a key, the default color for that level is used.
 
 ---
 

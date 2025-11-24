@@ -56,8 +56,18 @@ Default configuration:
     {
       enabled = true,       -- Enable the plugin
       message = "Triforce activated!",  -- Default message
+      heat_highlights = {   -- Heatmap colors (hex or link to highlight groups)
+        TriforceHeat4 = '#707070',
+        TriforceHeat3 = '#a0a0a0',
+        TriforceHeat2 = '#f0a0a0',
+        TriforceHeat1 = '#f0f0a0',
+      },
     }
 <
+
+You can point `heat_highlights` at existing highlight groups instead of hex
+colors (e.g. `TriforceHeat1 = 'DiffText'`) so the activity graph respects your
+colorscheme.
 
                                                           *triforce.config*
 triforce.config~
