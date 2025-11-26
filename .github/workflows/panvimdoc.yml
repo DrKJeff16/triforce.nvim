@@ -28,6 +28,8 @@ jobs:
           dedupsubheadings: true
           treesitter: true
           ignorerawblocks: true
+          docmapping: false
+          docmappingprojectname: false
       - name: Auto Commit
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
