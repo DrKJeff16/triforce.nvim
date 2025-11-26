@@ -24,6 +24,7 @@ jobs:
         with:
           vimdoc: triforce
           pandoc: README.md
+          version: "NVIM >=v0.9.0"
           toc: true
           demojify: true
           dedupsubheadings: true
