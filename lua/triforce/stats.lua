@@ -420,6 +420,8 @@ function M.export_to_json(stats, target, indent)
     indent = { indent, { 'string', 'nil' }, true },
   })
 
+  target = vim.fn.expand(target)
+
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':p:h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
     error(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
@@ -452,6 +454,8 @@ function M.export_to_md(stats, target)
     stats = { stats, { 'table' } },
     target = { target, { 'string' } },
   })
+
+  target = vim.fn.expand(target)
 
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':p:h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
