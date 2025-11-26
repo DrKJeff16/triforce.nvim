@@ -50,6 +50,7 @@ function M.has_gamification()
 end
 
 ---Default configuration
+---@class TriforceConfig
 local defaults = {
   ---Enable the plugin
   ---@type boolean
@@ -100,7 +101,7 @@ local defaults = {
 M.defaults = defaults
 
 ---@type TriforceConfig
-M.config = vim.deepcopy(defaults)
+M.config = {}
 
 ---Setup the plugin with user configuration
 ---@param opts TriforceConfig|nil User configuration options
