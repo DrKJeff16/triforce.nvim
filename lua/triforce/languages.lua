@@ -26,6 +26,10 @@ M.language_icons = {
   rust = '', -- nf-dev-rust
   go = '', -- nf-seti-go
   zig = '', -- nf-seti-zig
+  arduino = '', -- nf-dev-arduino
+  asm = '', -- nf-seti-asm
+  makefile = '', -- nf-seti-makefile
+  cmake = '', -- nf-dev-cmake
 
   -- Scripting
   python = '', -- nf-dev-python
@@ -45,6 +49,7 @@ M.language_icons = {
   elixir = '', -- nf-seti-elixir
   erlang = '', -- nf-dev-erlang
   clojure = '', -- nf-dev-clojure
+  lisp = '', -- nf-custom-common_lisp
 
   -- .NET
   cs = '󰌛', -- nf-md-language_csharp
@@ -54,11 +59,16 @@ M.language_icons = {
   swift = '', -- nf-dev-swift
   dart = '', -- nf-dev-dart
 
+  -- Configuration
+  conf = '', -- nf-seti-config
+  config = '', -- nf-seti-config
+
   -- Shell
   sh = '', -- nf-dev-terminal
   bash = '', -- nf-dev-terminal
   zsh = '', -- nf-dev-terminal
   fish = '', -- nf-dev-terminal
+  csh = '', -- nf-dev-terminal
 
   -- Data
   sql = '', -- nf-dev-database
@@ -70,13 +80,15 @@ M.language_icons = {
   -- Markup/Doc
   markdown = '', -- nf-dev-markdown
   tex = '', -- nf-seti-tex
+  org = '', -- nf-custom-orgmode
 
   -- Other
   vim = '', -- nf-seti-vim
-  r = '󰟔', -- nf-md-language_r
+  r = '', -- nf-dev-r
   julia = '', -- nf-seti-julia
   nim = '', -- nf-seti-nim
   crystal = '', -- nf-seti-crystal
+  PKGBUILD = '', -- nf-dev-terminal
 }
 
 ---Get icon for a filetype
@@ -120,6 +132,10 @@ M.language_display_names = {
   rust = 'Rust',
   go = 'Go',
   zig = 'Zig',
+  arduino = 'Arduino',
+  asm = 'Assembly',
+  makefile = 'Makefile',
+  cmake = 'CMake',
 
   -- Scripting
   python = 'Python',
@@ -139,6 +155,7 @@ M.language_display_names = {
   elixir = 'Elixir',
   erlang = 'Erlang',
   clojure = 'Clojure',
+  lisp = 'Common Lisp',
 
   -- .NET
   cs = 'C#',
@@ -148,11 +165,16 @@ M.language_display_names = {
   swift = 'Swift',
   dart = 'Dart',
 
+  -- Configuration
+  conf = 'Conf',
+  config = 'Config',
+
   -- Shell
   sh = 'Shell',
   bash = 'Bash',
   zsh = 'Zsh',
   fish = 'Fish',
+  csh = 'C Shell',
 
   -- Data
   sql = 'SQL',
@@ -164,6 +186,7 @@ M.language_display_names = {
   -- Markup/Doc
   markdown = 'Markdown',
   tex = 'LaTeX',
+  org = 'Org Mode',
 
   -- Other
   vim = 'Vim',
@@ -171,6 +194,7 @@ M.language_display_names = {
   julia = 'Julia',
   nim = 'Nim',
   crystal = 'Crystal',
+  PKGBUILD = 'PKGBUILD',
 }
 
 ---Get display name for language
