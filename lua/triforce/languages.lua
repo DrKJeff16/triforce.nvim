@@ -62,6 +62,7 @@ M.language_icons = {
   -- Configuration
   conf = '', -- nf-seti-config
   config = '', -- nf-seti-config
+  hyprlang = '', -- nf-linux-hyprland
 
   -- Shell
   sh = '', -- nf-dev-terminal
@@ -168,6 +169,7 @@ M.language_display_names = {
   -- Configuration
   conf = 'Conf',
   config = 'Config',
+  hyprlang = 'Hyprlang',
 
   -- Shell
   sh = 'Shell',
