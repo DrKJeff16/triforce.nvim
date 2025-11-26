@@ -13,7 +13,7 @@ local M = {}
 ---@param T table<string, vim.validate.Spec|ValidateSpec>
 function M.validate(T)
   if vim.fn.has('nvim-0.11') ~= 1 then
-    -- Filter table to fit legacy standard
+    ---Filter table to fit legacy standard
     ---@cast T table<string, vim.validate.Spec>
     for name, spec in pairs(T) do
       while #spec > 3 do
@@ -27,7 +27,7 @@ function M.validate(T)
     return
   end
 
-  -- Filter table to fit non-legacy standard
+  ---Filter table to fit non-legacy standard
   ---@cast T table<string, ValidateSpec>
   for name, spec in pairs(T) do
     while #spec > 4 do
