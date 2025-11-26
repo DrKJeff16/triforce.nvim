@@ -4,7 +4,7 @@
 local assert = require('luassert')
 
 describe('triforce', function()
-  local triforce --- @type Triforce
+  local triforce ---@type Triforce
 
   before_each(function()
     -- Clear module cache to get fresh instance
