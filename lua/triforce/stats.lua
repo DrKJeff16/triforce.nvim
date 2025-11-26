@@ -16,28 +16,33 @@ M.level_config = {
 ---@type string|nil
 M.db_path = nil
 
----Stats tracking and persistence module
----@class Stats
-M.default_stats = {
-  xp = 0, ---@type number Total experience points
-  level = 1, ---@type integer Current level
-  chars_typed = 0, ---@type integer Total characters typed
-  lines_typed = 0, ---@type integer Total lines typed
-  sessions = 0, ---@type integer Total sessions
-  time_coding = 0, ---@type integer Total time in seconds
-  last_session_start = 0, ---@type integer Timestamp of session start
-  achievements = {}, ---@type table<string, boolean> Unlocked achievements
-  chars_by_language = {}, ---@type table<string, integer> Characters typed per language
-  daily_activity = {}, ---@type table<string, integer> Lines typed per day (`YYYY-MM-DD` format)
-  current_streak = 0, ---@type integer Current consecutive day streak
-  longest_streak = 0, ---@type integer Longest ever streak
-  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
-}
+---@return Stats stats
+function M.default_stats()
+  ---Stats tracking and persistence module
+  ---@class Stats
+  local stats = {
+    xp = 0, ---@type number Total experience points
+    level = 1, ---@type integer Current level
+    chars_typed = 0, ---@type integer Total characters typed
+    lines_typed = 0, ---@type integer Total lines typed
+    sessions = 0, ---@type integer Total sessions
+    time_coding = 0, ---@type integer Total time in seconds
+    last_session_start = 0, ---@type integer Timestamp of session start
+    achievements = {}, ---@type table<string, boolean> Unlocked achievements
+    chars_by_language = {}, ---@type table<string, integer> Characters typed per language
+    daily_activity = {}, ---@type table<string, integer> Lines typed per day (`YYYY-MM-DD` format)
+    current_streak = 0, ---@type integer Current consecutive day streak
+    longest_streak = 0, ---@type integer Longest ever streak
+    db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
+  }
+
+  return stats
+end
 
 ---Get the stats file path
 ---@return string db_path
 local function get_stats_path()
-  return M.db_path or M.default_stats.db_path
+  return M.db_path or M.default_stats().db_path
 end
 
 ---Prepare stats for JSON encoding (handle empty tables)
@@ -70,14 +75,14 @@ function M.load()
 
   -- Check if file exists
   if vim.fn.filereadable(path) == 0 then
-    return vim.deepcopy(M.default_stats)
+    return M.default_stats()
   end
 
   ---Read file using vim.fn for cross-platform compatibility
   ---@type string[]
   local lines = vim.fn.readfile(path)
   if not lines or #lines == 0 then
-    return vim.deepcopy(M.default_stats)
+    return M.default_stats()
   end
 
   local content = table.concat(lines, '\n')
@@ -90,7 +95,7 @@ function M.load()
     local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
     vim.notify('Corrupted stats backed up to: ' .. backup, vim.log.levels.WARN)
-    return vim.deepcopy(M.default_stats)
+    return M.default_stats()
   end
 
   -- Fix chars_by_language if it was saved as array
@@ -109,7 +114,7 @@ function M.load()
   end
 
   -- Merge with defaults to ensure all fields exist
-  local merged = vim.tbl_deep_extend('force', vim.deepcopy(M.default_stats), stats)
+  local merged = vim.tbl_deep_extend('force', M.default_stats(), stats)
 
   -- Recalculate level from XP to fix any inconsistencies
   -- (e.g., if user changed level progression config after playing)

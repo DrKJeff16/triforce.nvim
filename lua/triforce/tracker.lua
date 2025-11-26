@@ -277,7 +277,7 @@ end
 function M.reset_stats()
   local stats_module = require('triforce.stats')
 
-  M.current_stats = vim.deepcopy(stats_module.default_stats)
+  M.current_stats = stats_module.default_stats()
 
   stats_module.save(M.current_stats)
   vim.notify('Stats reset!', vim.log.levels.INFO)
