@@ -93,15 +93,14 @@ FEATURES                                     *triforce-triforce.nvim-features*
 
 INSTALLATION                             *triforce-triforce.nvim-installation*
 
-
-REQUIREMENTS ~
+**Requirements**:
 
 - **Neovim** >= 0.9.0
 - **Volt.nvim** <https://github.com/NvChad/volt.nvim> (UI framework dependency)
 - A Nerd Font <https://www.nerdfonts.com/> (for icons)
 
 
-USING LAZY.NVIM (RECOMMENDED) ~
+LAZY.NVIM ~
 
 >lua
     {
@@ -119,7 +118,7 @@ USING LAZY.NVIM (RECOMMENDED) ~
 <
 
 
-USING PCKR.NVIM ~
+PCKR.NVIM ~
 
 >lua
     require('pckr').add({
@@ -138,7 +137,23 @@ USING PCKR.NVIM ~
 <
 
 
-USING VIM-PLUG ~
+PAQ-NVIM ~
+
+>lua
+    require('paq')({
+      'nvzone/volt',
+      'gisketch/triforce.nvim',
+    })
+    
+    require('triforce').setup({
+      keymap = {
+        show_profile = '<leader>tp',
+      },
+    })
+<
+
+
+VIM-PLUG ~
 
 >vim
     Plug 'nvzone/volt'
@@ -202,10 +217,10 @@ Triforce comes with sensible defaults, but you can customize everything:
     
       -- Override heatmap highlight groups (hex colors or existing hl groups)
       heat_highlights = {
-        TriforceHeat4 = '#707070',
-        TriforceHeat3 = '#a0a0a0',
-        TriforceHeat2 = '#f0a0a0',
         TriforceHeat1 = '#f0f0a0',
+        TriforceHeat2 = '#f0a0a0',
+        TriforceHeat3 = '#a0a0a0',
+        TriforceHeat4 = '#707070',
         -- Or link to your colorscheme's groups:
         -- TriforceHeat1 = 'DiffText',
       },
