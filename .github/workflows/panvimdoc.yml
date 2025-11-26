@@ -1,5 +1,4 @@
 name: panvimdoc
-
 on:
   push:
     branches:
@@ -7,6 +6,8 @@ on:
     paths:
       - README.md
       - .github/workflows/panvimdoc.yml
+
+  workflow_dispatch:
 
 permissions:
   contents: write
