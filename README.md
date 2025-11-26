@@ -71,13 +71,13 @@ bringing those ideas to life.
 
 ## 📦 Installation
 
-### Requirements
+**Requirements**:
 
 - **Neovim** >= 0.9.0
 - [**Volt.nvim**](https://github.com/NvChad/volt.nvim) (UI framework dependency)
 - A [Nerd Font](https://www.nerdfonts.com/) (for icons)
 
-### Using [lazy.nvim](https://github.com/folke/lazy.nvim) (Recommended)
+### `lazy.nvim`
 
 ```lua
 {
@@ -94,7 +94,7 @@ bringing those ideas to life.
 }
 ```
 
-### Using [pckr.nvim](https://github.com/lewis6991/pckr.nvim)
+### `pckr.nvim`
 
 ```lua
 require('pckr').add({
@@ -112,7 +112,23 @@ require('pckr').add({
 })
 ```
 
-### Using [vim-plug](https://github.com/junegunn/vim-plug)
+### `paq-nvim`
+
+```lua
+require('paq')({
+  'nvzone/volt',
+  'gisketch/triforce.nvim',
+})
+
+require('triforce').setup({
+  keymap = {
+    show_profile = '<leader>tp',
+  },
+})
+```
+
+
+### `vim-plug`
 
 ```vim
 Plug 'nvzone/volt'
@@ -176,10 +192,10 @@ require('triforce').setup({
 
   -- Override heatmap highlight groups (hex colors or existing hl groups)
   heat_highlights = {
-    TriforceHeat4 = '#707070',
-    TriforceHeat3 = '#a0a0a0',
-    TriforceHeat2 = '#f0a0a0',
     TriforceHeat1 = '#f0f0a0',
+    TriforceHeat2 = '#f0a0a0',
+    TriforceHeat3 = '#a0a0a0',
+    TriforceHeat4 = '#707070',
     -- Or link to your colorscheme's groups:
     -- TriforceHeat1 = 'DiffText',
   },
