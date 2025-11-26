@@ -420,9 +420,9 @@ function M.export_to_json(stats, target, indent)
     indent = { indent, { 'string', 'nil' }, true },
   })
 
-  target = vim.fn.expand(target)
+  target = vim.fn.fnamemodify(target, ':p')
 
-  local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':p:h'))
+  local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
     error(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
   end
@@ -455,14 +455,14 @@ function M.export_to_md(stats, target)
     target = { target, { 'string' } },
   })
 
-  target = vim.fn.expand(target)
+  target = vim.fn.fnamemodify(target, ':p')
 
-  local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':p:h'))
+  local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
     error(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
   end
 
-  if vim.fn.isdirectory(target) == 1 then
+  if vim.list_contains({ '/', '\\' }, target:sub(-1, -1)) or vim.fn.isdirectory(target) == 1 then
     error(('Target is a directory: `%s`'):format(target), vim.log.levels.ERROR)
   end
 
@@ -477,10 +477,10 @@ function M.export_to_md(stats, target)
     if type(v) == 'table' then
       data = ('%s\n'):format(data)
       for key, val in pairs(v) do
-        data = ('%s- **%s**: %s\n'):format(data, key, vim.inspect(val))
+        data = ('%s- **%s**: `%s`\n'):format(data, key, vim.inspect(val))
       end
     else
-      data = ('%s %s\n'):format(data, tostring(v))
+      data = ('%s `%s`\n'):format(data, tostring(v))
     end
   end
 
