@@ -184,7 +184,7 @@ function M.save_stats()
       return
     end
 
-    vim.notify('Failed to save stats!', vim.log.levels.ERROR)
+    error('Failed to save stats!', vim.log.levels.ERROR)
   end
 end
 
@@ -217,7 +217,7 @@ end
 
 ---Export stats to JSON
 ---@param file string
----@param indent? string
+---@param indent? string|nil
 function M.export_stats_to_json(file, indent)
   require('triforce.stats').export_to_json(require('triforce.tracker').get_stats(), file, indent or nil)
 end
