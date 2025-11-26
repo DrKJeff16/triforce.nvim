@@ -67,7 +67,14 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
 
   -- Plan B: If subcommand value is not valid then abort and print usage
   if subcommand ~= 'debug' then
-    vim.notify('Usage: :Triforce profile | stats | reset | debug', vim.log.levels.INFO)
+    vim.notify(
+      [[
+Usage: :Triforce profile
+       :Triforce stats [export json | markdown </path/to/file>]
+       :Triforce reset
+       :Triforce debug xp | achievement | languages | fix]],
+      vim.log.levels.INFO
+    )
     return
   end
 
