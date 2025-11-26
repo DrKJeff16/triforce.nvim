@@ -34,10 +34,19 @@
 ---Set to a keymap like `"<leader>tp"` to enable
 ---@field show_profile string|nil
 
+---@class Triforce.Config.Heat
+---@field TriforceHeat1 string
+---@field TriforceHeat2 string
+---@field TriforceHeat3 string
+---@field TriforceHeat4 string
+
 local util = require('triforce.util')
 
 ---@class Triforce
-local M = {}
+local M = {
+  get_stats = require('triforce.tracker').get_stats,
+  config = {}, ---@type TriforceConfig
+}
 
 ---@return boolean
 function M.has_gamification()
@@ -49,66 +58,55 @@ function M.has_gamification()
   return true
 end
 
----Default configuration
----@class TriforceConfig
-local defaults = {
-  ---Enable the plugin
-  ---@type boolean
-  enabled = true,
-  ---Enable gamification features (stats, XP, achievements)
-  ---@type boolean
-  gamification_enabled = true,
-  ---Notification configuration
-  ---@type TriforceConfig.Notifications
-  notifications = { enabled = true, level_up = true, achievements = true },
-  ---Auto-save stats interval in seconds (default: `300`)
-  ---@type integer
-  auto_save_interval = 300,
-  ---Keymap configuration
-  ---@type TriforceConfig.Keymap|nil
-  keymap = { show_profile = nil },
-  ---Custom language definitions:
-  ---
-  ---```lua
-  ----- Example
-  ---{ rust = { icon = "", name = "Rust" } }
-  ---```
-  ---@type table<string, TriforceLanguage>|nil
-  custom_languages = nil,
-  ---Custom level progression tiers
-  ---@type LevelProgression|nil
-  level_progression = {
-    tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
-    tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
-    tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
-  },
-  ---Custom XP reward amounts for different actions
-  ---@type XPRewards|nil
-  xp_rewards = { char = 1, line = 1, save = 50 },
-  ---Custom path for data file
-  ---@type string
-  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
-  ---Default highlight groups for the heats
-  ---@class Triforce.Config.Heat
-  heat_highlights = {
-    TriforceHeat4 = '#707070',
-    TriforceHeat3 = '#a0a0a0',
-    TriforceHeat2 = '#f0a0a0',
-    TriforceHeat1 = '#f0f0a0',
-  },
-}
+local function get_defaults()
+  ---Default configuration
+  ---@class TriforceConfig
+  local defaults = {
+    ---Enable the plugin
+    enabled = true, ---@type boolean
+    ---Enable gamification features (stats, XP, achievements)
+    gamification_enabled = true, ---@type boolean
+    ---Notification configuration
+    notifications = { enabled = true, level_up = true, achievements = true }, ---@type TriforceConfig.Notifications
+    ---Auto-save stats interval in seconds (default: `300`)
+    auto_save_interval = 300, ---@type integer
+    ---Keymap configuration
+    keymap = { show_profile = nil }, ---@type TriforceConfig.Keymap|nil
+    ---Custom language definitions:
+    ---
+    ---```lua
+    ----- Example
+    ---{ rust = { icon = "", name = "Rust" } }
+    ---```
+    custom_languages = nil, ---@type table<string, TriforceLanguage>|nil
+    ---Custom level progression tiers
+    level_progression = { ---@type LevelProgression|nil
+      tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
+      tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
+      tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
+    },
+    ---Custom XP reward amounts for different actions
+    xp_rewards = { char = 1, line = 1, save = 50 }, ---@type XPRewards|nil
+    ---Custom path for data file
+    db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
+    ---Default highlight groups for the heats
+    heat_highlights = { ---@type Triforce.Config.Heat
+      TriforceHeat1 = '#f0f0a0',
+      TriforceHeat2 = '#f0a0a0',
+      TriforceHeat3 = '#a0a0a0',
+      TriforceHeat4 = '#707070',
+    },
+  }
 
-M.defaults = defaults
-
----@type TriforceConfig
-M.config = {}
+  return defaults
+end
 
 ---Setup the plugin with user configuration
 ---@param opts TriforceConfig|nil User configuration options
 function M.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  M.config = vim.tbl_deep_extend('force', vim.deepcopy(defaults), opts or {})
+  M.config = vim.tbl_deep_extend('force', get_defaults(), opts or {})
   local stats_module = require('triforce.stats')
 
   -- Apply custom level progression to stats module
@@ -155,8 +153,6 @@ function M.show_profile()
 
   require('triforce.ui.profile').open()
 end
-
-M.get_stats = require('triforce.tracker').get_stats
 
 ---Reset all stats (useful for testing)
 function M.reset_stats()
