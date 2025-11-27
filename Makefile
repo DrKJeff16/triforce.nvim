@@ -1,15 +1,18 @@
 LUAROCKS_CMD = luarocks install --local
 
+.POSIX:
+
 .PHONY: all test lint format check help
 
 all: help
 
 help: ## Show this help message
-	@echo -e "Usage: make [target]\n"
-	@echo 'Available targets:'
+	@echo -e "Usage: make [target]\n\nAvailable targets:"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 test: ## Run tests with busted
+	# @busted -l || true
+	# @echo
 	@busted
 
 lint: ## Run selene linter

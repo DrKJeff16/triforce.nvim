@@ -29,43 +29,53 @@ describe('triforce', function()
       triforce.setup(nil)
       assert.is_true(triforce.config.enabled)
     end)
-  end)
 
-  describe('stats export to JSON', function()
-    local fpath = 'spec/.stats.json'
-    it('should export to stats with a given path', function()
-      local ok = pcall(triforce.export_stats_to_json, fpath)
-      assert.is_true(ok)
-      os.remove(fpath)
-    end)
-
-    it('should throw error when path is not valid', function()
-      local ok = pcall(triforce.export_stats_to_json, '.anyarbitrarydirectory/specs.json')
-      assert.is_false(ok)
-    end)
-
-    it('should throw error when nil path is passed', function()
-      local ok = pcall(triforce.export_stats_to_json, nil)
-      assert.is_false(ok)
+    it('should throw error when called with wrong type params', function()
+      local params = { 1, false, true, '', function() end }
+      for _, param in ipairs(params) do
+        local ok = pcall(triforce.setup, param)
+        assert.is_false(ok)
+      end
     end)
   end)
 
-  describe('stats export to Markdown', function()
-    local fpath = 'spec/.stats.md'
-    it('should export to stats with a given path', function()
-      local ok = pcall(triforce.export_stats_to_md, fpath)
-      assert.is_true(ok)
-      os.remove(fpath)
+  describe('stats', function()
+    describe('export to JSON', function()
+      local fpath = 'spec/.stats.json'
+      it('should export to stats with a given path', function()
+        local ok = pcall(triforce.export_stats_to_json, fpath)
+        assert.is_true(ok)
+        os.remove(fpath)
+      end)
+
+      it('should throw error when path is not valid', function()
+        local ok = pcall(triforce.export_stats_to_json, '.anyarbitrarydirectory/specs.json')
+        assert.is_false(ok)
+      end)
+
+      it('should throw error when nil path is passed', function()
+        local ok = pcall(triforce.export_stats_to_json, nil)
+        assert.is_false(ok)
+      end)
     end)
 
-    it('should throw error when path is not valid', function()
-      local ok = pcall(triforce.export_stats_to_md, '.anyarbitrarydirectory/specs.md')
-      assert.is_false(ok)
-    end)
+    describe('export to Markdown', function()
+      local fpath = 'spec/.stats.md'
+      it('should export to stats with a given path', function()
+        local ok = pcall(triforce.export_stats_to_md, fpath)
+        assert.is_true(ok)
+        os.remove(fpath)
+      end)
 
-    it('should throw error when nil path is passed', function()
-      local ok = pcall(triforce.export_stats_to_md, nil)
-      assert.is_false(ok)
+      it('should throw error when path is not valid', function()
+        local ok = pcall(triforce.export_stats_to_md, '.anyarbitrarydirectory/specs.md')
+        assert.is_false(ok)
+      end)
+
+      it('should throw error when nil path is passed', function()
+        local ok = pcall(triforce.export_stats_to_md, nil)
+        assert.is_false(ok)
+      end)
     end)
   end)
 end)
