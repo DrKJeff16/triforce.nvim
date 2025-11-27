@@ -109,6 +109,11 @@ function M.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   M.config = vim.tbl_deep_extend('force', M.defaults(), opts or {})
+
+  if not M.config.enabled then
+    return
+  end
+
   local stats_module = require('triforce.stats')
 
   -- Apply custom level progression to stats module
@@ -131,10 +136,6 @@ function M.setup(opts)
       silent = true,
       noremap = true,
     })
-  end
-
-  if not M.config.enabled then
-    return
   end
 
   if M.config.gamification_enabled then
