@@ -10,13 +10,15 @@ local languages = require('triforce.languages')
 local random_stats = require('triforce.random_stats')
 local util = require('triforce.util')
 
--- Helper functions (copied from typr)
+---Helper functions (copied from typr)
+---@return number day_i
 local function getday_i(day, month, year)
   return tonumber(os.date('%w', os.time({ year = tostring(year), month = month, day = day }))) + 1
 end
 
+---@return string
 local function double_digits(day)
-  return day >= 10 and day or '0' .. day
+  return (day >= 10 and '%s' or '0%s'):format(day)
 end
 
 ---@class Triforce.Ui.Profile
@@ -117,8 +119,8 @@ local function build_activity_heatmap(stats)
   local days = { 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' }
 
   -- Leap year check
-  local is_leap = (tonumber(year) % 4 == 0 and tonumber(year) % 100 ~= 0) or (tonumber(year) % 400 == 0)
-  if is_leap then
+  local year_num = tonumber(year)
+  if (year_num % 4 == 0 and year_num % 100 ~= 0) or year_num % 400 == 0 then
     days_in_months[2] = 29
   end
 
@@ -160,11 +162,7 @@ local function build_activity_heatmap(stats)
 
     -- Handle year boundary
     if months_i > months_end and i < months_end then
-      if i < months_end then
-        month_year = tostring(tonumber(year) + 1)
-      elseif i > current_month then
-        month_year = tostring(tonumber(year) - 1)
-      end
+      month_year = tostring(tonumber(year) + (i < months_end and 1 or (i > current_month and -1 or 0)))
     end
 
     local start_day = getday_i(1, month_idx, year)
@@ -306,7 +304,7 @@ local function build_stats_tab()
     {
       { '󱑈', 'TriforceBlue' },
       { ' Time ~ ' },
-      { tostring(math.floor(current_hours)) .. 'h / ' .. tostring(time_goal_hours) .. 'h', 'TriforceBlue' },
+      { ('%sh / %sh'):format(math.floor(current_hours), time_goal_hours), 'TriforceBlue' },
     },
     {},
     voltui.progressbar({
