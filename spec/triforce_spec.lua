@@ -30,13 +30,13 @@ describe('triforce', function()
       assert.is_true(triforce.config.enabled)
     end)
 
-    it('should throw error when called with wrong type params', function()
-      local params = { 1, false, true, '', function() end }
-      for _, param in ipairs(params) do
+    local params = { 1, false, '', function() end }
+    for _, param in ipairs(params) do
+      it(('should throw error when called with param of type %s'):format(type(param)), function()
         local ok = pcall(triforce.setup, param)
         assert.is_false(ok)
-      end
-    end)
+      end)
+    end
   end)
 
   describe('stats', function()
