@@ -407,14 +407,13 @@ local function build_achievements_tab()
 
   for i = start_idx, end_idx do
     local achievement = achievements[i]
-    local unlocked = achievement.check
-    local status_icon = unlocked and '✓' or '✗'
-    local status_hl = unlocked and 'String' or 'Comment'
-    local text_hl = unlocked and 'TriforceYellow' or 'Comment'
-    local desc_hl = unlocked and 'Normal' or 'Comment'
+    local status_icon = achievement.check and '✓' or '✗'
+    local status_hl = achievement.check and 'String' or 'Comment'
+    local text_hl = achievement.check and 'TriforceYellow' or 'Comment'
+    local desc_hl = achievement.check and 'Normal' or 'Comment'
 
     -- Only show icon if unlocked
-    local name_display = unlocked and (achievement.icon .. ' ' .. achievement.name) or achievement.name
+    local name_display = achievement.check and (achievement.icon .. ' ' .. achievement.name) or achievement.name
 
     table.insert(table_data, {
       { { status_icon, status_hl } }, -- Array of virt text chunks
@@ -630,11 +629,16 @@ local function setup_highlights()
   end
 
   -- Create Triforce highlight groups - change these to customize colors
-  vim.api.nvim_set_hl(Profile.ns, 'TriforceGreen', { link = 'String' })
-  vim.api.nvim_set_hl(Profile.ns, 'TriforceYellow', { link = 'Question' })
-  vim.api.nvim_set_hl(Profile.ns, 'TriforceRed', { link = 'Keyword' })
-  vim.api.nvim_set_hl(Profile.ns, 'TriforceBlue', { link = 'Identifier' })
-  vim.api.nvim_set_hl(Profile.ns, 'TriforcePurple', { link = 'Number' })
+  local hls = { ---@type table<string, vim.api.keyset.highlight>
+    TriforceRed = { link = 'Keyword' },
+    TriforceGreen = { link = 'String' },
+    TriforceYellow = { link = 'Question' },
+    TriforceBlue = { link = 'Identifier' },
+    TriforcePurple = { link = 'Number' },
+  }
+  for group, hl in pairs(hls) do
+    vim.api.nvim_set_hl(Profile.ns, group, hl)
+  end
 
   -- Heat levels: index maps to highlight group number and mix percentage
   local heat_levels = {
@@ -682,8 +686,11 @@ local function get_layout()
     },
     {
       lines = function()
-        local tabs = { ' Stats', '󰌌 Achievements', '0 Languages' }
-        return voltui.tabs(tabs, Profile.width - Profile.xpad * 2, { active = Profile.current_tab })
+        return voltui.tabs(
+          { ' Stats', '󰌌 Achievements', '0 Languages' },
+          Profile.width - Profile.xpad * 2,
+          { active = Profile.current_tab }
+        )
       end,
       name = 'tabs',
     },
