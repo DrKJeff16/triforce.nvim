@@ -133,19 +133,17 @@ function Lualine.level(opts)
 
   -- Get XP info
   local stats_module = require('triforce.stats')
-  local current_xp = stats.xp
-  local level = stats.level
-  local xp_for_current = stats_module.xp_for_next_level(level - 1)
-  local xp_for_next = stats_module.xp_for_next_level(level)
+  local xp_for_current = stats_module.xp_for_next_level(stats.level - 1)
+  local xp_for_next = stats_module.xp_for_next_level(stats.level)
   local xp_needed = xp_for_next - xp_for_current
-  local xp_progress = current_xp - xp_for_current
+  local xp_progress = stats.xp - xp_for_current
 
   -- Build component parts
   local parts = {} ---@type string[]
 
   -- Prefix and level number
   if config.show_level then
-    table.insert(parts, not config.prefix and tostring(level) or (config.prefix .. level))
+    table.insert(parts, not config.prefix and tostring(stats.level) or (config.prefix .. stats.level))
   end
 
   -- Progress bar
@@ -204,7 +202,7 @@ end
 
 ---Streak component - Shows current coding streak
 ---@param opts { icon: string, show_days: boolean }|nil Component-specific options
----@return string component
+---@return string|'' component
 function Lualine.streak(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
