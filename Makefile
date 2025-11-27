@@ -11,8 +11,6 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 test: ## Run tests with busted
-	# @busted -l || true
-	# @echo
 	@busted
 
 lint: ## Run selene linter

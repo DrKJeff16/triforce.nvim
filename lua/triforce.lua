@@ -40,65 +40,67 @@
 ---@field TriforceHeat3 string
 ---@field TriforceHeat4 string
 
+local ERROR = vim.log.levels.ERROR
+local WARN = vim.log.levels.WARN
+local INFO = vim.log.levels.INFO
 local util = require('triforce.util')
 
 ---@class Triforce
 local M = {
   get_stats = require('triforce.tracker').get_stats,
   config = {}, ---@type TriforceConfig
+  defaults = function() ---@return TriforceConfig default
+    ---Triforce setup configuration
+    ---@class TriforceConfig
+    local defaults = {
+      ---Enable the plugin
+      enabled = true, ---@type boolean
+      ---Enable gamification features (stats, XP, achievements)
+      gamification_enabled = true, ---@type boolean
+      ---Notification configuration
+      notifications = { enabled = true, level_up = true, achievements = true }, ---@type TriforceConfig.Notifications
+      ---Auto-save stats interval in seconds (default: `300`)
+      auto_save_interval = 300, ---@type integer
+      ---Keymap configuration
+      keymap = { show_profile = nil }, ---@type TriforceConfig.Keymap|nil
+      ---Custom language definitions:
+      ---
+      ---```lua
+      ----- Example
+      ---{ rust = { icon = "", name = "Rust" } }
+      ---```
+      custom_languages = nil, ---@type table<string, TriforceLanguage>|nil
+      ---Custom level progression tiers
+      level_progression = { ---@type LevelProgression|nil
+        tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
+        tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
+        tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
+      },
+      ---Custom XP reward amounts for different actions
+      xp_rewards = { char = 1, line = 1, save = 50 }, ---@type XPRewards|nil
+      ---Custom path for data file
+      db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
+      ---Default highlight groups for the heats
+      heat_highlights = { ---@type Triforce.Config.Heat
+        TriforceHeat1 = '#f0f0a0',
+        TriforceHeat2 = '#f0a0a0',
+        TriforceHeat3 = '#a0a0a0',
+        TriforceHeat4 = '#707070',
+      },
+    }
+
+    return defaults
+  end,
 }
 
----@return boolean
+---@return boolean gamified
 function M.has_gamification()
   if not M.config.gamification_enabled then
-    vim.notify('Gamification is not enabled in config', vim.log.levels.WARN)
+    vim.notify('Gamification is not enabled in config', WARN)
     return false
   end
 
   return true
-end
-
-function M.defaults()
-  ---Triforce setup configuration
-  ---@class TriforceConfig
-  local defaults = {
-    ---Enable the plugin
-    enabled = true, ---@type boolean
-    ---Enable gamification features (stats, XP, achievements)
-    gamification_enabled = true, ---@type boolean
-    ---Notification configuration
-    notifications = { enabled = true, level_up = true, achievements = true }, ---@type TriforceConfig.Notifications
-    ---Auto-save stats interval in seconds (default: `300`)
-    auto_save_interval = 300, ---@type integer
-    ---Keymap configuration
-    keymap = { show_profile = nil }, ---@type TriforceConfig.Keymap|nil
-    ---Custom language definitions:
-    ---
-    ---```lua
-    ----- Example
-    ---{ rust = { icon = "", name = "Rust" } }
-    ---```
-    custom_languages = nil, ---@type table<string, TriforceLanguage>|nil
-    ---Custom level progression tiers
-    level_progression = { ---@type LevelProgression|nil
-      tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
-      tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
-      tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
-    },
-    ---Custom XP reward amounts for different actions
-    xp_rewards = { char = 1, line = 1, save = 50 }, ---@type XPRewards|nil
-    ---Custom path for data file
-    db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
-    ---Default highlight groups for the heats
-    heat_highlights = { ---@type Triforce.Config.Heat
-      TriforceHeat1 = '#f0f0a0',
-      TriforceHeat2 = '#f0a0a0',
-      TriforceHeat3 = '#a0a0a0',
-      TriforceHeat4 = '#707070',
-    },
-  }
-
-  return defaults
 end
 
 ---Setup the plugin with user configuration
@@ -180,17 +182,17 @@ function M.save_stats()
 
   local tracker = require('triforce.tracker')
   if not tracker.current_stats then
-    vim.notify('No stats to save', vim.log.levels.WARN)
+    vim.notify('No stats to save', WARN)
     return
   end
 
   if tracker.current_stats then
     if require('triforce.stats').save(tracker.current_stats) then
-      vim.notify('Stats saved successfully!', vim.log.levels.INFO)
+      vim.notify('Stats saved successfully!', INFO)
       return
     end
 
-    error('Failed to save stats!', vim.log.levels.ERROR)
+    error('Failed to save stats!', ERROR)
   end
 end
 
@@ -225,12 +227,19 @@ end
 ---@param file string
 ---@param indent? string|nil
 function M.export_stats_to_json(file, indent)
+  util.validate({
+    file = { file, { 'string' } },
+    indent = { indent, { 'string', 'nil' }, true },
+  })
+
   require('triforce.stats').export_to_json(require('triforce.tracker').get_stats(), file, indent or nil)
 end
 
 ---Export stats to Markdown
 ---@param file string
 function M.export_stats_to_md(file)
+  util.validate({ file = { file, { 'string' } } })
+
   require('triforce.stats').export_to_md(require('triforce.tracker').get_stats(), file)
 end
 

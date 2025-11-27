@@ -259,8 +259,7 @@ function M.shutdown()
 
   -- Force save on shutdown, ignore debounce
   if not stats_module.save(M.current_stats) then
-    vim.notify('Failed to save stats on shutdown!', ERROR)
-    return
+    error('Failed to save stats on shutdown!', ERROR)
   end
 
   M.dirty = false
