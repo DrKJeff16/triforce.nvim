@@ -2,7 +2,7 @@ local util = require('triforce.util')
 
 ---Language configuration and icons
 ---@class Triforce.Languages
-local M = {
+local Languages = {
   ---Language to icon mapping for popular programming languages
   language_icons = { ---@type table<string, string>
     -- Web
@@ -181,55 +181,55 @@ local M = {
 ---Get icon for a filetype
 ---@param filetype string
 ---@return string icon
-function M.get_icon(filetype)
+function Languages.get_icon(filetype)
   util.validate({ filetype = { filetype, { 'string' } } })
 
-  return M.language_icons[filetype] or ''
+  return Languages.language_icons[filetype] or ''
 end
 
 ---Check if language should be tracked
 ---@param filetype string
 ---@return boolean
-function M.should_track(filetype)
+function Languages.should_track(filetype)
   util.validate({ filetype = { filetype, { 'string' } } })
 
   -- Track only if we have an icon for it or if user adds custom mapping
-  return M.language_icons[filetype] ~= nil
+  return Languages.language_icons[filetype] ~= nil
 end
 
 ---Get display name for language
 ---@param filetype string
 ---@return string name
-function M.get_display_name(filetype)
+function Languages.get_display_name(filetype)
   util.validate({ filetype = { filetype, { 'string' } } })
 
-  return M.language_display_names[filetype] or filetype
+  return Languages.language_display_names[filetype] or filetype
 end
 
 ---Get full display with icon
 ---@param filetype string
-function M.get_full_display(filetype)
+function Languages.get_full_display(filetype)
   util.validate({ filetype = { filetype, { 'string' } } })
 
-  local icon = M.get_icon(filetype)
-  local name = M.get_display_name(filetype)
+  local icon = Languages.get_icon(filetype)
+  local name = Languages.get_display_name(filetype)
   return icon == '' and name or ('%s %s'):format(icon, name)
 end
 
 ---Register custom languages
 ---@param custom_langs table<string, { icon: string, name: string }>
-function M.register_custom_languages(custom_langs)
+function Languages.register_custom_languages(custom_langs)
   util.validate({ custom_langs = { custom_langs, { 'table' } } })
 
   for filetype, config in pairs(custom_langs) do
     if config.icon then
-      M.language_icons[filetype] = config.icon
+      Languages.language_icons[filetype] = config.icon
     end
     if config.name then
-      M.language_display_names[filetype] = config.name
+      Languages.language_display_names[filetype] = config.name
     end
   end
 end
 
-return M
+return Languages
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

@@ -46,7 +46,7 @@ local INFO = vim.log.levels.INFO
 local util = require('triforce.util')
 
 ---@class Triforce
-local M = {
+local Triforce = {
   get_stats = require('triforce.tracker').get_stats,
   config = {}, ---@type TriforceConfig
   defaults = function() ---@return TriforceConfig default
@@ -94,8 +94,8 @@ local M = {
 }
 
 ---@return boolean gamified
-function M.has_gamification()
-  if not M.config.gamification_enabled then
+function Triforce.has_gamification()
+  if not Triforce.config.gamification_enabled then
     vim.notify('Gamification is not enabled in config', WARN)
     return false
   end
@@ -105,47 +105,47 @@ end
 
 ---Setup the plugin with user configuration
 ---@param opts TriforceConfig|nil User configuration options
-function M.setup(opts)
+function Triforce.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  M.config = vim.tbl_deep_extend('force', M.defaults(), opts or {})
+  Triforce.config = vim.tbl_deep_extend('force', Triforce.defaults(), opts or {})
 
-  if not M.config.enabled then
+  if not Triforce.config.enabled then
     return
   end
 
   local stats_module = require('triforce.stats')
 
   -- Apply custom level progression to stats module
-  if M.config.level_progression then
-    stats_module.level_config = M.config.level_progression
+  if Triforce.config.level_progression then
+    stats_module.level_config = Triforce.config.level_progression
   end
 
   -- Register custom languages if provided
-  if M.config.custom_languages then
-    require('triforce.languages').register_custom_languages(M.config.custom_languages)
+  if Triforce.config.custom_languages then
+    require('triforce.languages').register_custom_languages(Triforce.config.custom_languages)
   end
 
   -- Setup custom path if provided
-  stats_module.db_path = M.config.db_path
+  stats_module.db_path = Triforce.config.db_path
 
   -- Set up keymap if provided
-  if M.config.keymap and M.config.keymap.show_profile and M.config.keymap.show_profile ~= '' then
-    vim.keymap.set('n', M.config.keymap.show_profile, M.show_profile, {
+  if Triforce.config.keymap and Triforce.config.keymap.show_profile and Triforce.config.keymap.show_profile ~= '' then
+    vim.keymap.set('n', Triforce.config.keymap.show_profile, Triforce.show_profile, {
       desc = 'Show Triforce Profile',
       silent = true,
       noremap = true,
     })
   end
 
-  if M.config.gamification_enabled then
+  if Triforce.config.gamification_enabled then
     require('triforce.tracker').setup()
   end
 end
 
 ---Show profile UI
-function M.show_profile()
-  if not M.has_gamification() then
+function Triforce.show_profile()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -158,8 +158,8 @@ function M.show_profile()
 end
 
 ---Reset all stats (useful for testing)
-function M.reset_stats()
-  if not M.has_gamification() then
+function Triforce.reset_stats()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -167,8 +167,8 @@ function M.reset_stats()
 end
 
 ---Debug language tracking
-function M.debug_languages()
-  if not M.has_gamification() then
+function Triforce.debug_languages()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -176,8 +176,8 @@ function M.debug_languages()
 end
 
 ---Force save stats
-function M.save_stats()
-  if not M.has_gamification() then
+function Triforce.save_stats()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -198,8 +198,8 @@ function M.save_stats()
 end
 
 ---Debug: Show current XP progress
-function M.debug_xp()
-  if not M.has_gamification() then
+function Triforce.debug_xp()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -207,8 +207,8 @@ function M.debug_xp()
 end
 
 ---Debug: Test achievement notification
-function M.debug_achievement()
-  if not M.has_gamification() then
+function Triforce.debug_achievement()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -216,8 +216,8 @@ function M.debug_achievement()
 end
 
 ---Debug: Fix level/XP mismatch
-function M.debug_fix_level()
-  if not M.has_gamification() then
+function Triforce.debug_fix_level()
+  if not Triforce.has_gamification() then
     return
   end
 
@@ -227,7 +227,7 @@ end
 ---Export stats to JSON
 ---@param file string
 ---@param indent? string|nil
-function M.export_stats_to_json(file, indent)
+function Triforce.export_stats_to_json(file, indent)
   util.validate({
     file = { file, { 'string' } },
     indent = { indent, { 'string', 'nil' }, true },
@@ -238,11 +238,11 @@ end
 
 ---Export stats to Markdown
 ---@param file string
-function M.export_stats_to_md(file)
+function Triforce.export_stats_to_md(file)
   util.validate({ file = { file, { 'string' } } })
 
   require('triforce.stats').export_to_md(require('triforce.tracker').get_stats(), file)
 end
 
-return M
+return Triforce
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

@@ -8,12 +8,12 @@
 local util = require('triforce.util')
 
 ---@class Triforce.Achievements
-local M = {}
+local Achievement = {}
 
 ---Get all achievements with their unlock status
 ---@param stats Stats
 ---@return Achievement[] achievements
-function M.get_all_achievements(stats)
+function Achievement.get_all_achievements(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   -- Count unique languages
@@ -131,12 +131,12 @@ end
 ---Check and unlock achievements
 ---@param stats Stats
 ---@return Achievement[] newly_unlocked List of achievement objects
-function M.check_achievements(stats)
+function Achievement.check_achievements(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   ---@type Achievement[]
   local newly_unlocked = {}
-  local achievements = M.get_all_achievements(stats)
+  local achievements = Achievement.get_all_achievements(stats)
 
   for _, achievement in ipairs(achievements) do
     if achievement.check and not stats.achievements[achievement.id] then
@@ -154,4 +154,5 @@ function M.check_achievements(stats)
   return newly_unlocked
 end
 
-return M
+return Achievement
+-- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

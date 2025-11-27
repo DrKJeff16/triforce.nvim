@@ -2,9 +2,9 @@
 ---
 ---Run with `:checkhealth triforce`
 ---@class Triforce.Health
-local M = {}
+local Health = {}
 
-function M.check()
+function Health.check()
   vim.health.start('Version Check')
   local nvim_version = vim.version()
   if nvim_version.major == 0 and nvim_version.minor >= 9 then
@@ -42,5 +42,5 @@ function M.check()
   vim.health.info('Stats file not yet created (will be created on first use)')
 end
 
-return M
+return Health
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

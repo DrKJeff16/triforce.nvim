@@ -7,11 +7,11 @@
 
 ---Various utilities to be used for Triforce
 ---@class Triforce.Util
-local M = {}
+local Util = {}
 
 ---Dynamic `vim.validate()` wrapper. Covers both legacy and newer implementations
 ---@param T table<string, vim.validate.Spec|ValidateSpec>
-function M.validate(T)
+function Util.validate(T)
   if vim.fn.has('nvim-0.11') ~= 1 then
     ---Filter table to fit legacy standard
     ---@cast T table<string, vim.validate.Spec>
@@ -43,5 +43,5 @@ function M.validate(T)
   end
 end
 
-return M
+return Util
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

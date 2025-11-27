@@ -2,12 +2,12 @@ local util = require('triforce.util')
 
 ---Random stat generator for displaying varied coding facts
 ---@class Triforce.RandomStats
-local M = {}
+local RandStats = {}
 
 ---Generate a random stat fact based on current stats
 ---@param stats Stats
 ---@return string fact
-function M.get_random_fact(stats)
+function RandStats.get_random_fact(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   local facts = {} ---@type string[]
@@ -34,7 +34,7 @@ function M.get_random_fact(stats)
 
   -- Character-based facts
   if stats.chars_typed > 0 then
-    table.insert(facts, ("You've typed %s characters"):format(M.format_number(stats.chars_typed)))
+    table.insert(facts, ("You've typed %s characters"):format(RandStats.format_number(stats.chars_typed)))
 
     if stats.chars_typed >= 1000 then
       local pages = math.floor(stats.chars_typed / 3000)
@@ -48,13 +48,13 @@ function M.get_random_fact(stats)
 
     if stats.chars_typed >= 10000 then
       local words = math.floor(stats.chars_typed / 5)
-      table.insert(facts, ('Approximately %s words typed'):format(M.format_number(words)))
+      table.insert(facts, ('Approximately %s words typed'):format(RandStats.format_number(words)))
     end
   end
 
   -- Line-based facts
   if stats.lines_typed > 0 then
-    table.insert(facts, ("You've created %s lines of code"):format(M.format_number(stats.lines_typed)))
+    table.insert(facts, ("You've created %s lines of code"):format(RandStats.format_number(stats.lines_typed)))
 
     if stats.lines_typed >= 1000 then
       table.insert(facts, ("That's %d screens of code"):format(math.floor(stats.lines_typed / 50)))
@@ -100,7 +100,7 @@ function M.get_random_fact(stats)
     )
 
     if top_lang then
-      table.insert(facts, ('Your favorite language is %s'):format(M.format_language_name(top_lang)))
+      table.insert(facts, ('Your favorite language is %s'):format(RandStats.format_language_name(top_lang)))
     end
 
     if unique_languages >= 5 then
@@ -114,7 +114,7 @@ function M.get_random_fact(stats)
 
   -- XP and level facts
   if stats.level > 1 then
-    table.insert(facts, ("You're level %d with %s XP"):format(stats.level, M.format_number(stats.xp)))
+    table.insert(facts, ("You're level %d with %s XP"):format(stats.level, RandStats.format_number(stats.xp)))
 
     if stats.level >= 10 then
       table.insert(facts, "You've reached expert territory")
@@ -171,7 +171,7 @@ end
 ---Format large numbers with commas
 ---@param num number
 ---@return string
-function M.format_number(num)
+function RandStats.format_number(num)
   util.validate({ num = { num, { 'number' } } })
 
   local formatted = tostring(num)
@@ -189,7 +189,7 @@ end
 
 ---Format language name for display
 ---@param filetype string
-function M.format_language_name(filetype)
+function RandStats.format_language_name(filetype)
   util.validate({ filetype = { filetype, { 'string' } } })
 
   local language_names = {
@@ -222,5 +222,5 @@ function M.format_language_name(filetype)
   return language_names[filetype] or filetype
 end
 
-return M
+return RandStats
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

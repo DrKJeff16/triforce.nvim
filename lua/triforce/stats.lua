@@ -2,11 +2,11 @@ local uv = vim.uv or vim.loop
 local util = require('triforce.util')
 
 ---@class Triforce.Stats
-local M = {}
+local Stats = {}
 
 ---Configurable level progression
 ---@type LevelProgression
-M.level_config = {
+Stats.level_config = {
   -- XP required per level for each tier
   tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
   tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
@@ -14,10 +14,10 @@ M.level_config = {
 }
 
 ---@type string|nil
-M.db_path = nil
+Stats.db_path = nil
 
 ---@return Stats stats
-function M.default_stats()
+function Stats.default_stats()
   ---Stats tracking and persistence module
   ---@class Stats
   local stats = {
@@ -42,7 +42,7 @@ end
 ---Get the stats file path
 ---@return string db_path
 local function get_stats_path()
-  return M.db_path or M.default_stats().db_path
+  return Stats.db_path or Stats.default_stats().db_path
 end
 
 ---Prepare stats for JSON encoding (handle empty tables)
@@ -70,19 +70,20 @@ local function prepare_for_save(stats)
 end
 
 ---Load stats from disk
-function M.load()
+---@return Stats merged
+function Stats.load()
   local path = get_stats_path()
 
   -- Check if file exists
   if vim.fn.filereadable(path) == 0 then
-    return M.default_stats()
+    return Stats.default_stats()
   end
 
   ---Read file using vim.fn for cross-platform compatibility
   ---@type string[]
   local lines = vim.fn.readfile(path)
   if not lines or #lines == 0 then
-    return M.default_stats()
+    return Stats.default_stats()
   end
 
   local content = table.concat(lines, '\n')
@@ -95,7 +96,7 @@ function M.load()
     local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
     vim.notify('Corrupted stats backed up to: ' .. backup, vim.log.levels.WARN)
-    return M.default_stats()
+    return Stats.default_stats()
   end
 
   -- Fix chars_by_language if it was saved as array
@@ -114,7 +115,7 @@ function M.load()
   end
 
   -- Merge with defaults to ensure all fields exist
-  local merged = vim.tbl_deep_extend('force', M.default_stats(), stats)
+  local merged = vim.tbl_deep_extend('force', Stats.default_stats(), stats)
 
   -- Recalculate level from XP to fix any inconsistencies
   -- (e.g., if user changed level progression config after playing)
@@ -122,7 +123,7 @@ function M.load()
     return merged
   end
 
-  local calculated_level = M.calculate_level(merged.xp)
+  local calculated_level = Stats.calculate_level(merged.xp)
   if calculated_level ~= merged.level then
     vim.notify(
       ('Level mismatch detected! Recalculating from XP.\nOld level: %d → New level: %d (based on %d XP)'):format(
@@ -142,7 +143,7 @@ end
 ---Save stats to disk
 ---@param stats Stats|nil
 ---@return boolean success
-function M.save(stats)
+function Stats.save(stats)
   util.validate({ stats = { stats, { 'table', 'nil' }, true } })
   if not stats then
     return false
@@ -186,7 +187,7 @@ local function get_total_xp_for_level(level)
   end
 
   local total_xp = 0
-  local config = M.level_config
+  local config = Stats.level_config
 
   -- Calculate XP for tier 1 (levels 1-10)
   if level > config.tier_1.min_level then
@@ -221,7 +222,7 @@ end
 ---  Levels 21+: 1000 XP each
 ---@param xp number
 ---@return integer level
-function M.calculate_level(xp)
+function Stats.calculate_level(xp)
   util.validate({ xp = { xp, { 'number' } } })
   if xp <= 0 then
     return 1
@@ -229,7 +230,7 @@ function M.calculate_level(xp)
 
   local level = 1
   local accumulated_xp = 0
-  local config = M.level_config
+  local config = Stats.level_config
 
   -- Tier 1: Levels 1-10 (300 XP each)
   local tier_1_total = config.tier_1.max_level * config.tier_1.xp_per_level
@@ -257,7 +258,7 @@ end
 ---Calculate XP needed for next level
 ---@param current_level integer
 ---@return integer xp_needed
-function M.xp_for_next_level(current_level)
+function Stats.xp_for_next_level(current_level)
   return get_total_xp_for_level(current_level + 1)
 end
 
@@ -265,7 +266,7 @@ end
 ---@param stats Stats
 ---@param amount number
 ---@return boolean leveled_up
-function M.add_xp(stats, amount)
+function Stats.add_xp(stats, amount)
   util.validate({
     stats = { stats, { 'table' } },
     amount = { amount, { 'number' } },
@@ -273,14 +274,14 @@ function M.add_xp(stats, amount)
 
   local old_level = stats.level
   stats.xp = stats.xp + amount
-  stats.level = M.calculate_level(stats.xp)
+  stats.level = Stats.calculate_level(stats.xp)
 
   return stats.level > old_level
 end
 
 ---Start a new session
 ---@param stats Stats
-function M.start_session(stats)
+function Stats.start_session(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   stats.sessions = stats.sessions + 1
@@ -289,7 +290,7 @@ end
 
 ---End the current session
 ---@param stats Stats
-function M.end_session(stats)
+function Stats.end_session(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   if stats.last_session_start <= 0 then
@@ -321,7 +322,7 @@ end
 ---@param stats Stats
 ---@return integer current_streak
 ---@return integer longest_streak
-function M.calculate_streaks(stats)
+function Stats.calculate_streaks(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   if not stats.daily_activity then
@@ -395,7 +396,7 @@ end
 ---Record activity for today
 ---@param stats Stats
 ---@param lines_today integer Number of lines typed today
-function M.record_daily_activity(stats, lines_today)
+function Stats.record_daily_activity(stats, lines_today)
   util.validate({
     stats = { stats, { 'table' } },
     lines_today = { lines_today, { 'number' } },
@@ -409,7 +410,7 @@ function M.record_daily_activity(stats, lines_today)
   stats.daily_activity[today] = (stats.daily_activity[today] or 0) + lines_today
 
   -- Update streaks
-  local current, longest = M.calculate_streaks(stats)
+  local current, longest = Stats.calculate_streaks(stats)
   stats.current_streak = current
   stats.longest_streak = longest
 end
@@ -418,7 +419,7 @@ end
 ---@param stats Stats
 ---@param target string
 ---@param indent? string|nil
-function M.export_to_json(stats, target, indent)
+function Stats.export_to_json(stats, target, indent)
   util.validate({
     stats = { stats, { 'table' } },
     target = { target, { 'string' } },
@@ -454,7 +455,7 @@ end
 ---Export data to a specified Markdown file
 ---@param stats Stats
 ---@param target string
-function M.export_to_md(stats, target)
+function Stats.export_to_md(stats, target)
   util.validate({
     stats = { stats, { 'table' } },
     target = { target, { 'string' } },
@@ -493,5 +494,5 @@ function M.export_to_md(stats, target)
   uv.fs_close(fd)
 end
 
-return M
+return Stats
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

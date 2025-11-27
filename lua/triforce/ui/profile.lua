@@ -19,27 +19,28 @@ local function double_digits(day)
   return day >= 10 and day or '0' .. day
 end
 
-local M = {}
+---@class Triforce.Ui.Profile
+local Profile = {
+  -- UI state
+  buf = nil, ---@type integer|nil
+  win = nil, ---@type integer|nil
+  dim_win = nil, ---@type integer|nil
+  dim_buf = nil, ---@type integer|nil
+  ns = vim.api.nvim_create_namespace('TriforceProfile'), ---@type integer
+  achievements_page = 1, ---@type integer
+  achievements_per_page = 5, ---@type integer
+  max_language_entries = 13, ---@type integer
+  current_tab = ' Stats', ---@type string
 
--- UI state
-M.buf = nil
-M.win = nil
-M.dim_win = nil
-M.dim_buf = nil
-M.ns = vim.api.nvim_create_namespace('TriforceProfile')
-M.achievements_page = 1
-M.achievements_per_page = 5
-M.max_language_entries = 13
-M.current_tab = ' Stats'
-
--- Dimensions
-M.width = 80
-M.height = 30
-M.xpad = 2
+  -- Dimensions
+  width = 80, ---@type integer
+  height = 30, ---@type integer
+  xpad = 2, ---@type integer
+}
 
 ---Get Zelda-themed title based on level
 ---@param level integer
----@return string
+---@return string title
 local function get_level_title(level)
   util.validate({ level = { level, { 'number' } } })
 
@@ -73,7 +74,7 @@ end
 
 ---Format seconds to readable time
 ---@param secs number
----@return string
+---@return string time
 local function format_time(secs)
   local hours = math.floor(secs / 3600)
   local minutes = math.floor((secs % 3600) / 60)
@@ -82,7 +83,7 @@ end
 
 ---Get activity level highlight based on lines typed
 ---@param lines integer
----@return string
+---@return string hl
 local function get_activity_hl(lines)
   if lines == 0 then
     return 'LineNr'
@@ -102,7 +103,7 @@ end
 
 ---Build activity heatmap (copied from typr structure)
 ---@param stats Stats
----@return table
+---@return table lines
 local function build_activity_heatmap(stats)
   if not stats or not stats.daily_activity then
     return { { { '  No activity data yet', 'Comment' } } }
@@ -204,7 +205,7 @@ local function build_activity_heatmap(stats)
   end
 
   table.insert(header, { ' More' })
-  table.insert(lines, 1, voltui.hpad(header, M.width - (2 * M.xpad) - 4))
+  table.insert(lines, 1, voltui.hpad(header, Profile.width - (2 * Profile.xpad) - 4))
 
   return lines
 end
@@ -245,7 +246,7 @@ local function build_stats_tab()
   }
 
   -- Three progress bars section
-  local barlen = (M.width - M.xpad * 2) / 3 - 1
+  local barlen = (Profile.width - Profile.xpad * 2) / 3 - 1
 
   -- Dynamic session goal (increments by 100)
   local session_goal = math.ceil(stats.sessions / 100) * 100
@@ -340,13 +341,13 @@ local function build_stats_tab()
     },
   }
 
-  local table_ui = voltui.table(stats_table, M.width - M.xpad * 2, 'String')
+  local table_ui = voltui.table(stats_table, Profile.width - Profile.xpad * 2, 'String')
 
   -- Activity heatmap
   local heatmap_lines = build_activity_heatmap(stats)
   local heatmap_row = voltui.grid_col({
     { lines = {}, w = 1 },
-    { lines = heatmap_lines, w = M.width - M.xpad * 2 },
+    { lines = heatmap_lines, w = Profile.width - Profile.xpad * 2 },
   })
 
   -- Footer
@@ -386,19 +387,19 @@ local function build_achievements_tab()
 
   -- Calculate pagination
   local total_achievements = #achievements
-  local total_pages = math.ceil(total_achievements / M.achievements_per_page)
+  local total_pages = math.ceil(total_achievements / Profile.achievements_per_page)
 
   -- Ensure current page is within bounds
-  if M.achievements_page > total_pages then
-    M.achievements_page = total_pages
+  if Profile.achievements_page > total_pages then
+    Profile.achievements_page = total_pages
   end
-  if M.achievements_page < 1 then
-    M.achievements_page = 1
+  if Profile.achievements_page < 1 then
+    Profile.achievements_page = 1
   end
 
   -- Get achievements for current page
-  local start_idx = (M.achievements_page - 1) * M.achievements_per_page + 1
-  local end_idx = math.min(start_idx + M.achievements_per_page - 1, total_achievements)
+  local start_idx = (Profile.achievements_page - 1) * Profile.achievements_per_page + 1
+  local end_idx = math.min(start_idx + Profile.achievements_per_page - 1, total_achievements)
 
   -- Build table rows with virtual text for custom highlighting
   -- Each cell with custom hl must be an array of {text, hl} pairs
@@ -424,7 +425,7 @@ local function build_achievements_tab()
     })
   end
 
-  local achievement_table = voltui.table(table_data, M.width - M.xpad * 2, 'String')
+  local achievement_table = voltui.table(table_data, Profile.width - Profile.xpad * 2, 'String')
 
   local unlocked_count = 0
   for _, a in ipairs(achievements) do
@@ -453,7 +454,7 @@ local function build_achievements_tab()
     {
       { '  Tab: Switch Tabs    ', 'Comment' },
       { 'H/L or ◀/▶: ', 'Comment' },
-      { 'Page ' .. tostring(M.achievements_page) .. '/' .. tostring(total_pages), 'String' },
+      { 'Page ' .. tostring(Profile.achievements_page) .. '/' .. tostring(total_pages), 'String' },
       { '    q: Close', 'Comment' },
     },
     {},
@@ -485,7 +486,7 @@ local function build_languages_tab()
   end)
 
   -- Limit to max entries
-  local display_count = math.min(#lang_data, M.max_language_entries)
+  local display_count = math.min(#lang_data, Profile.max_language_entries)
 
   -- Prepare data for bar graph
   local graph_values = {}
@@ -499,7 +500,7 @@ local function build_languages_tab()
   end
 
   -- Fill graph values (scale to 100)
-  for i = 1, M.max_language_entries do
+  for i = 1, Profile.max_language_entries do
     if i <= display_count then
       local percentage = max_chars > 0 and math.floor((lang_data[i].count / max_chars) * 100) or 0
       table.insert(graph_values, percentage)
@@ -510,7 +511,7 @@ local function build_languages_tab()
 
   -- -- Create labels with icons
   -- local labels = {}
-  -- for i = 1, M.max_language_entries do
+  -- for i = 1, Profile.max_language_entries do
   --   if i <= display_count then
   --     local icon = languages.get_icon(lang_data[i].lang)
   --     labels[i] = icon ~= '' and icon or lang_data[i].lang:sub(1, 1)
@@ -520,7 +521,7 @@ local function build_languages_tab()
   -- end
 
   -- Calculate graph width (narrower for centering)
-  local graph_width = math.min(M.max_language_entries * 4, M.width - M.xpad * 2)
+  local graph_width = math.min(Profile.max_language_entries * 4, Profile.width - Profile.xpad * 2)
   local graph_data = {
     val = graph_values,
     -- footer_label = { " Character count by language" },
@@ -558,11 +559,11 @@ local function build_languages_tab()
   local x_axis_spacing = 6 + max_label_length
   local spacing_str = (' '):rep(x_axis_spacing)
   local graph_x_axis_parts = { { spacing_str } }
-  for i = 1, math.min(M.max_language_entries, #lang_data) do
+  for i = 1, math.min(Profile.max_language_entries, #lang_data) do
     local icon = languages.get_icon(lang_data[i].lang)
     local hl = 'Comment'
     table.insert(graph_x_axis_parts, { icon ~= '' and icon or '', icon ~= '' and hl or 'Comment' })
-    if i < math.min(M.max_language_entries, #lang_data) then
+    if i < math.min(Profile.max_language_entries, #lang_data) then
       table.insert(graph_x_axis_parts, { (' '):rep(4) }) -- 4 spaces between icons
     end
   end
@@ -624,18 +625,18 @@ local function setup_highlights()
 
   -- Set custom highlights for Triforce (linked to standard highlights)
   if normal_bg then
-    vim.api.nvim_set_hl(M.ns, 'TriforceNormal', { bg = normal_bg })
-    vim.api.nvim_set_hl(M.ns, 'TriforceBorder', { link = 'String' })
+    vim.api.nvim_set_hl(Profile.ns, 'TriforceNormal', { bg = normal_bg })
+    vim.api.nvim_set_hl(Profile.ns, 'TriforceBorder', { link = 'String' })
   else
     normal_bg = '#000000' -- Fallback for transparent backgrounds
   end
 
   -- Create Triforce highlight groups - change these to customize colors
-  vim.api.nvim_set_hl(M.ns, 'TriforceGreen', { link = 'String' })
-  vim.api.nvim_set_hl(M.ns, 'TriforceYellow', { link = 'Question' })
-  vim.api.nvim_set_hl(M.ns, 'TriforceRed', { link = 'Keyword' })
-  vim.api.nvim_set_hl(M.ns, 'TriforceBlue', { link = 'Identifier' })
-  vim.api.nvim_set_hl(M.ns, 'TriforcePurple', { link = 'Number' })
+  vim.api.nvim_set_hl(Profile.ns, 'TriforceGreen', { link = 'String' })
+  vim.api.nvim_set_hl(Profile.ns, 'TriforceYellow', { link = 'Question' })
+  vim.api.nvim_set_hl(Profile.ns, 'TriforceRed', { link = 'Keyword' })
+  vim.api.nvim_set_hl(Profile.ns, 'TriforceBlue', { link = 'Identifier' })
+  vim.api.nvim_set_hl(Profile.ns, 'TriforcePurple', { link = 'Number' })
 
   -- Heat levels: index maps to highlight group number and mix percentage
   local heat_levels = {
@@ -657,12 +658,12 @@ local function setup_highlights()
     -- Otherwise treat it as a color (hex string, number, etc.) and set fg.
     if fg then
       local key = (type(fg) == 'string' and fg:sub(1, 1) ~= '#') and 'link' or 'fg'
-      vim.api.nvim_set_hl(M.ns, hl, { [key] = fg })
+      vim.api.nvim_set_hl(Profile.ns, hl, { [key] = fg })
     end
   end
   -- Link to standard highlights
-  vim.api.nvim_set_hl(M.ns, 'FloatBorder', { link = 'TriforceBorder' })
-  vim.api.nvim_set_hl(M.ns, 'Normal', { link = 'TriforceNormal' })
+  vim.api.nvim_set_hl(Profile.ns, 'FloatBorder', { link = 'TriforceBorder' })
+  vim.api.nvim_set_hl(Profile.ns, 'Normal', { link = 'TriforceNormal' })
 end
 
 ---Get layout for tab system
@@ -684,7 +685,7 @@ local function get_layout()
     {
       lines = function()
         local tabs = { ' Stats', '󰌌 Achievements', '0 Languages' }
-        return voltui.tabs(tabs, M.width - M.xpad * 2, { active = M.current_tab })
+        return voltui.tabs(tabs, Profile.width - Profile.xpad * 2, { active = Profile.current_tab })
       end,
       name = 'tabs',
     },
@@ -696,7 +697,7 @@ local function get_layout()
     },
     {
       lines = function()
-        return components[M.current_tab]()
+        return components[Profile.current_tab]()
       end,
       name = 'content',
     },
@@ -704,17 +705,17 @@ local function get_layout()
 end
 
 ---Open profile window
-function M.open()
-  if M.buf and vim.api.nvim_buf_is_valid(M.buf) then
+function Profile.open()
+  if Profile.buf and vim.api.nvim_buf_is_valid(Profile.buf) then
     return
   end
 
   -- Create buffer
-  M.buf = vim.api.nvim_create_buf(false, true)
+  Profile.buf = vim.api.nvim_create_buf(false, true)
 
   -- Create dimmed background
-  M.dim_buf = vim.api.nvim_create_buf(false, true)
-  M.dim_win = vim.api.nvim_open_win(M.dim_buf, false, {
+  Profile.dim_buf = vim.api.nvim_create_buf(false, true)
+  Profile.dim_win = vim.api.nvim_open_win(Profile.dim_buf, false, {
     focusable = false,
     row = 0,
     col = 0,
@@ -724,24 +725,24 @@ function M.open()
     style = 'minimal',
     border = 'none',
   })
-  vim.wo[M.dim_win].winblend = 20
+  vim.wo[Profile.dim_win].winblend = 20
 
   -- Initialize Volt
   volt.gen_data({
-    { buf = M.buf, layout = get_layout(), xpad = M.xpad, ns = M.ns },
+    { buf = Profile.buf, layout = get_layout(), xpad = Profile.xpad, ns = Profile.ns },
   })
 
-  M.height = voltstate[M.buf].h
+  Profile.height = voltstate[Profile.buf].h
 
   -- Window config
-  local row = math.floor((vim.o.lines - M.height) / 2)
-  local col = math.floor((vim.o.columns - M.width) / 2)
+  local row = math.floor((vim.o.lines - Profile.height) / 2)
+  local col = math.floor((vim.o.columns - Profile.width) / 2)
 
-  M.win = vim.api.nvim_open_win(M.buf, true, {
+  Profile.win = vim.api.nvim_open_win(Profile.buf, true, {
     row = row,
     col = col,
-    width = M.width,
-    height = M.height,
+    width = Profile.width,
+    height = Profile.height,
     relative = 'editor',
     style = 'minimal',
     border = 'none',
@@ -750,34 +751,34 @@ function M.open()
 
   -- Apply highlights
   setup_highlights()
-  vim.api.nvim_win_set_hl_ns(M.win, M.ns)
+  vim.api.nvim_win_set_hl_ns(Profile.win, Profile.ns)
 
   -- Run Volt to render content
-  volt.run(M.buf, { h = M.height, w = M.width - M.xpad * 2 })
+  volt.run(Profile.buf, { h = Profile.height, w = Profile.width - Profile.xpad * 2 })
 
   -- Set up keybindings
   local function close()
-    if M.win and vim.api.nvim_win_is_valid(M.win) then
-      vim.api.nvim_win_close(M.win, true)
+    if Profile.win and vim.api.nvim_win_is_valid(Profile.win) then
+      vim.api.nvim_win_close(Profile.win, true)
     end
-    if M.dim_win and vim.api.nvim_win_is_valid(M.dim_win) then
-      vim.api.nvim_win_close(M.dim_win, true)
+    if Profile.dim_win and vim.api.nvim_win_is_valid(Profile.dim_win) then
+      vim.api.nvim_win_close(Profile.dim_win, true)
     end
-    if M.buf and vim.api.nvim_buf_is_valid(M.buf) then
-      vim.api.nvim_buf_delete(M.buf, { force = true })
+    if Profile.buf and vim.api.nvim_buf_is_valid(Profile.buf) then
+      vim.api.nvim_buf_delete(Profile.buf, { force = true })
     end
-    if M.dim_buf and vim.api.nvim_buf_is_valid(M.dim_buf) then
-      vim.api.nvim_buf_delete(M.dim_buf, { force = true })
+    if Profile.dim_buf and vim.api.nvim_buf_is_valid(Profile.dim_buf) then
+      vim.api.nvim_buf_delete(Profile.dim_buf, { force = true })
     end
-    M.buf = nil
-    M.win = nil
-    M.dim_win = nil
-    M.dim_buf = nil
+    Profile.buf = nil
+    Profile.win = nil
+    Profile.dim_win = nil
+    Profile.dim_buf = nil
   end
 
   -- Use Volt's built-in mapping system
   volt.mappings({
-    bufs = { M.buf, M.dim_buf },
+    bufs = { Profile.buf, Profile.dim_buf },
     winclosed_event = true,
     after_close = close,
   })
@@ -785,25 +786,25 @@ function M.open()
   -- Tab switching
   vim.keymap.set('n', '<Tab>', function()
     -- Cycle through tabs
-    if M.current_tab == ' Stats' then
-      M.current_tab = '󰌌 Achievements'
-    elseif M.current_tab == '󰌌 Achievements' then
-      M.current_tab = '0 Languages'
+    if Profile.current_tab == ' Stats' then
+      Profile.current_tab = '󰌌 Achievements'
+    elseif Profile.current_tab == '󰌌 Achievements' then
+      Profile.current_tab = '0 Languages'
     else
-      M.current_tab = ' Stats'
+      Profile.current_tab = ' Stats'
     end
 
     -- Make buffer modifiable
-    vim.bo[M.buf].modifiable = true
+    vim.bo[Profile.buf].modifiable = true
 
     -- Reinitialize layout with new content
     volt.gen_data({
-      { buf = M.buf, layout = get_layout(), xpad = M.xpad, ns = M.ns },
+      { buf = Profile.buf, layout = get_layout(), xpad = Profile.xpad, ns = Profile.ns },
     })
 
     -- Get new height and ensure buffer has enough lines
-    local new_height = voltstate[M.buf].h
-    local current_lines = vim.api.nvim_buf_line_count(M.buf)
+    local new_height = voltstate[Profile.buf].h
+    local current_lines = vim.api.nvim_buf_line_count(Profile.buf)
 
     -- Add more lines if needed
     if current_lines < new_height then
@@ -811,90 +812,90 @@ function M.open()
       for _ = 1, (new_height - current_lines) do
         table.insert(empty_lines, '')
       end
-      vim.api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
+      vim.api.nvim_buf_set_lines(Profile.buf, current_lines, current_lines, false, empty_lines)
     elseif current_lines > new_height then
       -- Remove extra lines if buffer is too big
-      vim.api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
+      vim.api.nvim_buf_set_lines(Profile.buf, new_height, current_lines, false, {})
     end
 
     -- Update window height if needed
-    if new_height ~= M.height then
-      M.height = new_height
-      row = math.floor((vim.o.lines - M.height) / 2)
-      col = math.floor((vim.o.columns - M.width) / 2)
-      vim.api.nvim_win_set_config(M.win, {
+    if new_height ~= Profile.height then
+      Profile.height = new_height
+      row = math.floor((vim.o.lines - Profile.height) / 2)
+      col = math.floor((vim.o.columns - Profile.width) / 2)
+      vim.api.nvim_win_set_config(Profile.win, {
         row = row,
         col = col,
-        width = M.width,
-        height = M.height,
+        width = Profile.width,
+        height = Profile.height,
         relative = 'editor',
         border = 'none',
       })
     end
 
     -- Redraw content
-    volt.redraw(M.buf, 'all')
-    vim.bo[M.buf].modifiable = false
-  end, { buffer = M.buf })
+    volt.redraw(Profile.buf, 'all')
+    vim.bo[Profile.buf].modifiable = false
+  end, { buffer = Profile.buf })
 
   -- Helper function to redraw achievements tab
   local function redraw_achievements()
-    if M.current_tab ~= '󰌌 Achievements' then
+    if Profile.current_tab ~= '󰌌 Achievements' then
       return
     end
 
-    vim.bo[M.buf].modifiable = true
+    vim.bo[Profile.buf].modifiable = true
     volt.gen_data({
-      { buf = M.buf, layout = get_layout(), xpad = M.xpad, ns = M.ns },
+      { buf = Profile.buf, layout = get_layout(), xpad = Profile.xpad, ns = Profile.ns },
     })
 
-    local new_height = voltstate[M.buf].h
-    local current_lines = vim.api.nvim_buf_line_count(M.buf)
+    local new_height = voltstate[Profile.buf].h
+    local current_lines = vim.api.nvim_buf_line_count(Profile.buf)
 
     if current_lines < new_height then
       local empty_lines = {}
       for _ = 1, (new_height - current_lines) do
         table.insert(empty_lines, '')
       end
-      vim.api.nvim_buf_set_lines(M.buf, current_lines, current_lines, false, empty_lines)
+      vim.api.nvim_buf_set_lines(Profile.buf, current_lines, current_lines, false, empty_lines)
     elseif current_lines > new_height then
-      vim.api.nvim_buf_set_lines(M.buf, new_height, current_lines, false, {})
+      vim.api.nvim_buf_set_lines(Profile.buf, new_height, current_lines, false, {})
     end
 
-    volt.redraw(M.buf, 'all')
-    vim.bo[M.buf].modifiable = false
+    volt.redraw(Profile.buf, 'all')
+    vim.bo[Profile.buf].modifiable = false
   end
 
   -- Pagination keymaps for achievements
   local pagination_keys = { 'h', 'H', '<Left>', 'l', 'L', '<Right>' }
   for _, key in ipairs(pagination_keys) do
     vim.keymap.set('n', key, function()
-      if M.current_tab ~= '󰌌 Achievements' then
+      if Profile.current_tab ~= '󰌌 Achievements' then
         return
       end
 
       if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
-        if M.achievements_page > 1 then
-          M.achievements_page = M.achievements_page - 1
+        if Profile.achievements_page > 1 then
+          Profile.achievements_page = Profile.achievements_page - 1
           redraw_achievements()
         end
       elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
         local stats = tracker.get_stats()
         if stats then
           local achievements = achievement_module.get_all_achievements(stats)
-          local total_pages = math.ceil(#achievements / M.achievements_per_page)
-          if M.achievements_page < total_pages then
-            M.achievements_page = M.achievements_page + 1
+          local total_pages = math.ceil(#achievements / Profile.achievements_per_page)
+          if Profile.achievements_page < total_pages then
+            Profile.achievements_page = Profile.achievements_page + 1
             redraw_achievements()
           end
         end
       end
-    end, { buffer = M.buf })
+    end, { buffer = Profile.buf })
   end
 
   -- Set filetype
-  vim.bo[M.buf].filetype = 'triforce-profile'
+  vim.bo[Profile.buf].filetype = 'triforce-profile'
 end
 
-return M
+return Profile
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
