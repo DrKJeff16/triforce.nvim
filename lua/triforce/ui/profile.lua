@@ -521,15 +521,11 @@ local function build_languages_tab()
 
   -- Calculate graph width (narrower for centering)
   local graph_width = math.min(M.max_language_entries * 4, M.width - M.xpad * 2)
-
   local graph_data = {
     val = graph_values,
     -- footer_label = { " Character count by language" },
     format_labels = function(x)
-      if max_chars == 0 then
-        return '0'
-      end
-      return tostring(math.floor((x / 100) * max_chars))
+      return max_chars == 0 and '0' or tostring(math.floor((x * max_chars / 100)))
     end,
     baropts = {
       w = 3,
@@ -567,7 +563,7 @@ local function build_languages_tab()
     local hl = 'Comment'
     table.insert(graph_x_axis_parts, { icon ~= '' and icon or '', icon ~= '' and hl or 'Comment' })
     if i < math.min(M.max_language_entries, #lang_data) then
-      table.insert(graph_x_axis_parts, { '    ' }) -- 4 spaces between icons
+      table.insert(graph_x_axis_parts, { (' '):rep(4) }) -- 4 spaces between icons
     end
   end
 
@@ -576,7 +572,7 @@ local function build_languages_tab()
   if display_count == 0 then
     graph_x_axis = {
       {},
-      { { '  No language data yet. Start coding!', 'Comment' } },
+      { { ('%sNo language data yet. Start coding!'):format((' '):rep(2)), 'Comment' } },
     }
   end
 
@@ -832,6 +828,7 @@ function M.open()
         width = M.width,
         height = M.height,
         relative = 'editor',
+        border = 'none',
       })
     end
 
