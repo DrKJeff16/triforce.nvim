@@ -651,7 +651,7 @@ local function setup_highlights()
   }
 
   local heat_hls = (triforce.config and triforce.config.heat_highlights)
-    or (triforce.defaults and triforce.defaults.heat_highlights)
+    or (triforce.defaults and triforce.defaults().heat_highlights)
     or {}
   for _, level in ipairs(heat_levels) do
     local hl = ('TriforceHeat%d'):format(level.name)

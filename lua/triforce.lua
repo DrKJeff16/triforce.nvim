@@ -58,8 +58,8 @@ function M.has_gamification()
   return true
 end
 
-local function get_defaults()
-  ---Default configuration
+function M.defaults()
+  ---Triforce setup configuration
   ---@class TriforceConfig
   local defaults = {
     ---Enable the plugin
@@ -106,7 +106,7 @@ end
 function M.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  M.config = vim.tbl_deep_extend('force', get_defaults(), opts or {})
+  M.config = vim.tbl_deep_extend('force', M.defaults(), opts or {})
   local stats_module = require('triforce.stats')
 
   -- Apply custom level progression to stats module
