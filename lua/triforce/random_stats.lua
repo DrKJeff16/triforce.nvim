@@ -23,8 +23,7 @@ function RandStats.get_random_fact(stats)
   end
 
   -- Get most used language
-  local top_lang = nil
-  local top_count = 0
+  local top_lang, top_count = nil, 0
   for lang, count in pairs(stats.chars_by_language or {}) do
     if count > top_count then
       top_count = count

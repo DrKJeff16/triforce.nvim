@@ -364,14 +364,12 @@ function Tracker.debug_fix_level()
   end
 
   local stats_module = require('triforce.stats')
-
-  local old_level = Tracker.current_stats.level
   local current_xp = Tracker.current_stats.xp
   local calculated_level = stats_module.calculate_level(current_xp)
 
-  if old_level == calculated_level then
+  if Tracker.current_stats.level == calculated_level then
     vim.notify(
-      ('✓ No mismatch detected!\n\nLevel %d matches %d XP'):format(old_level, current_xp),
+      ('✓ No mismatch detected!\n\nLevel %d matches %d XP'):format(Tracker.current_stats.level, current_xp),
       INFO,
       { title = ' Triforce Debug' }
     )
@@ -383,7 +381,11 @@ function Tracker.debug_fix_level()
   stats_module.save(Tracker.current_stats)
 
   vim.notify(
-    ('✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d'):format(old_level, calculated_level, current_xp),
+    ('✓ Level fixed!\n\nOld: Level %d\nNew: Level %d\nXP: %d'):format(
+      Tracker.current_stats.level,
+      calculated_level,
+      current_xp
+    ),
     WARN,
     { title = ' Triforce Debug', timeout = 5000 }
   )
