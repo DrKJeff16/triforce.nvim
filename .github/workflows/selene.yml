@@ -14,8 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        id: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Lint Lua code with Selene
         uses: AlejandroSuero/selene-linter-action@v1.0.0
         with:
