@@ -21,7 +21,6 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 - [Customization](#-customization)
 - [Data Storage](#-data-storage)
 - [Roadmap](#%EF%B8%8F-roadmap)
-- [Contributing](#-contributing)
 - [License](#-license)
 - [Acknowledgments](#-acknowledgments)
 - [Support](#-support)
