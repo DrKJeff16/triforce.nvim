@@ -19,10 +19,6 @@
 ---@field line number XP gained per new line (default: `1`)
 ---@field save number XP gained per file save (default: `50`)
 
----@class TriforceLanguage
----@field name string
----@field icon string
-
 ---@class TriforceConfig.Keymap
 ---Keymap for showing profile. A `nil` value sets no keymap
 ---

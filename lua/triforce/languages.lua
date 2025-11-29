@@ -1,232 +1,157 @@
+---@class TriforceLanguage
+---@field name string
+---@field icon string
+
 local util = require('triforce.util')
 
 ---Language configuration and icons
 ---@class Triforce.Languages
 local Languages = {
   ---Language to icon mapping for popular programming languages
-  language_icons = { ---@type table<string, string>
+  langs = { ---@type table<string, TriforceLanguage>
     -- Web
-    javascript = '', -- nf-dev-javascript
-    typescript = '', -- nf-seti-typescript
-    typescriptreact = '', -- nf-dev-react
-    javascriptreact = '', -- nf-dev-react
-    html = '', -- nf-dev-html5
-    css = '', -- nf-dev-css3
-    scss = '', -- nf-dev-sass
-    sass = '', -- nf-dev-sass
-    less = '', -- nf-dev-less
-    vue = '', -- nf-seti-vue
-    svelte = '', -- nf-seti-svelte
+    javascript = { name = 'JavaScript', icon = '' }, -- nf-dev-javascript
+    typescript = { name = 'TypeScript', icon = '' }, -- nf-seti-typescript
+    typescriptreact = { icon = '', name = 'TypeScript' }, -- nf-dev-react
+    javascriptreact = { name = 'JavaScript', icon = '' }, -- nf-dev-react
+    html = { name = 'HTML', icon = '' }, -- nf-dev-html5
+    css = { name = 'CSS', icon = '' }, -- nf-dev-css3
+    scss = { name = 'SCSS', icon = '' }, -- nf-dev-sass
+    sass = { name = 'Sass', icon = '' }, -- nf-dev-sass
+    less = { name = 'Less', icon = '' }, -- nf-dev-less
+    vue = { name = 'Vue', icon = '' }, -- nf-seti-vue
+    svelte = { name = 'Svelte', icon = '' }, -- nf-seti-svelte
 
     -- Systems
-    c = '', -- nf-seti-c
-    cpp = '', -- nf-seti-cpp
-    rust = '', -- nf-dev-rust
-    go = '', -- nf-seti-go
-    zig = '', -- nf-seti-zig
-    arduino = '', -- nf-dev-arduino
-    asm = '', -- nf-seti-asm
-    makefile = '', -- nf-seti-makefile
-    cmake = '', -- nf-dev-cmake
+    c = { name = 'C', icon = '' }, -- nf-seti-c
+    cpp = { name = 'C++', icon = '' }, -- nf-seti-cpp
+    rust = { name = 'Rust', icon = '' }, -- nf-dev-rust
+    go = { name = 'Go', icon = '' }, -- nf-seti-go
+    zig = { name = 'Zig', icon = '' }, -- nf-seti-zig
+    arduino = { name = 'Arduino', icon = '' }, -- nf-dev-arduino
+    asm = { name = 'Assembly', icon = '' }, -- nf-seti-asm
+    makefile = { name = 'Makefile', icon = '' }, -- nf-seti-makefile
+    cmake = { name = 'CMake', icon = '' }, -- nf-dev-cmake
 
     -- Scripting
-    python = '', -- nf-dev-python
-    ruby = '', -- nf-dev-ruby
-    php = '', -- nf-dev-php
-    perl = '', -- nf-dev-perl
-    lua = '', -- nf-seti-lua
+    python = { name = 'Python', icon = '' }, -- nf-dev-python
+    ruby = { name = 'Ruby', icon = '' }, -- nf-dev-ruby
+    php = { name = 'PHP', icon = '' }, -- nf-dev-php
+    perl = { name = 'Perl', icon = '' }, -- nf-dev-perl
+    lua = { name = 'Lua', icon = '' }, -- nf-seti-lua
 
     -- JVM
-    java = '', -- nf-dev-java
-    kotlin = '', -- nf-seti-kotlin
-    scala = '', -- nf-dev-scala
+    java = { name = 'Java', icon = '' }, -- nf-dev-java
+    kotlin = { name = 'Kotlin', icon = '' }, -- nf-seti-kotlin
+    scala = { name = 'Scala', icon = '' }, -- nf-dev-scala
 
     -- Functional
-    haskell = '', -- nf-seti-haskell
-    ocaml = '', -- nf-seti-ocaml
-    elixir = '', -- nf-seti-elixir
-    erlang = '', -- nf-dev-erlang
-    clojure = '', -- nf-dev-clojure
-    lisp = '', -- nf-custom-common_lisp
+    haskell = { name = 'Haskell', icon = '' }, -- nf-seti-haskell
+    ocaml = { name = 'OCaml', icon = '' }, -- nf-seti-ocaml
+    elixir = { name = 'Elixir', icon = '' }, -- nf-seti-elixir
+    erlang = { name = 'Erlang', icon = '' }, -- nf-dev-erlang
+    clojure = { name = 'Clojure', icon = '' }, -- nf-dev-clojure
+    lisp = { name = 'Common Lisp', icon = '' }, -- nf-custom-common_lisp
 
     -- .NET
-    cs = '󰌛', -- nf-md-language_csharp
-    fsharp = '', -- nf-dev-fsharp
+    cs = { name = 'C#', icon = '󰌛' }, -- nf-md-language_csharp
+    fsharp = { name = 'F#', icon = '' }, -- nf-dev-fsharp
 
     -- Mobile
-    swift = '', -- nf-dev-swift
-    dart = '', -- nf-dev-dart
+    swift = { name = 'Swift', icon = '' }, -- nf-dev-swift
+    dart = { name = 'Dart', icon = '' }, -- nf-dev-dart
 
     -- Configuration
-    conf = '', -- nf-seti-config
-    config = '', -- nf-seti-config
-    hyprlang = '', -- nf-linux-hyprland
+    conf = { name = 'Conf', icon = '' }, -- nf-seti-config
+    config = { name = 'Config', icon = '' }, -- nf-seti-config
+    hyprlang = { name = 'Hyprlang', icon = '' }, -- nf-linux-hyprland
 
     -- Shell
-    sh = '', -- nf-dev-terminal
-    bash = '', -- nf-dev-terminal
-    zsh = '', -- nf-dev-terminal
-    fish = '', -- nf-dev-terminal
-    csh = '', -- nf-dev-terminal
+    sh = { name = 'Shell', icon = '' }, -- nf-dev-terminal
+    bash = { name = 'Bash', icon = '' }, -- nf-dev-terminal
+    zsh = { name = 'Zsh', icon = '' }, -- nf-dev-terminal
+    fish = { name = 'Fish', icon = '' }, -- nf-dev-terminal
+    csh = { name = 'C Shell', icon = '' }, -- nf-dev-terminal
 
     -- Data
-    sql = '', -- nf-dev-database
-    json = '', -- nf-seti-json
-    yaml = '', -- nf-seti-yaml
-    toml = '', -- nf-seti-toml
-    xml = '󰗀', -- nf-md-xml
+    sql = { name = 'SQL', icon = '' }, -- nf-dev-database
+    json = { name = 'JSON', icon = '' }, -- nf-seti-json
+    yaml = { name = 'YAML', icon = '' }, -- nf-seti-yaml
+    toml = { name = 'TOML', icon = '' }, -- nf-seti-toml
+    xml = { name = 'XML', icon = '󰗀' }, -- nf-md-xml
 
     -- Markup/Doc
-    markdown = '', -- nf-dev-markdown
-    tex = '', -- nf-seti-tex
-    org = '', -- nf-custom-orgmode
+    markdown = { name = 'Markdown', icon = '' }, -- nf-dev-markdown
+    tex = { name = 'LaTeX', icon = '' }, -- nf-seti-tex
+    org = { name = 'Org Mode', icon = '' }, -- nf-custom-orgmode
 
     -- Other
-    vim = '', -- nf-seti-vim
-    r = '', -- nf-dev-r
-    julia = '', -- nf-seti-julia
-    nim = '', -- nf-seti-nim
-    crystal = '', -- nf-seti-crystal
-    PKGBUILD = '', -- nf-dev-terminal
-  },
-
-  ---Language filetype to display name mapping
-  language_display_names = { ---@type table<string, string>
-    -- Web
-    javascript = 'JavaScript',
-    typescript = 'TypeScript',
-    typescriptreact = 'TypeScript',
-    javascriptreact = 'JavaScript',
-    html = 'HTML',
-    css = 'CSS',
-    scss = 'SCSS',
-    sass = 'Sass',
-    less = 'Less',
-    vue = 'Vue',
-    svelte = 'Svelte',
-
-    -- Systems
-    c = 'C',
-    cpp = 'C++',
-    rust = 'Rust',
-    go = 'Go',
-    zig = 'Zig',
-    arduino = 'Arduino',
-    asm = 'Assembly',
-    makefile = 'Makefile',
-    cmake = 'CMake',
-
-    -- Scripting
-    python = 'Python',
-    ruby = 'Ruby',
-    php = 'PHP',
-    perl = 'Perl',
-    lua = 'Lua',
-
-    -- JVM
-    java = 'Java',
-    kotlin = 'Kotlin',
-    scala = 'Scala',
-
-    -- Functional
-    haskell = 'Haskell',
-    ocaml = 'OCaml',
-    elixir = 'Elixir',
-    erlang = 'Erlang',
-    clojure = 'Clojure',
-    lisp = 'Common Lisp',
-
-    -- .NET
-    cs = 'C#',
-    fsharp = 'F#',
-
-    -- Mobile
-    swift = 'Swift',
-    dart = 'Dart',
-
-    -- Configuration
-    conf = 'Conf',
-    config = 'Config',
-    hyprlang = 'Hyprlang',
-
-    -- Shell
-    sh = 'Shell',
-    bash = 'Bash',
-    zsh = 'Zsh',
-    fish = 'Fish',
-    csh = 'C Shell',
-
-    -- Data
-    sql = 'SQL',
-    json = 'JSON',
-    yaml = 'YAML',
-    toml = 'TOML',
-    xml = 'XML',
-
-    -- Markup/Doc
-    markdown = 'Markdown',
-    tex = 'LaTeX',
-    org = 'Org Mode',
-
-    -- Other
-    vim = 'Vim',
-    r = 'R',
-    julia = 'Julia',
-    nim = 'Nim',
-    crystal = 'Crystal',
-    PKGBUILD = 'PKGBUILD',
+    vim = { name = 'Vimscript', icon = '' }, -- nf-seti-vim
+    r = { name = 'R', icon = '' }, -- nf-dev-r
+    julia = { name = 'Julia', icon = '' }, -- nf-seti-julia
+    nim = { name = 'Nim', icon = '' }, -- nf-seti-nim
+    crystal = { name = 'Crystal', icon = '' }, -- nf-seti-crystal
+    PKGBUILD = { name = 'PKGBUILD', icon = '' }, -- nf-dev-terminal
   },
 }
 
 ---Get icon for a filetype
----@param filetype string
+---@param ft string
 ---@return string icon
-function Languages.get_icon(filetype)
-  util.validate({ filetype = { filetype, { 'string' } } })
+function Languages.get_icon(ft)
+  util.validate({ ft = { ft, { 'string' } } })
 
-  return Languages.language_icons[filetype] or ''
+  if not Languages.langs[ft] then
+    return ''
+  end
+
+  return Languages.langs[ft].icon or ''
 end
 
 ---Check if language should be tracked
----@param filetype string
+---@param ft string
 ---@return boolean
-function Languages.should_track(filetype)
-  util.validate({ filetype = { filetype, { 'string' } } })
+function Languages.should_track(ft)
+  util.validate({ ft = { ft, { 'string' } } })
 
   -- Track only if we have an icon for it or if user adds custom mapping
-  return Languages.language_icons[filetype] ~= nil
+  return Languages.langs[ft] ~= nil and Languages.langs[ft].icon ~= nil
 end
 
 ---Get display name for language
----@param filetype string
+---@param ft string
 ---@return string name
-function Languages.get_display_name(filetype)
-  util.validate({ filetype = { filetype, { 'string' } } })
+function Languages.get_display_name(ft)
+  util.validate({ ft = { ft, { 'string' } } })
 
-  return Languages.language_display_names[filetype] or filetype
+  if not Languages.langs[ft] then
+    return ''
+  end
+
+  return Languages.langs[ft].name or ft
 end
 
 ---Get full display with icon
----@param filetype string
-function Languages.get_full_display(filetype)
-  util.validate({ filetype = { filetype, { 'string' } } })
+---@param ft string
+function Languages.get_full_display(ft)
+  util.validate({ ft = { ft, { 'string' } } })
 
-  local icon = Languages.get_icon(filetype)
-  local name = Languages.get_display_name(filetype)
+  local icon = Languages.get_icon(ft)
+  local name = Languages.get_display_name(ft)
   return icon == '' and name or ('%s %s'):format(icon, name)
 end
 
 ---Register custom languages
----@param custom_langs table<string, { icon: string, name: string }>
+---@param custom_langs table<string, TriforceLanguage>
 function Languages.register_custom_languages(custom_langs)
   util.validate({ custom_langs = { custom_langs, { 'table' } } })
 
-  for filetype, config in pairs(custom_langs) do
+  for ft, config in pairs(custom_langs) do
     if config.icon then
-      Languages.language_icons[filetype] = config.icon
+      Languages.langs[ft].icon = config.icon
     end
     if config.name then
-      Languages.language_display_names[filetype] = config.name
+      Languages.langs[ft].name = config.name
     end
   end
 end
