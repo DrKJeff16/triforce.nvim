@@ -41,7 +41,6 @@ TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
 - |triforce-customization|
 - |triforce-data-storage|
 - |triforce-roadmap|
-- |triforce-contributing|
 - |triforce-license|
 - |triforce-acknowledgments|
 - |triforce-support|
