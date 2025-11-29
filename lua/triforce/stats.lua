@@ -1,20 +1,19 @@
+local ERROR = vim.log.levels.ERROR
+local WARN = vim.log.levels.WARN
 local uv = vim.uv or vim.loop
 local util = require('triforce.util')
 
 ---@class Triforce.Stats
-local Stats = {}
-
----Configurable level progression
----@type LevelProgression
-Stats.level_config = {
-  -- XP required per level for each tier
-  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
-  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
-  tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
+local Stats = {
+  ---Configurable level progression
+  level_config = { ---@type LevelProgression
+    -- XP required per level for each tier
+    tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
+    tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
+    tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
+  },
+  db_path = nil, ---@type string|nil
 }
-
----@type string|nil
-Stats.db_path = nil
 
 ---@return Stats stats
 function Stats.default_stats()
@@ -80,9 +79,8 @@ function Stats.load()
   end
 
   ---Read file using vim.fn for cross-platform compatibility
-  ---@type string[]
-  local lines = vim.fn.readfile(path)
-  if not lines or #lines == 0 then
+  local lines = vim.fn.readfile(path) ---@type string[]
+  if not lines or vim.tbl_isempty(lines) then
     return Stats.default_stats()
   end
 
@@ -95,7 +93,7 @@ function Stats.load()
     -- Backup corrupted file
     local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
-    vim.notify('Corrupted stats backed up to: ' .. backup, vim.log.levels.WARN)
+    vim.notify('Corrupted stats backed up to: ' .. backup, WARN)
     return Stats.default_stats()
   end
 
@@ -131,7 +129,7 @@ function Stats.load()
         calculated_level,
         merged.xp
       ),
-      vim.log.levels.WARN,
+      WARN,
       { title = ' Triforce' }
     )
     merged.level = calculated_level
@@ -156,7 +154,7 @@ function Stats.save(stats)
   -- Encode to JSON
   local ok, json = pcall(vim.json.encode, data_to_save)
   if not ok then
-    vim.notify('Failed to encode stats to JSON', vim.log.levels.ERROR)
+    vim.notify('Failed to encode stats to JSON', ERROR)
     return false
   end
 
@@ -170,7 +168,7 @@ function Stats.save(stats)
   local write_ok = vim.fn.writefile({ json }, path)
 
   if write_ok == -1 then
-    vim.notify('Failed to write stats file to: ' .. path, vim.log.levels.ERROR)
+    vim.notify('Failed to write stats file to: ' .. path, ERROR)
     return false
   end
 
@@ -191,15 +189,12 @@ local function get_total_xp_for_level(level)
 
   -- Calculate XP for tier 1 (levels 1-10)
   if level > config.tier_1.min_level then
-    local tier_1_levels = math.min(level - 1, config.tier_1.max_level)
-    total_xp = total_xp + (tier_1_levels * config.tier_1.xp_per_level)
+    total_xp = total_xp + (math.min(level - 1, config.tier_1.max_level) * config.tier_1.xp_per_level)
   end
 
   -- Calculate XP for tier 2 (levels 11-20)
   if level > config.tier_2.min_level then
-    local tier_2_start = config.tier_2.min_level
-    local tier_2_end = math.min(level - 1, config.tier_2.max_level)
-    local tier_2_levels = tier_2_end - tier_2_start + 1
+    local tier_2_levels = math.min(level - 1, config.tier_2.max_level) - config.tier_2.min_level + 1
     if tier_2_levels > 0 then
       total_xp = total_xp + (tier_2_levels * config.tier_2.xp_per_level)
     end
@@ -207,9 +202,7 @@ local function get_total_xp_for_level(level)
 
   -- Calculate XP for tier 3 (levels 21+)
   if level > config.tier_3.min_level then
-    local tier_3_start = config.tier_3.min_level
-    local tier_3_levels = level - tier_3_start
-    total_xp = total_xp + (tier_3_levels * config.tier_3.xp_per_level)
+    total_xp = total_xp + ((level - config.tier_3.min_level) * config.tier_3.xp_per_level)
   end
 
   return total_xp
@@ -230,29 +223,26 @@ function Stats.calculate_level(xp)
 
   local level = 1
   local accumulated_xp = 0
-  local config = Stats.level_config
 
   -- Tier 1: Levels 1-10 (300 XP each)
-  local tier_1_total = config.tier_1.max_level * config.tier_1.xp_per_level
+  local tier_1_total = Stats.level_config.tier_1.max_level * Stats.level_config.tier_1.xp_per_level
   if xp <= tier_1_total then
-    return 1 + math.floor(xp / config.tier_1.xp_per_level)
+    return 1 + math.floor(xp / Stats.level_config.tier_1.xp_per_level)
   end
   accumulated_xp = tier_1_total
-  level = config.tier_1.max_level
+  level = Stats.level_config.tier_1.max_level
 
   -- Tier 2: Levels 11-20 (500 XP each)
-  local tier_2_range = config.tier_2.max_level - config.tier_2.min_level + 1
-  local tier_2_total = tier_2_range * config.tier_2.xp_per_level
+  local tier_2_range = Stats.level_config.tier_2.max_level - Stats.level_config.tier_2.min_level + 1
+  local tier_2_total = tier_2_range * Stats.level_config.tier_2.xp_per_level
   if xp <= accumulated_xp + tier_2_total then
-    local xp_in_tier = xp - accumulated_xp
-    return (level + 1) + math.floor(xp_in_tier / config.tier_2.xp_per_level)
+    return (level + 1) + math.floor((xp - accumulated_xp) / Stats.level_config.tier_2.xp_per_level)
   end
   accumulated_xp = accumulated_xp + tier_2_total
-  level = config.tier_2.max_level
+  level = Stats.level_config.tier_2.max_level
 
   -- Tier 3: Levels 21+ (1000 XP each)
-  local xp_in_tier = xp - accumulated_xp
-  return (level + 1) + math.floor(xp_in_tier / config.tier_3.xp_per_level)
+  return level + math.floor((xp - accumulated_xp) / Stats.level_config.tier_3.xp_per_level) + 1
 end
 
 ---Calculate XP needed for next level
@@ -297,8 +287,7 @@ function Stats.end_session(stats)
     return
   end
 
-  local duration = os.time() - stats.last_session_start
-  stats.time_coding = stats.time_coding + duration
+  stats.time_coding = stats.time_coding - stats.last_session_start + os.time()
   stats.last_session_start = 0
 end
 
@@ -355,7 +344,7 @@ function Stats.calculate_streaks(stats)
 
     if i == #dates then
       -- Start with most recent date
-      if date == today or date == yesterday then
+      if vim.list_contains({ today, yesterday }, date) then
         streak = 1
         current_streak = 1
       end
@@ -367,7 +356,7 @@ function Stats.calculate_streaks(stats)
       if diff_days == 1 then
         -- Consecutive day
         streak = streak + 1
-        if i == #dates - 1 or (date == today or date == yesterday) then
+        if i == #dates - 1 or vim.list_contains({ today, yesterday }, date) then
           current_streak = streak
         end
       else
@@ -430,22 +419,22 @@ function Stats.export_to_json(stats, target, indent)
 
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
-    error(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
+    error(('Target not in a valid directory: `%s`'):format(target), ERROR)
   end
 
   if vim.fn.isdirectory(target) == 1 then
-    error(('Target is a directory: `%s`'):format(target), vim.log.levels.ERROR)
+    error(('Target is a directory: `%s`'):format(target), ERROR)
   end
 
   local fd = uv.fs_open(target, 'w', tonumber('644', 8))
   if not fd then
-    error(('Unable to open target `%s`'):format(target), vim.log.levels.ERROR)
+    error(('Unable to open target `%s`'):format(target), ERROR)
   end
 
   local ok, data = pcall(vim.json.encode, stats, { sort_keys = true, indent = indent })
   if not ok then
     uv.fs_close(fd)
-    error('Unable to encode stats!', vim.log.levels.ERROR)
+    error('Unable to encode stats!', ERROR)
   end
 
   uv.fs_write(fd, data)
@@ -465,16 +454,16 @@ function Stats.export_to_md(stats, target)
 
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
-    error(('Target not in a valid directory: `%s`'):format(target), vim.log.levels.ERROR)
+    error(('Target not in a valid directory: `%s`'):format(target), ERROR)
   end
 
   if vim.list_contains({ '/', '\\' }, target:sub(-1, -1)) or vim.fn.isdirectory(target) == 1 then
-    error(('Target is a directory: `%s`'):format(target), vim.log.levels.ERROR)
+    error(('Target is a directory: `%s`'):format(target), ERROR)
   end
 
   local fd = uv.fs_open(target, 'w', tonumber('644', 8))
   if not fd then
-    error(('Unable to open target `%s`'):format(target), vim.log.levels.ERROR)
+    error(('Unable to open target `%s`'):format(target), ERROR)
   end
 
   local data = '# Triforce Stats\n'
