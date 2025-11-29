@@ -5,3 +5,5 @@
 /selene.toml @DrKJeff16
 /vim.yml @DrKJeff16
 /lua/triforce/util.lua @DrKJeff16
+/lua/triforce/achievement.lua @DrKJeff16 @gisketch
+/CONTRIBUTING.md @DrKJeff16 @gisketch
