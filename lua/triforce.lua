@@ -23,22 +23,11 @@
 ---@field name string
 ---@field icon string
 
----@class TriforceConfig.Notifications
----@field enabled? boolean Show level up and achievement notifications
----@field level_up? boolean Show level up notifications
----@field achievements? boolean Show achievement unlock notifications
-
 ---@class TriforceConfig.Keymap
 ---Keymap for showing profile. A `nil` value sets no keymap
 ---
 ---Set to a keymap like `"<leader>tp"` to enable
 ---@field show_profile string|nil
-
----@class Triforce.Config.Heat
----@field TriforceHeat1 string
----@field TriforceHeat2 string
----@field TriforceHeat3 string
----@field TriforceHeat4 string
 
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
@@ -58,7 +47,15 @@ local Triforce = {
       ---Enable gamification features (stats, XP, achievements)
       gamification_enabled = true, ---@type boolean
       ---Notification configuration
-      notifications = { enabled = true, level_up = true, achievements = true }, ---@type TriforceConfig.Notifications
+      ---@class TriforceConfig.Notifications
+      notifications = {
+        ---Show level up and achievement notifications
+        enabled = true, ---@type boolean
+        ---Show level up notifications
+        level_up = true, ---@type boolean
+        ---Show achievement unlock notifications
+        achievements = true, ---@type boolean
+      },
       ---Auto-save stats interval in seconds (default: `300`)
       auto_save_interval = 300, ---@type integer
       ---Keymap configuration
@@ -81,11 +78,12 @@ local Triforce = {
       ---Custom path for data file
       db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
       ---Default highlight groups for the heats
-      heat_highlights = { ---@type Triforce.Config.Heat
-        TriforceHeat1 = '#f0f0a0',
-        TriforceHeat2 = '#f0a0a0',
-        TriforceHeat3 = '#a0a0a0',
-        TriforceHeat4 = '#707070',
+      ---@class Triforce.Config.Heat
+      heat_highlights = {
+        TriforceHeat1 = '#f0f0a0', ---@type string
+        TriforceHeat2 = '#f0a0a0', ---@type string
+        TriforceHeat3 = '#a0a0a0', ---@type string
+        TriforceHeat4 = '#707070', ---@type string
       },
     }
 
