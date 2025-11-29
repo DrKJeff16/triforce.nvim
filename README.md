@@ -322,7 +322,7 @@ require('lualine').setup({
 })
 ```
 
-### Quick Setup (All Components)
+### Quick Setup
 
 Use the `components()` helper to get all components at once:
 
@@ -516,7 +516,9 @@ local triforce = require('triforce.lualine').components()
 require('lualine').setup({
   sections = {
     lualine_x = {
-      require('triforce.lualine').level,
+      function()
+        return require('triforce.lualine').level()
+      end,
     },
   }
 })
@@ -536,14 +538,15 @@ require('lualine').setup({
       triforce.streak,
       triforce.achievements,
       triforce.level,
-      'encoding', 'filetype'
+      'encoding',
+      'filetype',
     },
   }
 })
 -- Result:  2h 34m  5  12/18 Lv.27 ████░░ ...
 ```
 
-#### Custom Styled
+#### Custom Style
 
 ```lua
 require('triforce.lualine').setup({
@@ -632,38 +635,29 @@ src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7
 
 Triforce includes **18 built-in achievements** across 5 categories:
 
-### 📝 Typing Milestones
-
-- 🌱 **First Steps**: Type 100 characters
-- ⚔️ **Getting Started**: Type 1,000 characters
-- 🛡️ **Dedicated Coder**: Type 10,000 characters
-- 📜 **Master Scribe**: Type 100,000 characters
-
-### 📈 Level Achievements
-
-- ⭐ **Rising Star**: Reach level 5
-- 💎 **Expert Coder**: Reach level 10
-- 👑 **Champion**: Reach level 25
-- 🔱 **Legend**: Reach level 50
-
-### 🔄 Session Achievements
-
-- 🔄 **Regular Visitor**: Complete 10 sessions
-- 📅 **Creature of Habit**: Complete 50 sessions
-- 🏆 **Dedicated Hero**: Complete 100 sessions
-
-### ⏰ Time Achievements
-
-- ⏰ **First Hour**: Code for 1 hour total
-- ⌛ **Committed**: Code for 10 hours total
-- 🕐 **Veteran**: Code for 100 hours total
-
-### 🌍 Polyglot Achievements
-
-- 🌍 **Polyglot Beginner**: Code in 3 languages
-- 🌎 **Polyglot**: Code in 5 languages
-- 🌏 **Master Polyglot**: Code in 10 languages
-- 🗺️ **Language Virtuoso**: Code in 15 languages
+- 📝 **_Typing Milestones_**
+    1. 🌱 **First Steps**: Type 100 characters
+    2. ⚔️ **Getting Started**: Type 1,000 characters
+    3. 🛡️ **Dedicated Coder**: Type 10,000 characters
+    4. 📜 **Master Scribe**: Type 100,000 characters
+- 📈 **_Level Achievements_**
+    1. ⭐ **Rising Star**: Reach level 5
+    2. 💎 **Expert Coder**: Reach level 10
+    3. 👑 **Champion**: Reach level 25
+    4. 🔱 **Legend**: Reach level 50
+- 🔄 **_Session Achievements_**
+    1. 🔄 **Regular Visitor**: Complete 10 sessions
+    2. 📅 **Creature of Habit**: Complete 50 sessions
+    3. 🏆 **Dedicated Hero**: Complete 100 sessions
+- ⏰ **_Time Achievements_**
+    1. ⏰ **First Hour**: Code for 1 hour total
+    2. ⌛ **Committed**: Code for 10 hours total
+    3. 🕐 **Veteran**: Code for 100 hours total
+- 🌍 **_Polyglot Achievements_**
+    1. 🌍 **Polyglot Beginner**: Code in 3 languages
+    2. 🌎 **Polyglot**: Code in 5 languages
+    3. 🌏 **Master Polyglot**: Code in 10 languages
+    4. 🗺️ **Language Virtuoso**: Code in 15 languages
 
 ---
 
@@ -714,9 +708,7 @@ require('triforce').setup({
 })
 
 -- Set your own keymap
-vim.keymap.set('n', '<C-s>', function()
-  require('triforce').show_profile()
-end, { desc = 'Show Triforce Stats' })
+vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Triforce Stats' })
 ```
 
 ### Customize Heatmap Colors
@@ -728,10 +720,10 @@ highlight groups:
 ```lua
 require('triforce').setup({
   heat_highlights = {
-    TriforceHeat4 = '#424242',
-    TriforceHeat3 = 'CursorLine',
-    TriforceHeat2 = 'DiagnosticVirtualTextWarn',
     TriforceHeat1 = 'Error',
+    TriforceHeat2 = 'DiagnosticVirtualTextWarn',
+    TriforceHeat3 = 'CursorLine',
+    TriforceHeat4 = '#424242',
   },
 })
 ```
@@ -790,38 +782,6 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 - [ ] **Plugin API**: Expose hooks for other plugins to integrate
 
 **Have a feature idea?** Open an issue on GitHub!
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how to help:
-
-1. Fork the repository
-2. Create a feature branch:
-  ```bash
-  git checkout -b feature/amazing-feature
-  ```
-3. Commit your changes:
-  ```bash
-  git commit -m 'Add amazing feature'
-  ```
-4. Push to the branch:
-  ```bash
-  git push origin feature/amazing-feature
-  ```
-5. Open a Pull Request
-
-### Development
-
-```bash
-# Clone the repo
-git clone https://github.com/gisketch/triforce.nvim.git
-cd triforce.nvim
-
-# Symlink to Neovim config for testing
-ln -s $(pwd) ~/.local/share/nvim/site/pack/plugins/start/triforce.nvim
-```
 
 ---
 
