@@ -7,7 +7,7 @@ local util = require('triforce.util')
 ---Language configuration and icons
 ---@class Triforce.Languages
 local Languages = {
-  ---Language to icon mapping for popular programming languages
+  ---Mappings for popular programming languages, in `{ name, icon }` tuples
   langs = { ---@type table<string, TriforceLanguage>
     -- Web
     javascript = { name = 'JavaScript', icon = '' }, -- nf-dev-javascript
