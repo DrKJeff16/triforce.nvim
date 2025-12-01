@@ -134,8 +134,7 @@ end
 function Achievement.check_achievements(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
-  ---@type Achievement[]
-  local newly_unlocked = {}
+  local newly_unlocked = {} ---@type Achievement[]
   local achievements = Achievement.get_all_achievements(stats)
 
   for _, achievement in ipairs(achievements) do
@@ -145,8 +144,8 @@ function Achievement.check_achievements(stats)
         id = achievement.id,
         check = achievement.check,
         name = achievement.name,
-        desc = achievement.desc,
-        icon = achievement.icon,
+        desc = achievement.desc or nil,
+        icon = achievement.icon or nil,
       })
     end
   end
