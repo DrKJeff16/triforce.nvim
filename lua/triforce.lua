@@ -23,7 +23,7 @@
 ---Keymap for showing profile. A `nil` value sets no keymap
 ---
 ---Set to a keymap like `"<leader>tp"` to enable
----@field show_profile string|nil
+---@field show_profile? string
 
 ---Notification configuration
 ---@class TriforceConfig.Notifications
@@ -52,18 +52,18 @@
 ---Auto-save stats interval in seconds (default: `300`)
 ---@field auto_save_interval? integer
 ---Keymap configuration
----@field keymap? TriforceConfig.Keymap|nil
+---@field keymap? TriforceConfig.Keymap
 ---Custom language definitions:
 ---
 ---```lua
 ----- Example
 ---{ rust = { icon = "", name = "Rust" } }
 ---```
----@field custom_languages? table<string, TriforceLanguage>|nil
+---@field custom_languages? table<string, TriforceLanguage>
 ---Custom level progression tiers
----@field level_progression? LevelProgression|nil
+---@field level_progression? LevelProgression
 ---Custom XP reward amounts for different actions
----@field xp_rewards? XPRewards|nil
+---@field xp_rewards? XPRewards
 ---Custom path for data file
 ---@field db_path? string
 ---Default highlight groups for the heats
@@ -123,7 +123,7 @@ function Triforce.has_gamification(silent)
 end
 
 ---Setup the plugin with user configuration
----@param opts TriforceConfig|nil User configuration options
+---@param opts? TriforceConfig User configuration options
 function Triforce.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
@@ -245,7 +245,7 @@ end
 
 ---Export stats to JSON
 ---@param file string
----@param indent? string|nil
+---@param indent? string
 function Triforce.export_stats_to_json(file, indent)
   util.validate({
     file = { file, { 'string' } },
