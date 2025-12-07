@@ -70,11 +70,9 @@ function Tracker.setup()
       end
 
       local now = os.time()
-      if now - Tracker.last_save_time < 5 then -- Debounce: only save if at least 5 seconds since last save
-        return
-      end
 
-      if not stats_module.save(Tracker.current_stats) then
+      -- Debounce: only save if at least 5 seconds since last save
+      if now - Tracker.last_save_time < 5 or not stats_module.save(Tracker.current_stats) then
         return
       end
 
