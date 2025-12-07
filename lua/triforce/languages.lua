@@ -142,9 +142,9 @@ function Languages.get_full_display(ft)
 end
 
 ---Register custom languages
----@param custom_langs table<string, TriforceLanguage>|nil
+---@param custom_langs table<string, TriforceLanguage>
 function Languages.register_custom_languages(custom_langs)
-  util.validate({ custom_langs = { custom_langs, { 'table', 'nil' }, true } })
+  util.validate({ custom_langs = { custom_langs, { 'table' } } })
 
   if not custom_langs or vim.tbl_isempty(custom_langs) then
     return
