@@ -25,6 +25,50 @@
 ---Set to a keymap like `"<leader>tp"` to enable
 ---@field show_profile string|nil
 
+---Notification configuration
+---@class TriforceConfig.Notifications
+---Show level up and achievement notifications
+---@field enabled? boolean
+---Show level up notifications
+---@field level_up? boolean
+---Show achievement unlock notifications
+---@field achievements? boolean
+
+---Default highlight groups for the heats
+---@class Triforce.Config.Heat
+---@field TriforceHeat1? string
+---@field TriforceHeat2? string
+---@field TriforceHeat3? string
+---@field TriforceHeat4? string
+
+---Triforce setup configuration
+---@class TriforceConfig
+---Enable the plugin
+---@field enabled? boolean
+---Enable gamification features (stats, XP, achievements)
+---@field gamification_enabled? boolean
+---Notification configuration
+---@field notifications? TriforceConfig.Notifications
+---Auto-save stats interval in seconds (default: `300`)
+---@field auto_save_interval? integer
+---Keymap configuration
+---@field keymap? TriforceConfig.Keymap|nil
+---Custom language definitions:
+---
+---```lua
+----- Example
+---{ rust = { icon = "", name = "Rust" } }
+---```
+---@field custom_languages? table<string, TriforceLanguage>|nil
+---Custom level progression tiers
+---@field level_progression? LevelProgression|nil
+---Custom XP reward amounts for different actions
+---@field xp_rewards? XPRewards|nil
+---Custom path for data file
+---@field db_path? string
+---Default highlight groups for the heats
+---@field heat_highlights? Triforce.Config.Heat
+
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
 local INFO = vim.log.levels.INFO
@@ -35,51 +79,25 @@ local Triforce = {
   get_stats = require('triforce.tracker').get_stats,
   config = {}, ---@type TriforceConfig
   defaults = function() ---@return TriforceConfig default
-    ---Triforce setup configuration
-    ---@class TriforceConfig
-    local defaults = {
-      ---Enable the plugin
-      enabled = true, ---@type boolean
-      ---Enable gamification features (stats, XP, achievements)
-      gamification_enabled = true, ---@type boolean
-      ---Notification configuration
-      ---@class TriforceConfig.Notifications
-      notifications = {
-        ---Show level up and achievement notifications
-        enabled = true, ---@type boolean
-        ---Show level up notifications
-        level_up = true, ---@type boolean
-        ---Show achievement unlock notifications
-        achievements = true, ---@type boolean
-      },
-      ---Auto-save stats interval in seconds (default: `300`)
-      auto_save_interval = 300, ---@type integer
-      ---Keymap configuration
-      keymap = { show_profile = nil }, ---@type TriforceConfig.Keymap|nil
-      ---Custom language definitions:
-      ---
-      ---```lua
-      ----- Example
-      ---{ rust = { icon = "", name = "Rust" } }
-      ---```
-      custom_languages = nil, ---@type table<string, TriforceLanguage>|nil
-      ---Custom level progression tiers
-      level_progression = { ---@type LevelProgression|nil
+    local defaults = { ---@type TriforceConfig
+      enabled = true,
+      gamification_enabled = true,
+      notifications = { enabled = true, level_up = true, achievements = true },
+      auto_save_interval = 300,
+      keymap = { show_profile = nil },
+      custom_languages = nil,
+      level_progression = {
         tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
         tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
         tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
       },
-      ---Custom XP reward amounts for different actions
-      xp_rewards = { char = 1, line = 1, save = 50 }, ---@type XPRewards|nil
-      ---Custom path for data file
-      db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
-      ---Default highlight groups for the heats
-      ---@class Triforce.Config.Heat
+      xp_rewards = { char = 1, line = 1, save = 50 },
+      db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
       heat_highlights = {
-        TriforceHeat1 = '#f0f0a0', ---@type string
-        TriforceHeat2 = '#f0a0a0', ---@type string
-        TriforceHeat3 = '#a0a0a0', ---@type string
-        TriforceHeat4 = '#707070', ---@type string
+        TriforceHeat1 = '#f0f0a0',
+        TriforceHeat2 = '#f0a0a0',
+        TriforceHeat3 = '#a0a0a0',
+        TriforceHeat4 = '#707070',
       },
     }
 
