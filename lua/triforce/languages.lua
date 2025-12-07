@@ -146,7 +146,7 @@ end
 function Languages.register_custom_languages(custom_langs)
   util.validate({ custom_langs = { custom_langs, { 'table', 'nil' }, true } })
 
-  if not custom_langs then
+  if not custom_langs or vim.tbl_isempty(custom_langs) then
     return
   end
 
