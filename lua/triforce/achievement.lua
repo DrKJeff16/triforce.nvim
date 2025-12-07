@@ -135,9 +135,7 @@ function Achievement.check_achievements(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   local newly_unlocked = {} ---@type Achievement[]
-  local achievements = Achievement.get_all_achievements(stats)
-
-  for _, achievement in ipairs(achievements) do
+  for _, achievement in ipairs(Achievement.get_all_achievements(stats)) do
     if achievement.check and not stats.achievements[achievement.id] then
       stats.achievements[achievement.id] = true
       table.insert(newly_unlocked, {
