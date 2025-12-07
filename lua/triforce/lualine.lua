@@ -48,7 +48,7 @@ Lualine.config = {
 }
 
 ---Setup lualine integration with custom config
----@param opts Triforce.Lualine.Config|nil User configuration
+---@param opts? Triforce.Lualine.Config User configuration
 function Lualine.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
@@ -119,7 +119,7 @@ local function format_time(seconds, format)
 end
 
 ---Level component - Shows level and XP progress
----@param opts Triforce.Lualine.Config.Level|nil Component-specific options
+---@param opts? Triforce.Lualine.Config.Level Component-specific options
 ---@return string component
 function Lualine.level(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -165,7 +165,7 @@ function Lualine.level(opts)
 end
 
 ---Achievements component - Shows unlocked achievement count
----@param opts { icon: string, show_count: boolean }|nil Component-specific options
+---@param opts? { icon: string, show_count: boolean } Component-specific options
 ---@return string component
 function Lualine.achievements(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -201,7 +201,7 @@ function Lualine.achievements(opts)
 end
 
 ---Streak component - Shows current coding streak
----@param opts { icon: string, show_days: boolean }|nil Component-specific options
+---@param opts? { icon: string, show_days: boolean } Component-specific options
 ---@return string|'' component
 function Lualine.streak(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -235,7 +235,7 @@ function Lualine.streak(opts)
 end
 
 ---Session time component - Shows current session duration
----@param opts Triforce.Lualine.Config.SessionTime|nil Component-specific options
+---@param opts? Triforce.Lualine.Config.SessionTime Component-specific options
 ---@return string component
 function Lualine.session_time(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -269,7 +269,7 @@ function Lualine.session_time(opts)
 end
 
 ---Convenience function to get all components at once
----@param opts Triforce.Lualine.Config|nil Configuration for all components
+---@param opts? Triforce.Lualine.Config Configuration for all components
 ---@return Triforce.Lualine.Config components Table with level, achievements, streak, session_time functions
 function Lualine.components(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })

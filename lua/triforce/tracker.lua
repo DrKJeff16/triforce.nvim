@@ -212,8 +212,8 @@ end
 
 ---Notify user of achievement unlock
 ---@param achievement_name string
----@param achievement_desc string|nil
----@param achievement_icon string|nil
+---@param achievement_desc? string
+---@param achievement_icon? string
 function Tracker.notify_achievement(achievement_name, achievement_desc, achievement_icon)
   util.validate({
     achievement_name = { achievement_name, { 'string' } },

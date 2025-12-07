@@ -153,7 +153,7 @@ function Stats.load()
 end
 
 ---Save stats to disk
----@param stats Stats|nil
+---@param stats? Stats
 ---@return boolean success
 function Stats.save(stats)
   util.validate({ stats = { stats, { 'table', 'nil' }, true } })
@@ -306,7 +306,7 @@ function Stats.end_session(stats)
 end
 
 ---Get current date in YYYY-MM-DD format
----@param timestamp integer|nil Optional timestamp, defaults to current time
+---@param timestamp? integer Optional timestamp, defaults to current time
 local function get_date_string(timestamp)
   util.validate({ timestamp = { timestamp, { 'number', 'nil' }, true } })
   return os.date('%Y-%m-%d', timestamp or os.time())
@@ -421,7 +421,7 @@ end
 ---Export data to a specified JSON file
 ---@param stats Stats
 ---@param target string
----@param indent? string|nil
+---@param indent? string
 function Stats.export_to_json(stats, target, indent)
   util.validate({
     stats = { stats, { 'table' } },
