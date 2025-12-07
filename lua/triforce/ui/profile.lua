@@ -1,7 +1,7 @@
 ---Profile UI using Volt
 local volt = require('volt')
 local voltui = require('volt.ui')
-local voltstate = require('volt.state')
+local voltstate = require('volt.state') ---@type table<integer, { h: integer }>
 
 local stats_module = require('triforce.stats')
 local achievement_module = require('triforce.achievement')
@@ -78,14 +78,12 @@ end
 ---@param secs number
 ---@return string time
 local function format_time(secs)
-  local hours = math.floor(secs / 3600)
-  local minutes = math.floor((secs % 3600) / 60)
-  return ('%dh %dm'):format(hours, minutes)
+  return ('%dh %dm'):format(math.floor(secs / 3600), math.floor((secs % 3600) / 60))
 end
 
 ---Get activity level highlight based on lines typed
 ---@param lines integer
----@return string hl
+---@return 'LineNr'|'TriforceHeat0'|'TriforceHeat1'|'TriforceHeat2'|'TriforceHeat3' hl
 local function get_activity_hl(lines)
   if lines == 0 then
     return 'LineNr'
@@ -213,7 +211,7 @@ end
 ---@return integer current
 local function get_current_streak(stats)
   -- Recalculate to ensure accuracy
-  local current, _ = stats_module.calculate_streaks(stats)
+  local current = stats_module.calculate_streaks(stats)
   return current
 end
 
