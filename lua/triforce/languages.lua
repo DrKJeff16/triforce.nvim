@@ -151,6 +151,10 @@ function Languages.register_custom_languages(custom_langs)
   end
 
   for ft, config in pairs(custom_langs) do
+    if not Languages.langs[ft] then
+      Languages.langs[ft] = { icon = '', name = '' }
+    end
+
     if config.icon then
       Languages.langs[ft].icon = config.icon
     end
