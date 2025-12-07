@@ -142,9 +142,13 @@ function Languages.get_full_display(ft)
 end
 
 ---Register custom languages
----@param custom_langs table<string, TriforceLanguage>
+---@param custom_langs table<string, TriforceLanguage>|nil
 function Languages.register_custom_languages(custom_langs)
-  util.validate({ custom_langs = { custom_langs, { 'table' } } })
+  util.validate({ custom_langs = { custom_langs, { 'table', 'nil' }, true } })
+
+  if not custom_langs then
+    return
+  end
 
   for ft, config in pairs(custom_langs) do
     if config.icon then
