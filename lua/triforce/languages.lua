@@ -79,6 +79,7 @@ local Languages = {
     yaml = { name = 'YAML', icon = '' }, -- nf-seti-yaml
     toml = { name = 'TOML', icon = '' }, -- nf-seti-toml
     xml = { name = 'XML', icon = '󰗀' }, -- nf-md-xml
+    dosini = { name = 'INI', icon = '' }, -- nf-seti-config
 
     -- Markup/Doc
     markdown = { name = 'Markdown', icon = '' }, -- nf-dev-markdown
