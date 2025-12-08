@@ -83,8 +83,12 @@ local function prepare_for_save(stats)
 end
 
 ---Load stats from disk
+---@param debug? boolean
 ---@return Stats merged
-function Stats.load()
+function Stats.load(debug)
+  util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
+  debug = debug ~= nil and debug or false
+
   local path = get_stats_path()
 
   -- Check if file exists
@@ -107,7 +111,11 @@ function Stats.load()
     -- Backup corrupted file
     local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
-    vim.notify('Corrupted stats backed up to: ' .. backup, WARN)
+
+    if debug then
+      vim.notify('Corrupted stats backed up to: ' .. backup, WARN)
+    end
+
     return Stats.default_stats()
   end
 
@@ -137,15 +145,17 @@ function Stats.load()
 
   local calculated_level = Stats.calculate_level(merged.xp)
   if calculated_level ~= merged.level then
-    vim.notify(
-      ('Level mismatch detected! Recalculating from XP.\nOld level: %d → New level: %d (based on %d XP)'):format(
-        merged.level,
-        calculated_level,
-        merged.xp
-      ),
-      WARN,
-      { title = ' Triforce' }
-    )
+    if debug then
+      vim.notify(
+        ('Level mismatch detected! Recalculating from XP.\nOld level: %d → New level: %d (based on %d XP)'):format(
+          merged.level,
+          calculated_level,
+          merged.xp
+        ),
+        WARN,
+        { title = ' Triforce' }
+      )
+    end
     merged.level = calculated_level
   end
 

@@ -68,6 +68,8 @@
 ---@field db_path? string
 ---Default highlight groups for the heats
 ---@field heat_highlights? Triforce.Config.Heat
+---Enable debugging messages
+---@field debug? boolean
 
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
@@ -82,6 +84,7 @@ local Triforce = {
     local defaults = { ---@type TriforceConfig
       enabled = true,
       gamification_enabled = true,
+      debug = false,
       notifications = { enabled = true, level_up = true, achievements = true },
       auto_save_interval = 300,
       keymap = { show_profile = nil },

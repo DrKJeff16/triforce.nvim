@@ -18,6 +18,7 @@ local Tracker = {
   dirty = false, ---@type boolean
   ---Last save timestamp to prevent rapid saves
   last_save_time = 0, ---@type integer
+  debug = false, ---@type boolean
 }
 
 ---Get XP rewards from config
@@ -27,10 +28,14 @@ local function get_xp_rewards()
 end
 
 ---Initialize the tracker
-function Tracker.setup()
+---@param debug? boolean
+function Tracker.setup(debug)
+  util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
+
   local stats_module = require('triforce.stats')
 
-  Tracker.current_stats = stats_module.load()
+  Tracker.debug = debug ~= nil and debug or false
+  Tracker.current_stats = stats_module.load(Tracker.debug)
   Tracker.current_date = os.date('%Y-%m-%d')
   Tracker.lines_today = 0
   stats_module.start_session(Tracker.current_stats)
@@ -357,7 +362,11 @@ end
 ---Debug: Fix level/XP mismatch by recalculating level from XP
 function Tracker.debug_fix_level()
   if not Tracker.current_stats then
-    vim.notify('No stats loaded', WARN)
+    vim.notify('No stats loaded!', WARN)
+    return
+  end
+
+  if not Tracker.debug then
     return
   end
 

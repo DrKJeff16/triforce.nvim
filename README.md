@@ -198,6 +198,9 @@ require('triforce').setup({
     -- Or link to your colorscheme's groups:
     -- TriforceHeat1 = 'DiffText',
   },
+
+  -- Enable some debugging messages
+  debug = false,
 })
 ```
 
@@ -210,6 +213,7 @@ require('triforce').setup({
 | `notifications.enabled`      | `boolean`       | `true`                          | Master toggle for notifications       |
 | `notifications.level_up`     | `boolean`       | `true`                          | Show level up notifications           |
 | `notifications.achievements` | `boolean`       | `true`                          | Show achievement notifications        |
+| `debug`                      | `boolean`       | `true`                          | Enable some debugging messages        |
 | `auto_save_interval`         | `number`        | `300`                           | Auto-save interval in seconds         |
 | `keymap.show_profile`        | `string\|nil`   | `nil`                           | Keymap for opening profile            |
 | `custom_languages`           | `table\|nil`    | `nil`                           | Custom language definitions           |
