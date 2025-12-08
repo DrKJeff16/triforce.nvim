@@ -37,6 +37,18 @@ describe('triforce', function()
         assert.is_false(ok)
       end)
     end
+
+    describe('languages', function()
+      it('should handle new languages gracefully', function()
+        local ok = pcall(triforce.setup, {
+          custom_languages = {
+            gleam = { icon = '', name = 'Gleam' },
+            odin = { icon = '', name = 'Odin' },
+          },
+        })
+        assert.is_true(ok)
+      end)
+    end)
   end)
 
   describe('stats', function()
