@@ -685,6 +685,77 @@ require('triforce').setup({
 })
 ```
 
+### Creating Custom Achievements
+
+Triforce now allows you to create new achievements by using `require('tracker.achievement').new_achievements()`.
+
+The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
+
+```lua
+{
+  id = 'template_achievement', ---@type string
+  name = '...', ---@type string
+  ---@type fun(stats?: Stats): boolean
+  check = function(stats)
+    return stats.foo > stats.bar -- NOTE: This is just an example
+  end,
+  icon = '...' or nil, ---@type string|nil
+  desc = '...' or nil, ---@type string|nil
+}
+```
+
+The `new_achievements()` function requires two parameters:
+
+1. Either a table like the one mentioned above OR a list of those (type: `Achievement[]|Achievement`)
+2. Your current stats (type: `Stats`)
+
+> [!CAUTION]
+> Don't forget to call `new_achievements()` with the mandatory second parameter!
+>
+> We recommend passing `require('triforce.tracker').get_stats()` to it.
+
+**For example:**
+
+```lua
+local new_achievements = require('triforce.achievement').new_achievements
+
+--- SINGLE TABLE
+local achievement = {
+  id = 'first_200',
+  name = 'On Track',
+  desc = 'Type 200 Characters',
+  check = function(stats)
+    return stats.chars_typed >= 200
+  end,
+}
+
+new_achievement(achievement, require('triforce.tracker').get_stats())
+
+--- ARRAY OF ACHIEVEMENTS
+local arr = {
+  {
+    id = 'first_300',
+    name = 'Newbie',
+    desc = 'Type 300 Characters',
+    check = function(stats)
+      return stats.chars_typed >= 300
+    end,
+  },
+  {
+    id = 'level_100',
+    name = 'God-like',
+    desc = 'Reach level 100',
+    icon = '󰈸',
+    check = function(stats)
+      return stats.level >= 100
+    end,
+  },
+  -- ...
+}
+
+new_achievements(arr, require('triforce.tracker').get_stats())
+```
+
 ### Disabling Notifications
 
 Turn off all notifications or specific types:
@@ -778,7 +849,7 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 - [ ] **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
 - [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
 - [ ] **Leaderboards**: Compete with friends or the community
-- [ ] **Custom Achievements**: Define your own achievement criteria
+- [X] **Custom Achievements**: Define your own achievement criteria
 - [X] **Export Stats**: Export to JSON or Markdown reports
 - [ ] **Weekly/Monthly Reports**: Automated summaries via notifications
 - [ ] **Themes**: Customizable color schemes for the profile UI
