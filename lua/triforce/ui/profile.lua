@@ -378,7 +378,7 @@ local function build_achievements_tab()
 
   -- Sort: unlocked first
   table.sort(achievements, function(a, b)
-    return a.check == b.check and (a.name < b.name) or (a.check and not b.check)
+    return a.check(stats) == b.check(stats) and (a.name < b.name) or (a.check(stats) and not b.check(stats))
   end)
 
   -- Calculate pagination
@@ -405,13 +405,13 @@ local function build_achievements_tab()
 
   for i = start_idx, end_idx do
     local achievement = achievements[i]
-    local status_icon = achievement.check and '✓' or '✗'
-    local status_hl = achievement.check and 'String' or 'Comment'
-    local text_hl = achievement.check and 'TriforceYellow' or 'Comment'
-    local desc_hl = achievement.check and 'Normal' or 'Comment'
+    local status_icon = achievement.check(stats) and '✓' or '✗'
+    local status_hl = achievement.check(stats) and 'String' or 'Comment'
+    local text_hl = achievement.check(stats) and 'TriforceYellow' or 'Comment'
+    local desc_hl = achievement.check(stats) and 'Normal' or 'Comment'
 
     -- Only show icon if unlocked
-    local name_display = achievement.check and (achievement.icon .. ' ' .. achievement.name) or achievement.name
+    local name_display = achievement.check(stats) and (achievement.icon .. ' ' .. achievement.name) or achievement.name
 
     table.insert(table_data, {
       { { status_icon, status_hl } }, -- Array of virt text chunks
@@ -424,7 +424,7 @@ local function build_achievements_tab()
 
   local unlocked_count = 0
   for _, a in ipairs(achievements) do
-    if a.check then
+    if a.check(stats) then
       unlocked_count = unlocked_count + 1
     end
   end

@@ -43,5 +43,31 @@ function Util.validate(T)
   end
 end
 
+---@param x number
+---@return boolean int
+function Util.is_int(x)
+  Util.validate({ x = { x, { 'number' } } })
+
+  return (math.ceil(x) == x or math.floor(x) == x)
+end
+
+---@param T table
+---@return boolean dict
+function Util.is_dict(T)
+  Util.validate({ T = { T, { 'table' } } })
+
+  if vim.tbl_isempty(T) then
+    return false
+  end
+
+  for k, _ in pairs(T) do
+    if type(k) == 'string' or not Util.is_int(k) then
+      return true
+    end
+  end
+
+  return false
+end
+
 return Util
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

@@ -341,7 +341,8 @@ function Tracker.debug_achievement()
     return
   end
 
-  local achievements = require('triforce.achievements').get_all_achievements(Tracker.current_stats)
+  local achievement_mod = require('triforce.achievement')
+  local achievements = achievement_mod.get_all_achievements(Tracker.current_stats)
 
   -- Pick a random achievement
   local random_idx = math.random(1, #achievements)
@@ -351,7 +352,7 @@ function Tracker.debug_achievement()
   Tracker.notify_achievement(achievement.name, achievement.desc, achievement.icon)
 
   -- Also show status in separate notification
-  local status = achievement.check and '✓ Unlocked' or '✗ Locked'
+  local status = achievement.check(Tracker.current_stats) and '✓ Unlocked' or '✗ Locked'
   vim.notify(
     ('Test notification for: %s\n\nStatus: %s'):format(achievement.name, status),
     INFO,
