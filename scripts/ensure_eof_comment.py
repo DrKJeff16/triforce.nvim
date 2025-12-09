@@ -16,32 +16,80 @@ from typing import Dict, List, NoReturn, Tuple, Union
 COMMENT: str = "-- vim:ts=2:sts=2:sw=2:et:ai:si:sta:"
 
 
-def bootstrap_paths() -> Tuple[str]:
-    """Bootstraps all the matching paths in current dir and below."""
-    result = list()
-    for path in ("./lua", "./plugin", "./spec"):
-        for root, dirs, files in walk(path):
-            for file in files:
-                if file.endswith(".lua"):
-                    result.append(join(root, file))
+def error(*msg, end: str = "\n", sep: str = " ", flush: bool = False) -> NoReturn:
+    """Prints to stderr."""
+    try:
+        end = str(end)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        end = "\n"
 
-    return tuple(result)
+    try:
+        sep = str(sep)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        sep = " "
+
+    try:
+        flush = bool(flush)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        flush = False
+
+    print(*msg, end=end, sep=sep, flush=flush, file=STDERR)
 
 
-def die(*msg, code: int = 0) -> NoReturn:
+def die(*msg, code: int = 0, end: str = "\n", sep: str = " ", flush: bool = False) -> NoReturn:
     """Kill program execution."""
-    if code == 0:
-        func = print
-    else:
-        func = error
+    try:
+        code = int(code)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        code = 1
 
-    func(*msg)
+    try:
+        end = str(end)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        end = "\n"
+
+    try:
+        sep = str(sep)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        sep = " "
+
+    try:
+        flush = bool(flush)
+    except KeyboardInterrupt:
+        Exit(1)
+    except Exception:
+        flush = False
+
+    if msg and len(msg) > 0:
+        if code == 0:
+            print(*msg, end=end, sep=sep, flush=flush)
+        else:
+            error(*msg, end=end, sep=sep, flush=flush)
+
     Exit(code)
 
 
-def error(*msg, end: str = "\n", sep: str = " ", flush: bool = False) -> NoReturn:
-    """Prints to stderr."""
-    print(*msg, end=end, sep=sep, flush=flush, file=STDERR)
+def bootstrap_paths() -> Tuple[str]:
+    """Bootstraps all the matching paths in current dir and below."""
+    result = list()
+    for root, dirs, files in walk("./lua"):
+        for file in files:
+            if file.endswith(".lua"):
+                result.append(join(root, file))
+
+    return tuple(result)
 
 
 def open_batch_paths(paths: Tuple[str]) -> Dict[str, TextIOWrapper]:
@@ -50,24 +98,19 @@ def open_batch_paths(paths: Tuple[str]) -> Dict[str, TextIOWrapper]:
     for path in paths:
         try:
             result[path] = open(path, "r")
-
-        except FileNotFoundError:
-            error(f"File `{path}` is not available!")
-            continue
-
         except KeyboardInterrupt:
             die("\nProgram interrupted!", code=1)  # Kills the program
-
+        except FileNotFoundError:
+            error(f"File `{path}` is not available!")
         except Exception:
             error(f"Something went wrong while trying to open `{path}`!")
-            continue
 
     return result
 
 
 def get_last_line(file: TextIOWrapper) -> str:
     """Returns the last line of a file."""
-    result = file.read().split("\n")[-2]
+    result: str = file.read().split("\n")[-2]
     file.close()
 
     return result
@@ -113,13 +156,11 @@ def append_eof_comment(files: Dict[str, List[Union[TextIOWrapper, bool]]]) -> No
 def main() -> int:
     """Execute main workflow."""
     files = open_batch_paths(bootstrap_paths())
-
     if len(files) == 0:
         error("No matching files found!")
         return 1
 
     results = eof_comment_search(files)
-
     if len(results) > 0:
         append_eof_comment(results)
 
