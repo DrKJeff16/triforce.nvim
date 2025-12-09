@@ -25,8 +25,15 @@ describe('triforce', function()
       assert.is_false(triforce.config.enabled)
     end)
 
+    it('should handle empty table parameter', function()
+      local ok = pcall(triforce.setup, {})
+      assert.is_true(ok)
+      assert.is_true(triforce.config.enabled)
+    end)
+
     it('should handle nil options', function()
-      triforce.setup(nil)
+      local ok = pcall(triforce.setup, nil)
+      assert.is_true(ok)
       assert.is_true(triforce.config.enabled)
     end)
 
