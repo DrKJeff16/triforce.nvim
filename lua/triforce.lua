@@ -253,6 +253,14 @@ function Triforce.debug_fix_level()
   require('triforce.tracker').debug_fix_level()
 end
 
+function Triforce.export_stats()
+  if not Triforce.has_gamification() then
+    return
+  end
+
+  require('triforce.stats').export_stats(require('triforce.tracker').get_stats())
+end
+
 ---Export stats to JSON
 ---@param file string
 ---@param indent? string
@@ -261,6 +269,9 @@ function Triforce.export_stats_to_json(file, indent)
     file = { file, { 'string' } },
     indent = { indent, { 'string', 'nil' }, true },
   })
+  if not Triforce.has_gamification() then
+    return
+  end
 
   require('triforce.stats').export_to_json(require('triforce.tracker').get_stats(), file, indent or nil)
 end
@@ -269,6 +280,9 @@ end
 ---@param file string
 function Triforce.export_stats_to_md(file)
   util.validate({ file = { file, { 'string' } } })
+  if not Triforce.has_gamification() then
+    return
+  end
 
   require('triforce.stats').export_to_md(require('triforce.tracker').get_stats(), file)
 end
@@ -276,6 +290,9 @@ end
 ---@param achievements Achievement[]|Achievement
 function Triforce.new_achievements(achievements)
   util.validate({ achievements = { achievements, { 'table' } } })
+  if not Triforce.has_gamification() then
+    return
+  end
 
   require('triforce.achievement').new_achievements(achievements, require('triforce.tracker').get_stats())
 end

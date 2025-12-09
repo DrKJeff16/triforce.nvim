@@ -428,6 +428,37 @@ function Stats.record_daily_activity(stats, lines_today)
   stats.longest_streak = longest
 end
 
+---Export data to a new empty buffer
+---@param stats Stats
+function Stats.export_stats(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
+  local data = vim.split(vim.inspect(stats), '\n', { plain = true, trimempty = true })
+  local bufnr = vim.api.nvim_create_buf(true, true)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, data)
+
+  local win = vim.api.nvim_open_win(bufnr, true, {
+    noautocmd = true,
+    split = 'below',
+    style = 'minimal',
+  })
+
+  vim.bo[bufnr].filetype = 'lua'
+  vim.bo[bufnr].modified = false
+  vim.bo[bufnr].modifiable = false
+
+  vim.wo[win].number = false
+  vim.wo[win].signcolumn = 'no'
+  vim.wo[win].colorcolumn = ''
+  vim.wo[win].wrap = true
+  vim.wo[win].list = false
+
+  vim.keymap.set('n', 'q', function()
+    vim.api.nvim_buf_delete(bufnr, { force = true })
+    pcall(vim.api.nvim_win_close, win, true)
+  end, { noremap = true, silent = true, buffer = bufnr })
+end
+
 ---Export data to a specified JSON file
 ---@param stats Stats
 ---@param target string

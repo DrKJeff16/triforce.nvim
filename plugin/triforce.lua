@@ -37,7 +37,12 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
     end
 
     if subcommand2 ~= 'export' then
-      vim.notify('Usage: :Triforce stats [export json | markdown </path/to/file> ]', vim.log.levels.INFO)
+      vim.notify('Usage: :Triforce stats [ export [ json | markdown </path/to/file> ] ]', vim.log.levels.INFO)
+      return
+    end
+
+    if subcommand3 == '' then
+      triforce.export_stats()
       return
     end
 
