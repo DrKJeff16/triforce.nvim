@@ -266,5 +266,12 @@ function Triforce.export_stats_to_md(file)
   require('triforce.stats').export_to_md(require('triforce.tracker').get_stats(), file)
 end
 
+---@param achievements Achievement[]|Achievement
+function Triforce.new_achievements(achievements)
+  util.validate({ achievements = { achievements, { 'table' } } })
+
+  require('triforce.achievement').new_achievements(achievements, require('triforce.tracker').get_stats())
+end
+
 return Triforce
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:

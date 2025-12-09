@@ -397,7 +397,7 @@ require('triforce').setup({
 
 ### Creating Custom Achievements
 
-Triforce now allows you to create new achievements by using `require('tracker.achievement').new_achievements()`.
+Triforce now allows you to create new achievements by using `require('triforce').new_achievements()`.
 
 The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
 
@@ -414,35 +414,26 @@ The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
 }
 ```
 
-The `new_achievements()` function requires two parameters:
-
-1. Either a table like the one mentioned above OR a list of those (type: `Achievement[]|Achievement`)
-2. Your current stats (type: `Stats`)
-
-> [!CAUTION]
-> Don't forget to call `new_achievements()` with the mandatory second parameter!
->
-> We recommend passing `require('triforce.tracker').get_stats()` to it.
+The `new_achievements()` function requires either a table
+like the one mentioned above OR a list of those (type: `Achievement[]|Achievement`).
 
 **For example:**
 
 ```lua
-local new_achievements = require('triforce.achievement').new_achievements
+local new_achievements = require('triforce').new_achievements
 
 --- SINGLE TABLE
-local achievement = {
+new_achievements({
   id = 'first_200',
   name = 'On Track',
   desc = 'Type 200 Characters',
   check = function(stats)
     return stats.chars_typed >= 200
   end,
-}
-
-new_achievement(achievement, require('triforce.tracker').get_stats())
+})
 
 --- ARRAY OF ACHIEVEMENTS
-local arr = {
+new_achievements({
   {
     id = 'first_300',
     name = 'Newbie',
@@ -461,9 +452,7 @@ local arr = {
     end,
   },
   -- ...
-}
-
-new_achievements(arr, require('triforce.tracker').get_stats())
+})
 ```
 
 ### Disabling Notifications
