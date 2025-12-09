@@ -18,7 +18,7 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 - [Usage](#-usage)
 - [Achievements](#-achievements)
 - [Customization](#-customization)
-  - [Lualine Integration](#-lualine-integration)
+- [Lualine Integration](#-lualine-integration)
 - [Data Storage](#-data-storage)
 - [Roadmap](#%EF%B8%8F-roadmap)
 - [License](#-license)
