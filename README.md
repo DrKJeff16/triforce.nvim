@@ -49,7 +49,6 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 - [Data Storage](#-data-storage)
     - [Data Format](#data-format)
 - [Roadmap](#%EF%B8%8F-roadmap)
-    - [Future Features](#future-features)
 - [License](#-license)
 - [Acknowledgments](#-acknowledgments)
 - [Support](#-support)
@@ -859,8 +858,6 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 ---
 
 ## 🗺️ Roadmap
-
-### Future Features
 
 - [ ] **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
 - [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
