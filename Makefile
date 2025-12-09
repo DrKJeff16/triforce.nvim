@@ -2,7 +2,7 @@ LUAROCKS_CMD = luarocks install --local
 
 .POSIX:
 
-.PHONY: all test lint format check help
+.PHONY: all test lint format check help ensure_eof
 
 all: help
 
@@ -19,8 +19,11 @@ lint: ## Run selene linter
 format: ## Format code with stylua
 	stylua --check .
 
-format-fix: ## Format code with stylua (fix)
+format-fix: ensure_eof ## Format code with stylua (fix)
 	stylua .
+
+ensure_eof: scripts/ensure_eof_comment.py ## Run EOF checker script
+	@python scripts/ensure_eof_comment.py
 
 check: lint test ## Run linter and tests
 
