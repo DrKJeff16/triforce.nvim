@@ -38,7 +38,7 @@ TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
 - |triforce-usage|
 - |triforce-achievements|
 - |triforce-customization|
-    - |triforce-lualine-integration|
+- |triforce-lualine-integration|
 - |triforce-data-storage|
 - |triforce-roadmap|
 - |triforce-license|
