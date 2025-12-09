@@ -15,10 +15,10 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 - [Features](#-features)
 - [Installation](#-installation)
 - [Configuration](#%EF%B8%8F-configuration)
-- [Lualine Integration](#-lualine-integration)
 - [Usage](#-usage)
 - [Achievements](#-achievements)
 - [Customization](#-customization)
+  - [Lualine Integration](#-lualine-integration)
 - [Data Storage](#-data-storage)
 - [Roadmap](#%EF%B8%8F-roadmap)
 - [License](#-license)
@@ -281,6 +281,239 @@ require('triforce').setup({
   },
 })
 ```
+
+---
+
+## 🎮 Usage
+
+### Commands
+
+| Command                                                  | Description                                   |
+|----------------------------------------------------------|-----------------------------------------------|
+| `:lua require('triforce').show_profile()`                | Open the Triforce profile UI                  |
+| `:lua require('triforce').get_stats()`                   | Get current stats programmatically            |
+| `:lua require('triforce').reset_stats()`                 | Reset all stats (useful for testing)          |
+| `:lua require('triforce').save_stats()`                  | Force save stats immediately                  |
+| `:lua require('triforce').debug_languages()`             | Debug language tracking                       |
+| `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown              |
+
+### Profile UI
+
+The profile has **3 tabs**:
+
+1. **📊 Stats Tab**
+   - Level progress bar
+   - Session/time milestone progress
+   - Activity heatmap (7 months)
+   - Quick stats overview
+
+<img
+width="1224"
+height="970"
+alt="image"
+src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e"
+/>
+
+2. **🏆 Achievements Tab**
+   - View all unlocked achievements
+   - See locked achievements with unlock requirements
+   - Paginate through achievements (H/L or arrow keys)
+
+<img
+width="1219"
+height="774"
+alt="image"
+src="https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77"
+/>
+
+3. **💻 Languages Tab**
+   - Bar graph showing your most-used languages
+   - See character count breakdown by language
+
+<img
+width="1210"
+height="784"
+alt="image"
+src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81"
+/>
+
+**Keybindings in Profile:**
+- `Tab`: Cycle between tabs
+- `H` / `L` or `←` / `→`: Navigate achievement pages
+- `q` / `Esc`: Close profile
+
+---
+
+## 🏆 Achievements
+
+Triforce includes **18 built-in achievements** across 5 categories:
+
+- 📝 **_Typing Milestones_**
+    1. 🌱 **First Steps**: Type 100 characters
+    2. ⚔️ **Getting Started**: Type 1,000 characters
+    3. 🛡️ **Dedicated Coder**: Type 10,000 characters
+    4. 📜 **Master Scribe**: Type 100,000 characters
+- 📈 **_Level Achievements_**
+    1. ⭐ **Rising Star**: Reach level 5
+    2. 💎 **Expert Coder**: Reach level 10
+    3. 👑 **Champion**: Reach level 25
+    4. 🔱 **Legend**: Reach level 50
+- 🔄 **_Session Achievements_**
+    1. 🔄 **Regular Visitor**: Complete 10 sessions
+    2. 📅 **Creature of Habit**: Complete 50 sessions
+    3. 🏆 **Dedicated Hero**: Complete 100 sessions
+- ⏰ **_Time Achievements_**
+    1. ⏰ **First Hour**: Code for 1 hour total
+    2. ⌛ **Committed**: Code for 10 hours total
+    3. 🕐 **Veteran**: Code for 100 hours total
+- 🌍 **_Polyglot Achievements_**
+    1. 🌍 **Polyglot Beginner**: Code in 3 languages
+    2. 🌎 **Polyglot**: Code in 5 languages
+    3. 🌏 **Master Polyglot**: Code in 10 languages
+    4. 🗺️ **Language Virtuoso**: Code in 15 languages
+
+---
+
+## 🎨 Customization
+
+### Adding Custom Languages
+
+Triforce supports 50+ programming languages out of the box, but you can add more:
+
+```lua
+require('triforce').setup({
+  custom_languages = {
+    gleam = {
+      icon = '✨',
+      name = 'Gleam'
+    },
+    zig = {
+      icon = '⚡',
+      name = 'Zig'
+    },
+  },
+})
+```
+
+### Creating Custom Achievements
+
+Triforce now allows you to create new achievements by using `require('tracker.achievement').new_achievements()`.
+
+The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
+
+```lua
+{
+  id = 'template_achievement', ---@type string
+  name = '...', ---@type string
+  ---@type fun(stats?: Stats): boolean
+  check = function(stats)
+    return stats.foo > stats.bar -- NOTE: This is just an example
+  end,
+  icon = '...' or nil, ---@type string|nil
+  desc = '...' or nil, ---@type string|nil
+}
+```
+
+The `new_achievements()` function requires two parameters:
+
+1. Either a table like the one mentioned above OR a list of those (type: `Achievement[]|Achievement`)
+2. Your current stats (type: `Stats`)
+
+> [!CAUTION]
+> Don't forget to call `new_achievements()` with the mandatory second parameter!
+>
+> We recommend passing `require('triforce.tracker').get_stats()` to it.
+
+**For example:**
+
+```lua
+local new_achievements = require('triforce.achievement').new_achievements
+
+--- SINGLE TABLE
+local achievement = {
+  id = 'first_200',
+  name = 'On Track',
+  desc = 'Type 200 Characters',
+  check = function(stats)
+    return stats.chars_typed >= 200
+  end,
+}
+
+new_achievement(achievement, require('triforce.tracker').get_stats())
+
+--- ARRAY OF ACHIEVEMENTS
+local arr = {
+  {
+    id = 'first_300',
+    name = 'Newbie',
+    desc = 'Type 300 Characters',
+    check = function(stats)
+      return stats.chars_typed >= 300
+    end,
+  },
+  {
+    id = 'level_100',
+    name = 'God-like',
+    desc = 'Reach level 100',
+    icon = '󰈸',
+    check = function(stats)
+      return stats.level >= 100
+    end,
+  },
+  -- ...
+}
+
+new_achievements(arr, require('triforce.tracker').get_stats())
+```
+
+### Disabling Notifications
+
+Turn off all notifications or specific types:
+
+```lua
+require('triforce').setup({
+  notifications = {
+    enabled = true,       -- Keep enabled
+    level_up = false,     -- Disable level up notifications
+    achievements = true,  -- Keep achievement notifications
+  },
+})
+```
+
+### Disable Auto-Keymap
+
+If you prefer to set your own keymap:
+
+```lua
+require('triforce').setup({
+  keymap = {
+    show_profile = nil, -- Don't create default keymap
+  },
+})
+
+-- Set your own keymap
+vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Triforce Stats' })
+```
+
+### Customize Heatmap Colors
+
+If your colorscheme uses unconventional highlight groups, point the heatmap to
+colors that fit your palette. You can mix hex colors and links to existing
+highlight groups:
+
+```lua
+require('triforce').setup({
+  heat_highlights = {
+    TriforceHeat1 = 'Error',
+    TriforceHeat2 = 'DiagnosticVirtualTextWarn',
+    TriforceHeat3 = 'CursorLine',
+    TriforceHeat4 = '#424242',
+  },
+})
+```
+
+Each key corresponds to a heat level used in the profile activity graph. If you
+omit a key, the default color for that level is used.
 
 ---
 
@@ -571,239 +804,6 @@ local triforce = require('triforce.lualine').components()
 -- Now all components use your custom config
 -- Result:  2h 34m  5  12/18 27 ●●●●●●●●●○ 90%
 ```
-
----
-
-## 🎮 Usage
-
-### Commands
-
-| Command                                                  | Description                                   |
-|----------------------------------------------------------|-----------------------------------------------|
-| `:lua require('triforce').show_profile()`                | Open the Triforce profile UI                  |
-| `:lua require('triforce').get_stats()`                   | Get current stats programmatically            |
-| `:lua require('triforce').reset_stats()`                 | Reset all stats (useful for testing)          |
-| `:lua require('triforce').save_stats()`                  | Force save stats immediately                  |
-| `:lua require('triforce').debug_languages()`             | Debug language tracking                       |
-| `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown              |
-
-### Profile UI
-
-The profile has **3 tabs**:
-
-1. **📊 Stats Tab**
-   - Level progress bar
-   - Session/time milestone progress
-   - Activity heatmap (7 months)
-   - Quick stats overview
-
-<img
-width="1224"
-height="970"
-alt="image"
-src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e"
-/>
-
-2. **🏆 Achievements Tab**
-   - View all unlocked achievements
-   - See locked achievements with unlock requirements
-   - Paginate through achievements (H/L or arrow keys)
-
-<img
-width="1219"
-height="774"
-alt="image"
-src="https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77"
-/>
-
-3. **💻 Languages Tab**
-   - Bar graph showing your most-used languages
-   - See character count breakdown by language
-
-<img
-width="1210"
-height="784"
-alt="image"
-src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81"
-/>
-
-**Keybindings in Profile:**
-- `Tab`: Cycle between tabs
-- `H` / `L` or `←` / `→`: Navigate achievement pages
-- `q` / `Esc`: Close profile
-
----
-
-## 🏆 Achievements
-
-Triforce includes **18 built-in achievements** across 5 categories:
-
-- 📝 **_Typing Milestones_**
-    1. 🌱 **First Steps**: Type 100 characters
-    2. ⚔️ **Getting Started**: Type 1,000 characters
-    3. 🛡️ **Dedicated Coder**: Type 10,000 characters
-    4. 📜 **Master Scribe**: Type 100,000 characters
-- 📈 **_Level Achievements_**
-    1. ⭐ **Rising Star**: Reach level 5
-    2. 💎 **Expert Coder**: Reach level 10
-    3. 👑 **Champion**: Reach level 25
-    4. 🔱 **Legend**: Reach level 50
-- 🔄 **_Session Achievements_**
-    1. 🔄 **Regular Visitor**: Complete 10 sessions
-    2. 📅 **Creature of Habit**: Complete 50 sessions
-    3. 🏆 **Dedicated Hero**: Complete 100 sessions
-- ⏰ **_Time Achievements_**
-    1. ⏰ **First Hour**: Code for 1 hour total
-    2. ⌛ **Committed**: Code for 10 hours total
-    3. 🕐 **Veteran**: Code for 100 hours total
-- 🌍 **_Polyglot Achievements_**
-    1. 🌍 **Polyglot Beginner**: Code in 3 languages
-    2. 🌎 **Polyglot**: Code in 5 languages
-    3. 🌏 **Master Polyglot**: Code in 10 languages
-    4. 🗺️ **Language Virtuoso**: Code in 15 languages
-
----
-
-## 🎨 Customization
-
-### Adding Custom Languages
-
-Triforce supports 50+ programming languages out of the box, but you can add more:
-
-```lua
-require('triforce').setup({
-  custom_languages = {
-    gleam = {
-      icon = '✨',
-      name = 'Gleam'
-    },
-    zig = {
-      icon = '⚡',
-      name = 'Zig'
-    },
-  },
-})
-```
-
-### Creating Custom Achievements
-
-Triforce now allows you to create new achievements by using `require('tracker.achievement').new_achievements()`.
-
-The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
-
-```lua
-{
-  id = 'template_achievement', ---@type string
-  name = '...', ---@type string
-  ---@type fun(stats?: Stats): boolean
-  check = function(stats)
-    return stats.foo > stats.bar -- NOTE: This is just an example
-  end,
-  icon = '...' or nil, ---@type string|nil
-  desc = '...' or nil, ---@type string|nil
-}
-```
-
-The `new_achievements()` function requires two parameters:
-
-1. Either a table like the one mentioned above OR a list of those (type: `Achievement[]|Achievement`)
-2. Your current stats (type: `Stats`)
-
-> [!CAUTION]
-> Don't forget to call `new_achievements()` with the mandatory second parameter!
->
-> We recommend passing `require('triforce.tracker').get_stats()` to it.
-
-**For example:**
-
-```lua
-local new_achievements = require('triforce.achievement').new_achievements
-
---- SINGLE TABLE
-local achievement = {
-  id = 'first_200',
-  name = 'On Track',
-  desc = 'Type 200 Characters',
-  check = function(stats)
-    return stats.chars_typed >= 200
-  end,
-}
-
-new_achievement(achievement, require('triforce.tracker').get_stats())
-
---- ARRAY OF ACHIEVEMENTS
-local arr = {
-  {
-    id = 'first_300',
-    name = 'Newbie',
-    desc = 'Type 300 Characters',
-    check = function(stats)
-      return stats.chars_typed >= 300
-    end,
-  },
-  {
-    id = 'level_100',
-    name = 'God-like',
-    desc = 'Reach level 100',
-    icon = '󰈸',
-    check = function(stats)
-      return stats.level >= 100
-    end,
-  },
-  -- ...
-}
-
-new_achievements(arr, require('triforce.tracker').get_stats())
-```
-
-### Disabling Notifications
-
-Turn off all notifications or specific types:
-
-```lua
-require('triforce').setup({
-  notifications = {
-    enabled = true,       -- Keep enabled
-    level_up = false,     -- Disable level up notifications
-    achievements = true,  -- Keep achievement notifications
-  },
-})
-```
-
-### Disable Auto-Keymap
-
-If you prefer to set your own keymap:
-
-```lua
-require('triforce').setup({
-  keymap = {
-    show_profile = nil, -- Don't create default keymap
-  },
-})
-
--- Set your own keymap
-vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Triforce Stats' })
-```
-
-### Customize Heatmap Colors
-
-If your colorscheme uses unconventional highlight groups, point the heatmap to
-colors that fit your palette. You can mix hex colors and links to existing
-highlight groups:
-
-```lua
-require('triforce').setup({
-  heat_highlights = {
-    TriforceHeat1 = 'Error',
-    TriforceHeat2 = 'DiagnosticVirtualTextWarn',
-    TriforceHeat3 = 'CursorLine',
-    TriforceHeat4 = '#424242',
-  },
-})
-```
-
-Each key corresponds to a heat level used in the profile activity graph. If you
-omit a key, the default color for that level is used.
 
 ---
 
