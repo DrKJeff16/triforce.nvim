@@ -1,13 +1,9 @@
 # 🕹️ triforce.nvim
 
-**Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels, and achievements while you work.
+**Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels,
+and achievements while you work.
 
-<img
-width="1920"
-height="1080"
-alt="image"
-src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac"
-/>
+![Showcase](https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac)
 
 ## 📑 Table of Contents
 
@@ -895,12 +891,8 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Star History
 
-<div align="center">
-
 **Made with ❤️ for the Neovim community**
 
 ⭐ Star this repo if you find it useful!
 
 [![Star History Chart](https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left)](https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left)
-
-</div>
