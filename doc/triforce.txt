@@ -31,19 +31,57 @@ levels, and achievements while you work.
 
 TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
 
-- |triforce-why-i-made-this|
-- |triforce-features|
-- |triforce-installation|
-- |triforce-configuration|
-- |triforce-usage|
-- |triforce-achievements|
-- |triforce-customization|
-- |triforce-lualine-integration|
-- |triforce-data-storage|
-- |triforce-roadmap|
-- |triforce-license|
-- |triforce-acknowledgments|
-- |triforce-support|
+1. |triforce-why-i-made-this|
+2. |triforce-features|
+3. |triforce-installation|1. |triforce-`lazy.nvim`|
+2. |triforce-`pckr.nvim`|
+3. |triforce-`paq-nvim`|
+4. |triforce-`vim-plug`|
+
+
+4. |triforce-configuration|1. |triforce-configuration-options|
+2. |triforce-level-progression|
+3. |triforce-xp-rewards|
+4. |triforce-custom-achievements|
+
+
+5. |triforce-usage|1. |triforce-commands|
+2. |triforce-profile-ui|
+
+
+6. |triforce-achievements|
+7. |triforce-customization|1. |triforce-adding-custom-languages|
+2. |triforce-disabling-notifications|
+3. |triforce-disabling-auto-keymap|
+4. |triforce-customizing-heatmap-colors|
+
+
+8. |triforce-lualine-integration|1. |triforce-available-components|
+2. |triforce-basic-setup|
+3. |triforce-quick-setup|
+4. |triforce-component-configuration|1. |triforce-level-component|
+2. |triforce-achievements-component|
+3. |triforce-streak-component|
+4. |triforce-session-time-component|
+
+
+5. |triforce-global-component-configuration|
+6. |triforce-example-configurations|1. |triforce-minimalist-setup|
+2. |triforce-full-stats-dashboard|
+3. |triforce-custom-style|
+
+
+
+
+9. |triforce-data-storage|1. |triforce-data-format|
+
+
+10. |triforce-roadmap|1. |triforce-future-features|
+
+
+11. |triforce-license|
+12. |triforce-acknowledgments|
+13. |triforce-support|
 
 ------------------------------------------------------------------------------
 
@@ -520,7 +558,7 @@ Turn off all notifications or specific types:
 <
 
 
-DISABLE AUTO-KEYMAP ~
+DISABLING AUTO-KEYMAP ~
 
 If you prefer to set your own keymap:
 
@@ -536,7 +574,7 @@ If you prefer to set your own keymap:
 <
 
 
-CUSTOMIZE HEATMAP COLORS ~
+CUSTOMIZING HEATMAP COLORS ~
 
 If your colorscheme uses unconventional highlight groups, point the heatmap to
 colors that fit your palette. You can mix hex colors and links to existing
