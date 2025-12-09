@@ -11,19 +11,48 @@ src="https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c
 
 ## 📑 Table of Contents
 
-- [Why I Made This](#-why-i-made-this)
-- [Features](#-features)
-- [Installation](#-installation)
-- [Configuration](#%EF%B8%8F-configuration)
-- [Usage](#-usage)
-- [Achievements](#-achievements)
-- [Customization](#-customization)
-- [Lualine Integration](#-lualine-integration)
-- [Data Storage](#-data-storage)
-- [Roadmap](#%EF%B8%8F-roadmap)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
-- [Support](#-support)
+1. [Why I Made This](#-why-i-made-this)
+2. [Features](#-features)
+3. [Installation](#-installation)
+    1. [`lazy.nvim`](#lazynvim)
+    2. [`pckr.nvim`](#pckrnvim)
+    3. [`paq-nvim`](#paq-nvim)
+    4. [`vim-plug`](#vim-plug)
+4. [Configuration](#%EF%B8%8F-configuration)
+    1. [Configuration Options](#configuration-options)
+    2. [Level Progression](#level-progression)
+    3. [XP Rewards](#xp-rewards)
+    4. [Custom Achievements](#custom-achievements)
+5. [Usage](#-usage)
+    1. [Commands](#commands)
+    2. [Profile UI](#profile-ui)
+6. [Achievements](#-achievements)
+7. [Customization](#-customization)
+    1. [Adding Custom Languages](#adding-custom-languages)
+    2. [Disabling Notifications](#disabling-notifications)
+    3. [Disabling Auto-Keymap](#disabling-auto-keymap)
+    4. [Customizing Heatmap Colors](#customizing-heatmap-colors)
+8. [Lualine Integration](#-lualine-integration)
+    1. [Available Components](#available-components)
+    2. [Basic Setup](#basic-setup)
+    3. [Quick Setup](#quick-setup)
+    4. [Component Configuration](#component-configuration)
+        1. [Level Component](#level-component)
+        2. [Achievements Component](#achievements-component)
+        3. [Streak Component](#streak-component)
+        4. [Session Time Component](#session-time-component)
+    5. [Global Component Configuration](#global-component-configuration)
+    6. [Example Configurations](#example-configurations)
+        1. [Minimalist Setup](#minimalist-setup)
+        2. [Full Stats Dashboard](#full-stats-dashboard)
+        3. [Custom Style](#custom-style)
+9. [Data Storage](#-data-storage)
+    1. [Data Format](#data-format)
+10. [Roadmap](#%EF%B8%8F-roadmap)
+    1. [Future Features](#future-features)
+11. [License](#-license)
+12. [Acknowledgments](#-acknowledgments)
+13. [Support](#-support)
 
 ---
 
@@ -467,7 +496,7 @@ require('triforce').setup({
 })
 ```
 
-### Disable Auto-Keymap
+### Disabling Auto-Keymap
 
 If you prefer to set your own keymap:
 
@@ -482,7 +511,7 @@ require('triforce').setup({
 vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Triforce Stats' })
 ```
 
-### Customize Heatmap Colors
+### Customizing Heatmap Colors
 
 If your colorscheme uses unconventional highlight groups, point the heatmap to
 colors that fit your palette. You can mix hex colors and links to existing
