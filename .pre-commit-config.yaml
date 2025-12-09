@@ -22,3 +22,9 @@ repos:
         entry: selene
         types: [lua]
         verbose: true
+      - id: check_eof
+        name: Run EOF Comments Check
+        language: system
+        entry: python3 scripts/ensure_eof_comment.py
+        types: [lua]
+        verbose: true
