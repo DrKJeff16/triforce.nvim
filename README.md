@@ -206,20 +206,21 @@ require('triforce').setup({
 
 ### Configuration Options
 
-| Option                       | Type            | Default                         | Description                           |
-|------------------------------|-----------------|---------------------------------|---------------------------------------|
-| `enabled`                    | `boolean`       | `true`                          | Enable/disable the plugin             |
-| `gamification_enabled`       | `boolean`       | `true`                          | Enable gamification features          |
-| `notifications.enabled`      | `boolean`       | `true`                          | Master toggle for notifications       |
-| `notifications.level_up`     | `boolean`       | `true`                          | Show level up notifications           |
-| `notifications.achievements` | `boolean`       | `true`                          | Show achievement notifications        |
-| `debug`                      | `boolean`       | `true`                          | Enable some debugging messages        |
-| `auto_save_interval`         | `number`        | `300`                           | Auto-save interval in seconds         |
-| `keymap.show_profile`        | `string\|nil`   | `nil`                           | Keymap for opening profile            |
-| `custom_languages`           | `table\|nil`    | `nil`                           | Custom language definitions           |
-| `level_progression`          | `table\|nil`    | [See below](#level-progression) | Custom XP requirements per level tier |
-| `xp_rewards`                 | `table\|nil`    | [See below](#xp-rewards)        | Custom XP rewards for actions         |
-| `heat_highlights`            | `table\|nil`    | Defaults shown above            | Override heatmap highlights (hex or links) |
+| Option                       | Type          | Default                           | Description                           |
+|------------------------------|---------------|-----------------------------------|---------------------------------------|
+| `enabled`                    | `boolean`     | `true`                            | Enable/disable the plugin             |
+| `gamification_enabled`       | `boolean`     | `true`                            | Enable gamification features          |
+| `notifications.enabled`      | `boolean`     | `true`                            | Master toggle for notifications       |
+| `notifications.level_up`     | `boolean`     | `true`                            | Show level up notifications           |
+| `notifications.achievements` | `boolean`     | `true`                            | Show achievement notifications        |
+| `debug`                      | `boolean`     | `true`                            | Enable some debugging messages        |
+| `auto_save_interval`         | `number`      | `300`                             | Auto-save interval in seconds         |
+| `keymap.show_profile`        | `string\|nil` | `nil`                             | Keymap for opening profile            |
+| `custom_languages`           | `table\|nil`  | `nil`                             | Custom language definitions           |
+| `level_progression`          | `table\|nil`  | [See below](#level-progression)   | Custom XP requirements per level tier |
+| `xp_rewards`                 | `table\|nil`  | [See below](#xp-rewards)          | Custom XP rewards for actions         |
+| `achievements`               | `table`       | [See below](#custom-achievements) | Custom achievements                   |
+| `heat_highlights`            | `table\|nil`  | Defaults shown above              | Override heatmap highlights (hex or links) |
 
 ### Level Progression
 
@@ -278,6 +279,63 @@ require('triforce').setup({
     char = 2,    -- More XP per character
     line = 5,    -- Moderate XP for lines
     save = 25,   -- Less emphasis on saves
+  },
+})
+```
+
+### Custom Achievements
+
+Triforce now allows you to create new achievements with the `achievements` setup option.
+
+**By default it's just an empty table.**
+
+> [!TIP]
+> The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
+>
+> ```lua
+> {
+>   id = 'template_achievement', ---@type string
+>   name = '...', ---@type string
+>   ---@type fun(stats?: Stats): boolean
+>   check = function(stats)
+>     return stats.foo > stats.bar -- NOTE: This is just an example
+>   end,
+>   icon = '...' or nil, ---@type string|nil
+>   desc = '...' or nil, ---@type string|nil
+> }
+> ```
+
+**For example:**
+
+```lua
+require('triforce').setup({
+  achievements = {
+    {
+      id = 'first_200',
+      name = 'On Track',
+      desc = 'Type 200 Characters',
+      check = function(stats)
+        return stats.chars_typed >= 200
+      end,
+    },
+    {
+      id = 'first_300',
+      name = 'Newbie',
+      desc = 'Type 300 Characters',
+      check = function(stats)
+        return stats.chars_typed >= 300
+      end,
+    },
+    {
+      id = 'level_100',
+      name = 'God-like',
+      desc = 'Reach level 100',
+      icon = '󰈸',
+      check = function(stats)
+        return stats.level >= 100
+      end,
+    },
+    -- ...
   },
 })
 ```
@@ -392,66 +450,6 @@ require('triforce').setup({
       name = 'Zig'
     },
   },
-})
-```
-
-### Creating Custom Achievements
-
-Triforce now allows you to create new achievements by using `require('triforce').new_achievements()`.
-
-The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
-
-```lua
-{
-  id = 'template_achievement', ---@type string
-  name = '...', ---@type string
-  ---@type fun(stats?: Stats): boolean
-  check = function(stats)
-    return stats.foo > stats.bar -- NOTE: This is just an example
-  end,
-  icon = '...' or nil, ---@type string|nil
-  desc = '...' or nil, ---@type string|nil
-}
-```
-
-The `new_achievements()` function requires either a table
-like the one mentioned above OR a list of those (type: `Achievement[]|Achievement`).
-
-**For example:**
-
-```lua
-local new_achievements = require('triforce').new_achievements
-
---- SINGLE TABLE
-new_achievements({
-  id = 'first_200',
-  name = 'On Track',
-  desc = 'Type 200 Characters',
-  check = function(stats)
-    return stats.chars_typed >= 200
-  end,
-})
-
---- ARRAY OF ACHIEVEMENTS
-new_achievements({
-  {
-    id = 'first_300',
-    name = 'Newbie',
-    desc = 'Type 300 Characters',
-    check = function(stats)
-      return stats.chars_typed >= 300
-    end,
-  },
-  {
-    id = 'level_100',
-    name = 'God-like',
-    desc = 'Reach level 100',
-    icon = '󰈸',
-    check = function(stats)
-      return stats.level >= 100
-    end,
-  },
-  -- ...
 })
 ```
 

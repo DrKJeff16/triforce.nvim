@@ -70,6 +70,8 @@
 ---@field heat_highlights? Triforce.Config.Heat
 ---Enable debugging messages
 ---@field debug? boolean
+---List of user-defined achievements
+---@field achievements? Achievement[]
 
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
@@ -85,6 +87,7 @@ local Triforce = {
       enabled = true,
       gamification_enabled = true,
       debug = false,
+      achievements = {},
       notifications = { enabled = true, level_up = true, achievements = true },
       auto_save_interval = 300,
       keymap = { show_profile = nil },
@@ -162,6 +165,10 @@ function Triforce.setup(opts)
 
   if Triforce.has_gamification(true) then
     require('triforce.tracker').setup()
+
+    if Triforce.config.achievements then
+      Triforce.new_achievements(Triforce.config.achievements)
+    end
   end
 end
 
