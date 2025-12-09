@@ -1,27 +1,6 @@
 *triforce.txt*         For NVIM >=v0.9.0         Last change: 2025 December 09
 
 ==============================================================================
-Table of Contents                                 *triforce-table-of-contents*
-
-1. triforce.nvim                                      |triforce-triforce.nvim|
-  - Table of Contents               |triforce-triforce.nvim-table-of-contents|
-  - Why I Made This                   |triforce-triforce.nvim-why-i-made-this|
-  - Features                                 |triforce-triforce.nvim-features|
-  - Installation                         |triforce-triforce.nvim-installation|
-  - Configuration                       |triforce-triforce.nvim-configuration|
-  - Usage                                       |triforce-triforce.nvim-usage|
-  - Achievements                         |triforce-triforce.nvim-achievements|
-  - Customization                       |triforce-triforce.nvim-customization|
-  - Lualine Integration           |triforce-triforce.nvim-lualine-integration|
-  - Data Storage                         |triforce-triforce.nvim-data-storage|
-  - Roadmap                                   |triforce-triforce.nvim-roadmap|
-  - License                                   |triforce-triforce.nvim-license|
-  - Acknowledgments                   |triforce-triforce.nvim-acknowledgments|
-  - Support                                   |triforce-triforce.nvim-support|
-  - Star History                         |triforce-triforce.nvim-star-history|
-2. Links                                                      |triforce-links|
-
-==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
 
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP,
