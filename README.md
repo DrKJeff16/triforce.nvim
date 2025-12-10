@@ -372,14 +372,14 @@ require('triforce').setup({
 
 | Command                                                  | Description                                    |
 |----------------------------------------------------------|------------------------------------------------|
-| `:Triforce profile` / `:Triforce stats`                  | Open the Triforce profile UI                   |
+| `:Triforce config`                                       | Open floating window showing your setup config |
+| `:Triforce debug languages`                              | Debug language tracking                        |
+| `:Triforce profile`                                      | Open the Triforce profile UI                   |
+| `:Triforce reset`                                        | Reset all stats (useful for testing)           |
+| `:Triforce stats`                                        | Get current stats programmatically             |
 | `:Triforce stats export`                                 | Export stats to a new Neovim buffer            |
 | `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown               |
-| `:Triforce stats config`                                 | Open floating window showing your setup config |
 | `:Triforce stats save`                                   | Force save stats immediately                   |
-| `:Triforce reset`                                        | Reset all stats (useful for testing)           |
-| `:Triforce debug languages`                              | Debug language tracking                        |
-| `:lua require('triforce').get_stats()`                   | Get current stats programmatically             |
 
 ### Profile UI
 
