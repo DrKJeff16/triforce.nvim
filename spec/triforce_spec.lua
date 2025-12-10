@@ -5,36 +5,38 @@ local assert = require('luassert')
 
 describe('triforce', function()
   local triforce ---@type Triforce
+  local config ---@type Triforce.Config
 
   before_each(function()
     -- Clear module cache to get fresh instance
     package.loaded.triforce = nil
     triforce = require('triforce')
+    config = require('triforce.config')
   end)
 
   describe('setup', function()
     it('should set default configuration', function()
       triforce.setup()
-      assert.is_true(triforce.config.enabled)
+      assert.is_true(config.config.enabled)
     end)
 
     it('should merge user configuration with defaults', function()
       triforce.setup({
         enabled = false,
       })
-      assert.is_false(triforce.config.enabled)
+      assert.is_false(config.config.enabled)
     end)
 
     it('should handle empty table parameter', function()
       local ok = pcall(triforce.setup, {})
       assert.is_true(ok)
-      assert.is_true(triforce.config.enabled)
+      assert.is_true(config.config.enabled)
     end)
 
     it('should handle nil options', function()
       local ok = pcall(triforce.setup, nil)
       assert.is_true(ok)
-      assert.is_true(triforce.config.enabled)
+      assert.is_true(config.config.enabled)
     end)
 
     local params = { 1, false, '', function() end }
