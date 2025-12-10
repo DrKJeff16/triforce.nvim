@@ -14,13 +14,13 @@ test: ## Run tests with busted
 	@busted
 
 lint: ## Run selene linter
-	selene lua
+	@selene lua
 
 format: ## Format code with stylua
-	stylua --check .
+	@stylua --check .
 
 format-fix: ensure_eof ## Format code with stylua (fix)
-	stylua .
+	@stylua .
 
 ensure_eof: scripts/ensure_eof_comment.py ## Run EOF checker script
 	@python scripts/ensure_eof_comment.py
@@ -28,6 +28,6 @@ ensure_eof: scripts/ensure_eof_comment.py ## Run EOF checker script
 check: lint test ## Run linter and tests
 
 install-deps: ## Install development dependencies
-	$(LUAROCKS_CMD) luassert
-	$(LUAROCKS_CMD) busted
-	$(LUAROCKS_CMD) nlua
+	@$(LUAROCKS_CMD) luassert
+	@$(LUAROCKS_CMD) busted
+	@$(LUAROCKS_CMD) nlua
