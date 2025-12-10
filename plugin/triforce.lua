@@ -21,6 +21,11 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
   local subcommand4 = opts.fargs[4] or ''
   local triforce = require('triforce')
 
+  if subcommand == 'config' then
+    require('triforce.config').toggle_window()
+    return
+  end
+
   if subcommand == 'profile' then
     triforce.show_profile()
     return
@@ -77,7 +82,8 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
 Usage: :Triforce profile
        :Triforce stats [export json | markdown </path/to/file>]
        :Triforce reset
-       :Triforce debug xp | achievement | languages | fix]],
+       :Triforce debug xp | achievement | languages | fix
+       :Triforce config]],
       vim.log.levels.INFO
     )
     return
@@ -104,7 +110,7 @@ end, {
   complete = function(_, line)
     local args = vim.split(line, '%s+', { trimempty = true })
     if #args == 1 then
-      return { 'profile', 'stats', 'reset', 'debug' }
+      return { 'profile', 'stats', 'reset', 'debug', 'config' }
     end
     if #args == 2 and args[2] == 'debug' then
       return { 'xp', 'achievement', 'languages', 'fix' }

@@ -100,6 +100,7 @@ local defaults = { ---@type TriforceConfig
 }
 
 ---@class Triforce.Config
+---@field float? { bufnr: integer, win: integer }|nil
 local Config = {
   config = {}, ---@type TriforceConfig
 }
@@ -153,6 +154,70 @@ function Config.setup(opts)
 
   -- Setup custom path if provided
   stats_module.db_path = Config.config.db_path
+end
+
+function Config.close_window()
+  if not Config.float then
+    return
+  end
+
+  vim.api.nvim_buf_delete(Config.float.bufnr, { force = true })
+  pcall(vim.api.nvim_win_close, Config.float.win, true)
+
+  Config.float = nil
+end
+
+function Config.toggle_window()
+  if Config.float then
+    Config.close_window()
+    return
+  end
+
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  local data = vim.split(Config.get_config(), '\n', { plain = true, trimempty = true })
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, data)
+
+  local height = math.floor(vim.o.lines * 0.85)
+  local width = math.floor(vim.o.columns * 0.85)
+  local title = 'Triforce Config'
+  local win = vim.api.nvim_open_win(bufnr, true, {
+    focusable = true,
+    border = 'single',
+    col = math.floor((vim.o.columns - width) / 2) - 1,
+    row = math.floor((vim.o.lines - height) / 2) - 1,
+    noautocmd = true,
+    relative = 'editor',
+    style = 'minimal',
+    title = title,
+    title_pos = 'center',
+    width = width,
+    height = height,
+    zindex = 30,
+  })
+
+  vim.wo[win].signcolumn = 'no'
+  vim.wo[win].list = false
+  vim.wo[win].number = false
+  vim.wo[win].wrap = false
+  vim.wo[win].colorcolumn = ''
+
+  vim.bo[bufnr].filetype = ''
+  vim.bo[bufnr].fileencoding = 'utf-8'
+  vim.bo[bufnr].buftype = 'nowrite'
+  vim.bo[bufnr].modifiable = false
+
+  vim.keymap.set('n', 'q', Config.close_window, { buffer = bufnr, noremap = true, silent = true })
+
+  Config.float = { bufnr = bufnr, win = win }
+end
+
+---@return string config_str
+function Config.get_config()
+  local opts = {} ---@type TriforceConfig
+  for k, v in pairs(Config.config) do
+    opts[k] = v
+  end
+  return vim.inspect(opts)
 end
 
 return Config
