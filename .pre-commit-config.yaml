@@ -28,3 +28,9 @@ repos:
         entry: python3 scripts/ensure_eof_comment.py
         types: [lua]
         verbose: true
+      - id: run_tests
+        name: Run Tests
+        language: system
+        entry: make test
+        types: [lua]
+        verbose: true
