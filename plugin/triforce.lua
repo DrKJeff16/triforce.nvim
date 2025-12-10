@@ -37,7 +37,7 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
 
   if subcommand == 'stats' then
     if subcommand2 == '' then
-      triforce.show_profile()
+      vim.notify(vim.inspect(triforce.get_stats()), vim.log.levels.INFO)
       return
     end
 
@@ -47,7 +47,14 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
     end
 
     if subcommand2 ~= 'export' then
-      vim.notify('Usage: :Triforce stats [ export [ json | markdown </path/to/file> ] ]', vim.log.levels.INFO)
+      vim.notify(
+        [[
+Usage: :Triforce stats
+        :Triforce stats export
+        :Triforce stats export json </path/to/file>
+        :Triforce stats export markdown </path/to/file>]],
+        vim.log.levels.INFO
+      )
       return
     end
 
@@ -57,7 +64,12 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
     end
 
     if not vim.list_contains({ 'json', 'markdown' }, subcommand3) then
-      vim.notify('Usage: :Triforce stats export json | markdown </path/to/file>', vim.log.levels.INFO)
+      vim.notify(
+        [[
+Usage: :Triforce stats export json <path/to/file>
+        :Triforce stats export markdown </path/to/file>]],
+        vim.log.levels.INFO
+      )
       return
     end
 
@@ -84,11 +96,15 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
   if subcommand ~= 'debug' then
     vim.notify(
       [[
-Usage: :Triforce profile
-       :Triforce stats [export json | markdown </path/to/file>]
-       :Triforce reset
+Usage: :Triforce config
        :Triforce debug xp | achievement | languages | fix
-       :Triforce config]],
+       :Triforce profile
+       :Triforce reset
+       :Triforce stats
+       :Triforce stats export
+       :Triforce stats export json <path/to/file>
+       :Triforce stats export markdown </path/to/file>
+       :Triforce stats save]],
       vim.log.levels.INFO
     )
     return
