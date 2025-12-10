@@ -75,6 +75,30 @@
 
 local util = require('triforce.util')
 
+local defaults = { ---@type TriforceConfig
+  enabled = true,
+  gamification_enabled = true,
+  debug = false,
+  achievements = {},
+  notifications = { enabled = true, level_up = true, achievements = true },
+  auto_save_interval = 300,
+  keymap = { show_profile = nil },
+  custom_languages = nil,
+  level_progression = {
+    tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
+    tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
+    tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
+  },
+  xp_rewards = { char = 1, line = 1, save = 50 },
+  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
+  heat_highlights = {
+    TriforceHeat1 = '#f0f0a0',
+    TriforceHeat2 = '#f0a0a0',
+    TriforceHeat3 = '#a0a0a0',
+    TriforceHeat4 = '#707070',
+  },
+}
+
 ---@class Triforce.Config
 local Config = {
   config = {}, ---@type TriforceConfig
@@ -97,33 +121,11 @@ function Config.has_gamification(silent)
   return false
 end
 
----@return TriforceConfig defaults
-function Config.defaults()
-  local defaults = { ---@type TriforceConfig
-    enabled = true,
-    gamification_enabled = true,
-    debug = false,
-    achievements = {},
-    notifications = { enabled = true, level_up = true, achievements = true },
-    auto_save_interval = 300,
-    keymap = { show_profile = nil },
-    custom_languages = nil,
-    level_progression = {
-      tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
-      tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
-      tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
-    },
-    xp_rewards = { char = 1, line = 1, save = 50 },
-    db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
-    heat_highlights = {
-      TriforceHeat1 = '#f0f0a0',
-      TriforceHeat2 = '#f0a0a0',
-      TriforceHeat3 = '#a0a0a0',
-      TriforceHeat4 = '#707070',
-    },
-  }
+---@param opts? TriforceConfig
+function Config.new_config(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  return defaults
+  Config.config = setmetatable(vim.tbl_deep_extend('keep', opts or {}, defaults), { __index = defaults })
 end
 
 ---Setup the plugin with user configuration
@@ -131,7 +133,7 @@ end
 function Config.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  Config.config = vim.tbl_deep_extend('force', Config.defaults(), opts or {})
+  Config.new_config(opts or {})
 
   if not Config.config.enabled then
     return
