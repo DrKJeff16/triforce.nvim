@@ -370,14 +370,16 @@ require('triforce').setup({
 
 ### Commands
 
-| Command                                                  | Description                                   |
-|----------------------------------------------------------|-----------------------------------------------|
-| `:lua require('triforce').show_profile()`                | Open the Triforce profile UI                  |
-| `:lua require('triforce').get_stats()`                   | Get current stats programmatically            |
-| `:lua require('triforce').reset_stats()`                 | Reset all stats (useful for testing)          |
-| `:lua require('triforce').save_stats()`                  | Force save stats immediately                  |
-| `:lua require('triforce').debug_languages()`             | Debug language tracking                       |
-| `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown              |
+| Command                                                  | Description                                    |
+|----------------------------------------------------------|------------------------------------------------|
+| `:Triforce profile` / `:Triforce stats`                  | Open the Triforce profile UI                   |
+| `:Triforce stats export`                                 | Export stats to a new Neovim buffer            |
+| `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown               |
+| `:Triforce stats config`                                 | Open floating window showing your setup config |
+| `:Triforce stats save`                                   | Force save stats immediately                   |
+| `:Triforce reset`                                        | Reset all stats (useful for testing)           |
+| `:Triforce debug languages`                              | Debug language tracking                        |
+| `:lua require('triforce').get_stats()`                   | Get current stats programmatically             |
 
 ### Profile UI
 
