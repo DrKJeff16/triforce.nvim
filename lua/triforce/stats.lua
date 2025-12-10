@@ -199,39 +199,6 @@ function Stats.save(stats)
   return true
 end
 
----Calculate total XP needed to reach a specific level
----@param level integer
----@return integer total_xp
-local function get_total_xp_for_level(level)
-  util.validate({ level = { level, { 'number' } } })
-  if level <= 1 then
-    return 0
-  end
-
-  local total_xp = 0
-  local config = Stats.level_config
-
-  -- Calculate XP for tier 1 (levels 1-10)
-  if level > config.tier_1.min_level then
-    total_xp = total_xp + (math.min(level - 1, config.tier_1.max_level) * config.tier_1.xp_per_level)
-  end
-
-  -- Calculate XP for tier 2 (levels 11-20)
-  if level > config.tier_2.min_level then
-    local tier_2_levels = math.min(level - 1, config.tier_2.max_level) - config.tier_2.min_level + 1
-    if tier_2_levels > 0 then
-      total_xp = total_xp + (tier_2_levels * config.tier_2.xp_per_level)
-    end
-  end
-
-  -- Calculate XP for tier 3 (levels 21+)
-  if level > config.tier_3.min_level then
-    total_xp = total_xp + ((level - config.tier_3.min_level) * config.tier_3.xp_per_level)
-  end
-
-  return total_xp
-end
-
 ---Calculate level from XP
 ---Simple tier-based progression:
 ---  Levels 1-10: 300 XP each
@@ -273,7 +240,7 @@ end
 ---@param current_level integer
 ---@return integer xp_needed
 function Stats.xp_for_next_level(current_level)
-  return get_total_xp_for_level(current_level + 1)
+  return util.get_total_xp_for_level(current_level + 1, Stats.level_config)
 end
 
 ---Add XP and update level

@@ -69,5 +69,42 @@ function Util.is_dict(T)
   return false
 end
 
+---Calculate total XP needed to reach a specific level
+---@param level integer
+---@param level_config LevelProgression
+---@return integer total_xp
+function Util.get_total_xp_for_level(level, level_config)
+  Util.validate({
+    level = { level, { 'number' } },
+    level_config = { level_config, { 'table' } },
+  })
+
+  if level <= 1 then
+    return 0
+  end
+
+  local total_xp = 0
+
+  -- Calculate XP for tier 1 (levels 1-10)
+  if level > level_config.tier_1.min_level then
+    total_xp = total_xp + (math.min(level - 1, level_config.tier_1.max_level) * level_config.tier_1.xp_per_level)
+  end
+
+  -- Calculate XP for tier 2 (levels 11-20)
+  if level > level_config.tier_2.min_level then
+    local tier_2_levels = math.min(level - 1, level_config.tier_2.max_level) - level_config.tier_2.min_level + 1
+    if tier_2_levels > 0 then
+      total_xp = total_xp + (tier_2_levels * level_config.tier_2.xp_per_level)
+    end
+  end
+
+  -- Calculate XP for tier 3 (levels 21+)
+  if level > level_config.tier_3.min_level then
+    total_xp = total_xp + ((level - level_config.tier_3.min_level) * level_config.tier_3.xp_per_level)
+  end
+
+  return total_xp
+end
+
 return Util
 -- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
