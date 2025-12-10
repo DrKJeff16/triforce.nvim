@@ -1,15 +1,15 @@
 # StyLua configuration for code formatting
 # Run with: stylua .
 
-column_width = 120
-line_endings = "Unix"
-indent_type = "Spaces"
-indent_width = 2
-quote_style = "AutoPreferSingle"
-call_parentheses = "Always"
-collapse_simple_statement = "Never"
-space_after_function_names ="Never"
-syntax = "LuaJIT"
+call_parentheses           = "Always"
+collapse_simple_statement  = "Never"
+column_width               = 120
+indent_type                = "Spaces"
+indent_width               = 2
+line_endings               = "Unix"
+quote_style                = "AutoPreferSingle"
+space_after_function_names = "Never"
+syntax                     = "LuaJIT"
 
 [sort_requires]
 enabled = false
