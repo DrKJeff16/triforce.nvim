@@ -24,7 +24,7 @@ local Tracker = {
 ---Get XP rewards from config
 ---@return XPRewards rewards
 local function get_xp_rewards()
-  return require('triforce').config.xp_rewards or { char = 1, line = 1, save = 50 }
+  return require('triforce.config').config.xp_rewards or { char = 1, line = 1, save = 50 }
 end
 
 ---Initialize the tracker
@@ -199,7 +199,7 @@ function Tracker.notify_level_up()
     return
   end
 
-  local notifications = require('triforce').config.notifications
+  local notifications = require('triforce.config').config.notifications
   if not notifications or not (notifications.enabled and notifications.level_up) then
     return
   end
@@ -226,7 +226,7 @@ function Tracker.notify_achievement(achievement_name, achievement_desc, achievem
     achievement_icon = { achievement_icon, { 'string', 'nil' }, true },
   })
 
-  local notifications = require('triforce').config.notifications
+  local notifications = require('triforce.config').config.notifications
   if not notifications or not (notifications.enabled and notifications.achievements) then
     return
   end

@@ -20,15 +20,23 @@ function Health.check()
     return
   end
   vim.health.ok('triforce module loaded successfully')
-  if not triforce.config.enabled then
-    vim.health.warn('Plugin is disabled in configuration')
+
+  vim.health.start('Triforce Config')
+  local conf_ok, config = pcall(require, 'triforce.config')
+  if not conf_ok then
+    vim.health.error('Failed to load triforce config')
+    return
+  end
+
+  if not config.config.enabled then
+    vim.health.warn('Triforce is disabled in configuration')
     return
   end
 
   vim.health.ok('Plugin is enabled')
 
   vim.health.start('Gamification')
-  if not triforce.config.gamification_enabled then
+  if not config.config.gamification_enabled then
     vim.health.warn('Gamification is disabled')
     return
   end

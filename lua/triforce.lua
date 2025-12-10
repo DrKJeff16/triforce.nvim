@@ -1,78 +1,3 @@
----@class LevelTier
----@field min_level integer Starting level for this tier
----@field max_level integer Ending level for this tier (use math.huge for infinite)
----@field xp_per_level integer XP required per level in this tier
-
----@class LevelTier3: LevelTier
----@field max_level number
-
----@class LevelProgression
----Default: Levels 1-10, 300 XP each
----@field tier_1 LevelTier
----Default: Levels 11-20, 500 XP each
----@field tier_2 LevelTier
----Default: Levels 21+, 1000 XP each
----@field tier_3 LevelTier3
-
----@class XPRewards
----@field char number XP gained per character typed (default: `1`)
----@field line number XP gained per new line (default: `1`)
----@field save number XP gained per file save (default: `50`)
-
----@class TriforceConfig.Keymap
----Keymap for showing profile. A `nil` value sets no keymap
----
----Set to a keymap like `"<leader>tp"` to enable
----@field show_profile? string
-
----Notification configuration
----@class TriforceConfig.Notifications
----Show level up and achievement notifications
----@field enabled? boolean
----Show level up notifications
----@field level_up? boolean
----Show achievement unlock notifications
----@field achievements? boolean
-
----Default highlight groups for the heats
----@class Triforce.Config.Heat
----@field TriforceHeat1? string
----@field TriforceHeat2? string
----@field TriforceHeat3? string
----@field TriforceHeat4? string
-
----Triforce setup configuration
----@class TriforceConfig
----Enable the plugin
----@field enabled? boolean
----Enable gamification features (stats, XP, achievements)
----@field gamification_enabled? boolean
----Notification configuration
----@field notifications? TriforceConfig.Notifications
----Auto-save stats interval in seconds (default: `300`)
----@field auto_save_interval? integer
----Keymap configuration
----@field keymap? TriforceConfig.Keymap
----Custom language definitions:
----
----```lua
------ Example
----{ rust = { icon = "", name = "Rust" } }
----```
----@field custom_languages? table<string, TriforceLanguage>
----Custom level progression tiers
----@field level_progression? LevelProgression
----Custom XP reward amounts for different actions
----@field xp_rewards? XPRewards
----Custom path for data file
----@field db_path? string
----Default highlight groups for the heats
----@field heat_highlights? Triforce.Config.Heat
----Enable debugging messages
----@field debug? boolean
----List of user-defined achievements
----@field achievements? Achievement[]
-
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
 local INFO = vim.log.levels.INFO
@@ -81,82 +6,24 @@ local util = require('triforce.util')
 ---@class Triforce
 local Triforce = {
   get_stats = require('triforce.tracker').get_stats,
-  config = {}, ---@type TriforceConfig
-  defaults = function() ---@return TriforceConfig default
-    local defaults = { ---@type TriforceConfig
-      enabled = true,
-      gamification_enabled = true,
-      debug = false,
-      achievements = {},
-      notifications = { enabled = true, level_up = true, achievements = true },
-      auto_save_interval = 300,
-      keymap = { show_profile = nil },
-      custom_languages = nil,
-      level_progression = {
-        tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
-        tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
-        tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
-      },
-      xp_rewards = { char = 1, line = 1, save = 50 },
-      db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
-      heat_highlights = {
-        TriforceHeat1 = '#f0f0a0',
-        TriforceHeat2 = '#f0a0a0',
-        TriforceHeat3 = '#a0a0a0',
-        TriforceHeat4 = '#707070',
-      },
-    }
-
-    return defaults
-  end,
 }
 
----@param silent? boolean
----@return boolean gamified
 function Triforce.has_gamification(silent)
   util.validate({ silent = { silent, { 'boolean', 'nil' }, true } })
 
   silent = silent ~= nil and silent or false
 
-  if Triforce.config.gamification_enabled ~= nil and Triforce.config.gamification_enabled then
-    return true
-  end
-
-  if not silent then
-    vim.notify('Gamification is not enabled in config', WARN)
-  end
-  return false
+  return require('triforce.config').has_gamification(silent)
 end
 
----Setup the plugin with user configuration
----@param opts? TriforceConfig User configuration options
 function Triforce.setup(opts)
-  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+  local config_module = require('triforce.config')
+  config_module.setup(opts)
 
-  Triforce.config = vim.tbl_deep_extend('force', Triforce.defaults(), opts or {})
-
-  if not Triforce.config.enabled then
-    return
-  end
-
-  local stats_module = require('triforce.stats')
-
-  -- Apply custom level progression to stats module
-  if Triforce.config.level_progression then
-    stats_module.level_config = Triforce.config.level_progression
-  end
-
-  -- Register custom languages if provided
-  if Triforce.config.custom_languages then
-    require('triforce.languages').register_custom_languages(Triforce.config.custom_languages)
-  end
-
-  -- Setup custom path if provided
-  stats_module.db_path = Triforce.config.db_path
-
+  local config = config_module.config
   -- Set up keymap if provided
-  if Triforce.config.keymap and Triforce.config.keymap.show_profile and Triforce.config.keymap.show_profile ~= '' then
-    vim.keymap.set('n', Triforce.config.keymap.show_profile, Triforce.show_profile, {
+  if config.keymap and config.keymap.show_profile and config.keymap.show_profile ~= '' then
+    vim.keymap.set('n', config.keymap.show_profile, Triforce.show_profile, {
       desc = 'Show Triforce Profile',
       silent = true,
       noremap = true,
@@ -169,8 +36,8 @@ function Triforce.setup(opts)
 
   require('triforce.tracker').setup()
 
-  if Triforce.config.achievements then
-    Triforce.new_achievements(Triforce.config.achievements)
+  if config.achievements then
+    Triforce.new_achievements(config.achievements)
   end
 end
 
