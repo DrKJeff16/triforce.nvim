@@ -118,14 +118,14 @@ function Triforce.has_gamification(silent)
 
   silent = silent ~= nil and silent or false
 
-  if not Triforce.config.gamification_enabled then
-    if not silent then
-      vim.notify('Gamification is not enabled in config', WARN)
-    end
-    return false
+  if Triforce.config.gamification_enabled ~= nil and Triforce.config.gamification_enabled then
+    return true
   end
 
-  return true
+  if not silent then
+    vim.notify('Gamification is not enabled in config', WARN)
+  end
+  return false
 end
 
 ---Setup the plugin with user configuration
@@ -163,12 +163,14 @@ function Triforce.setup(opts)
     })
   end
 
-  if Triforce.has_gamification(true) then
-    require('triforce.tracker').setup()
+  if not Triforce.has_gamification(true) then
+    return
+  end
 
-    if Triforce.config.achievements then
-      Triforce.new_achievements(Triforce.config.achievements)
-    end
+  require('triforce.tracker').setup()
+
+  if Triforce.config.achievements then
+    Triforce.new_achievements(Triforce.config.achievements)
   end
 end
 
