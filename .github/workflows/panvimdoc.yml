@@ -4,8 +4,8 @@ on:
     branches:
       - main
     paths:
-      - README.md
       - .github/workflows/panvimdoc.yml
+      - README.md
   workflow_dispatch:
 permissions:
   contents: write

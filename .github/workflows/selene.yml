@@ -3,11 +3,17 @@ on:
   push:
     paths:
       - '**.lua'
+      - '.github/workflows/selene.yml'
+      - selene.toml
+      - vim.yml
   pull_request:
     types:
       - opened
     paths:
       - '**.lua'
+      - '.github/workflows/selene.yml'
+      - selene.toml
+      - vim.yml
 jobs:
   selene_check:
     name: Lint With Selene
