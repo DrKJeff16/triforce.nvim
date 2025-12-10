@@ -41,6 +41,11 @@ vim.api.nvim_create_user_command('Triforce', function(opts)
       return
     end
 
+    if subcommand2 == 'save' then
+      triforce.save_stats()
+      return
+    end
+
     if subcommand2 ~= 'export' then
       vim.notify('Usage: :Triforce stats [ export [ json | markdown </path/to/file> ] ]', vim.log.levels.INFO)
       return
@@ -116,9 +121,9 @@ end, {
       return { 'xp', 'achievement', 'languages', 'fix' }
     end
     if #args == 2 and args[2] == 'stats' then
-      return { 'export' }
+      return { 'export', 'save' }
     end
-    if #args == 3 and args[3] == 'export' then
+    if #args == 3 and args[2] == 'stats' and args[3] == 'export' then
       return { 'json', 'markdown' }
     end
     return {}
