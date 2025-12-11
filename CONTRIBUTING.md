@@ -61,3 +61,7 @@ cd triforce.nvim
 # Symlink to Neovim config for testing
 ln -s "$(pwd)" ~/.local/share/nvim/site/pack/plugins/start/triforce.nvim
 ```
+
+<!--
+vim:ts=2:sts=2:sw=2:et:ai:si:sta:
+-->
