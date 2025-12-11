@@ -7,8 +7,10 @@ local util = require('triforce.util')
 ---Language configuration and icons
 ---@class Triforce.Languages
 local Languages = {
+  ---List of ignored languages (called from setup())
+  ignored_langs = {}, ---@type string[]
   ---Mappings for popular programming languages, in `{ name, icon }` tuples
-  langs = { ---@type table<string, TriforceLanguage|'EXCLUDED'>
+  langs = { ---@type table<string, TriforceLanguage>
     -- Web
     javascript = { name = 'JavaScript', icon = '' }, -- nf-dev-javascript
     typescript = { name = 'TypeScript', icon = '' }, -- nf-seti-typescript
@@ -102,38 +104,42 @@ local Languages = {
 function Languages.get_icon(ft)
   util.validate({ ft = { ft, { 'string' } } })
 
+  if vim.list_contains(Languages.ignored_langs, ft) then
+    return
+  end
+
   if not Languages.langs[ft] then
     return ''
   end
 
-  if Languages.langs[ft] == 'EXCLUDED' then
-    return
-  end
-
   return Languages.langs[ft].icon or ''
+end
+
+---@param ft string
+---@return boolean excluded
+function Languages.is_excluded(ft)
+  return vim.list_contains(Languages.ignored_langs, ft)
 end
 
 ---@param langs string[]
 function Languages.exclude_langs(langs)
   util.validate({ langs = { langs, { 'table' } } })
 
-  if vim.tbl_isempty(langs) then
-    return
-  end
-
-  for _, lang in ipairs(langs) do
-    Languages.langs[lang] = 'EXCLUDED'
-  end
+  Languages.ignored_langs = langs
 end
 
 ---Check if language should be tracked
 ---@param ft string
----@return boolean
+---@return boolean tracked
 function Languages.should_track(ft)
   util.validate({ ft = { ft, { 'string' } } })
 
+  if ft == '' then
+    return false
+  end
+
   -- Track only if we have an icon for it or if user adds custom mapping
-  return Languages.langs[ft] ~= nil and Languages.langs[ft] ~= 'EXCLUDED' and Languages.langs[ft].icon ~= nil
+  return not Languages.is_excluded(ft) and Languages.langs[ft] and Languages.langs[ft].icon ~= nil
 end
 
 ---Get display name for language
@@ -142,28 +148,29 @@ end
 function Languages.get_display_name(ft)
   util.validate({ ft = { ft, { 'string' } } })
 
-  if not Languages.langs[ft] then
-    return ''
+  if Languages.is_excluded(ft) then
+    return
   end
 
-  if Languages.langs[ft] == 'EXCLUDED' then
-    return
+  if not Languages.langs[ft] then
+    return ''
   end
 
   return Languages.langs[ft].name or ft
 end
 
 ---Get full display with icon
----@param ft string|nil
+---@param ft string
+---@return string|nil full_display
 function Languages.get_full_display(ft)
   util.validate({ ft = { ft, { 'string' } } })
 
-  local icon = Languages.get_icon(ft)
-  local name = Languages.get_display_name(ft)
-
-  if Languages.langs[ft] == 'EXCLUDED' then
+  if Languages.is_excluded(ft) then
     return
   end
+
+  local icon = Languages.get_icon(ft)
+  local name = Languages.get_display_name(ft)
 
   return icon == '' and name or ('%s %s'):format(icon, name)
 end
@@ -178,11 +185,10 @@ function Languages.register_custom_languages(custom_langs)
   end
 
   for ft, config in pairs(custom_langs) do
-    if not Languages.langs[ft] then
-      Languages.langs[ft] = { icon = '', name = '' }
-    end
-
-    if Languages.langs[ft] ~= 'EXCLUDED' then
+    if not Languages.is_excluded(ft) then
+      if not Languages.langs[ft] then
+        Languages.langs[ft] = { icon = '', name = '' }
+      end
       if config.icon then
         Languages.langs[ft].icon = config.icon
       end

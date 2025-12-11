@@ -1,3 +1,7 @@
+---@class TriforceLangData
+---@field lang string
+---@field count integer
+
 ---Profile UI using Volt
 local volt = require('volt')
 local voltui = require('volt.ui')
@@ -471,9 +475,11 @@ local function build_languages_tab()
   end
 
   -- Get language data and sort by character count
-  local lang_data = {} ---@type { lang: string, count: integer }[]
+  local lang_data = {} ---@type TriforceLangData[]
   for lang, count in pairs(stats.chars_by_language or {}) do
-    table.insert(lang_data, { lang = lang, count = count })
+    if not languages.is_excluded(lang) then
+      table.insert(lang_data, { lang = lang, count = count })
+    end
   end
 
   table.sort(lang_data, function(a, b)

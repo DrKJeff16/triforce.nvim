@@ -139,8 +139,8 @@ function Tracker.on_text_changed(bufnr)
   Tracker.dirty = true
 
   -- Track character by language
-  local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
-  if filetype and filetype ~= '' and require('triforce.languages').should_track(filetype) then
+  local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr }) ---@type string
+  if filetype ~= '' and require('triforce.languages').should_track(filetype) then
     -- Initialize if needed
     if not Tracker.current_stats.chars_by_language then
       Tracker.current_stats.chars_by_language = {}
