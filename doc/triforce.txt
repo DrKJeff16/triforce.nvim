@@ -219,6 +219,9 @@ Triforce comes with sensible defaults, but you can customize everything:
         save = 50,  -- XP per file save
       },
     
+      -- Add filetypes to be excluded
+      ignore_ft = {},
+    
       -- Override heatmap highlight groups (hex colors or existing hl groups)
       heat_highlights = {
         TriforceHeat1 = '#f0f0a0',
@@ -266,6 +269,9 @@ CONFIGURATION OPTIONS ~
 
   custom_languages             table\|nil    nil                  Custom language
                                                                   definitions
+
+  ignore_ft                    table\|nil    {}                   List of excluded
+                                                                  filetypes
 
   level_progression            table\|nil    See below            Custom XP requirements
                                                                   per level tier
