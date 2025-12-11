@@ -23,7 +23,7 @@ format-fix: ensure_eof ## Format code with stylua (fix)
 	@stylua .
 
 ensure_eof: scripts/ensure_eof_comment.py ## Run EOF checker script
-	@python scripts/ensure_eof_comment.py
+	@python scripts/ensure_eof_comment.py lua spec plugin -e lua
 
 check: lint test ## Run linter and tests
 
