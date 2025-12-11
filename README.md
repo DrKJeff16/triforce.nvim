@@ -213,6 +213,9 @@ require('triforce').setup({
     save = 50,  -- XP per file save
   },
 
+  -- Add filetypes to be excluded
+  ignore_ft = {},
+
   -- Override heatmap highlight groups (hex colors or existing hl groups)
   heat_highlights = {
     TriforceHeat1 = '#f0f0a0',
@@ -241,6 +244,7 @@ require('triforce').setup({
 | `auto_save_interval`         | `number`      | `300`                             | Auto-save interval in seconds         |
 | `keymap.show_profile`        | `string\|nil` | `nil`                             | Keymap for opening profile            |
 | `custom_languages`           | `table\|nil`  | `nil`                             | Custom language definitions           |
+| `ignore_ft`                  | `table\|nil`  | `{}`                              | List of excluded filetypes            |
 | `level_progression`          | `table\|nil`  | [See below](#level-progression)   | Custom XP requirements per level tier |
 | `xp_rewards`                 | `table\|nil`  | [See below](#xp-rewards)          | Custom XP rewards for actions         |
 | `achievements`               | `table`       | [See below](#custom-achievements) | Custom achievements                   |
