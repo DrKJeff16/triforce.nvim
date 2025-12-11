@@ -5,6 +5,7 @@
 ---@field desc? string
 ---@field icon? string
 
+local ERROR = vim.log.levels.ERROR
 local util = require('triforce.util')
 
 ---@class Triforce.Achievements
@@ -219,7 +220,7 @@ function Achievement.new_achievements(achievement, stats)
   })
 
   if vim.list_contains({ achievement.id, achievement.name }, '') then
-    vim.notify('Either new achievement id is ')
+    vim.notify('Either new achievement ID or name are empty!', ERROR)
     return
   end
 
