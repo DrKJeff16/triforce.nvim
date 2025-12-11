@@ -471,7 +471,7 @@ local function build_languages_tab()
   end
 
   -- Get language data and sort by character count
-  local lang_data = {}
+  local lang_data = {} ---@type { lang: string, count: integer }[]
   for lang, count in pairs(stats.chars_by_language or {}) do
     table.insert(lang_data, { lang = lang, count = count })
   end
@@ -557,9 +557,11 @@ local function build_languages_tab()
   for i = 1, math.min(Profile.max_language_entries, #lang_data) do
     local icon = languages.get_icon(lang_data[i].lang)
     local hl = 'Comment'
-    table.insert(graph_x_axis_parts, { icon ~= '' and icon or '', icon ~= '' and hl or 'Comment' })
-    if i < math.min(Profile.max_language_entries, #lang_data) then
-      table.insert(graph_x_axis_parts, { (' '):rep(4) }) -- 4 spaces between icons
+    if icon then
+      table.insert(graph_x_axis_parts, { icon ~= '' and icon or '', icon ~= '' and hl or 'Comment' })
+      if i < math.min(Profile.max_language_entries, #lang_data) then
+        table.insert(graph_x_axis_parts, { (' '):rep(4) }) -- 4 spaces between icons
+      end
     end
   end
 
@@ -573,21 +575,23 @@ local function build_languages_tab()
   end
 
   -- Language summary info
-  local language_info = {}
+  local language_info, summary_parts = { {} }, {}
+  local pre_msgs = { ' You code primarily in ', ', with ', ' and ' }
+  local hls = { 'TriforceRed', 'TriforceBlue', 'TriforcePurple' }
+  local i, added = 1, 1
   if display_count > 0 then
-    local summary_parts = {
-      { ' You code primarily in ' },
-      { languages.get_display_name(lang_data[1].lang), 'TriforceRed' },
-    }
+    local display_name
+    while display_count >= i and added <= 3 do
+      display_name = languages.get_display_name(lang_data[i].lang)
+      if display_name then
+        if added <= #pre_msgs then
+          table.insert(summary_parts, { pre_msgs[added] })
+        end
+        table.insert(summary_parts, { display_name, hls[added] })
+        added = added + 1
+      end
 
-    if display_count >= 2 then
-      table.insert(summary_parts, { ', with ' })
-      table.insert(summary_parts, { languages.get_display_name(lang_data[2].lang), 'TriforceBlue' })
-    end
-
-    if display_count >= 3 then
-      table.insert(summary_parts, { ' and ' })
-      table.insert(summary_parts, { languages.get_display_name(lang_data[3].lang), 'TriforcePurple' })
+      i = i + 1
     end
 
     if display_count >= 2 then
@@ -595,10 +599,6 @@ local function build_languages_tab()
     end
 
     language_info = { summary_parts, {} }
-  else
-    language_info = {
-      {},
-    }
   end
 
   return voltui.grid_row({

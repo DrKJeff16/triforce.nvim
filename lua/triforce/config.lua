@@ -72,6 +72,8 @@
 ---@field debug? boolean
 ---List of user-defined achievements
 ---@field achievements? Achievement[]
+---List of ignored filetypes
+---@field ignore_ft? string[]
 
 local util = require('triforce.util')
 
@@ -89,6 +91,7 @@ local defaults = { ---@type TriforceConfig
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
     tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
   },
+  ignore_ft = {},
   xp_rewards = { char = 1, line = 1, save = 50 },
   db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
   heat_highlights = {
@@ -146,6 +149,7 @@ function Config.setup(opts)
   end
 
   local stats_module = require('triforce.stats')
+  local langs_module = require('triforce.languages')
 
   -- Apply custom level progression to stats module
   if Config.config.level_progression then
@@ -154,7 +158,11 @@ function Config.setup(opts)
 
   -- Register custom languages if provided
   if Config.config.custom_languages then
-    require('triforce.languages').register_custom_languages(Config.config.custom_languages)
+    langs_module.register_custom_languages(Config.config.custom_languages)
+  end
+
+  if Config.config.ignore_ft then
+    langs_module.exclude_langs(Config.config.ignore_ft)
   end
 
   -- Setup custom path if provided
