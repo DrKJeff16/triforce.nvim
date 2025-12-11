@@ -122,11 +122,16 @@ function Config.has_gamification(silent)
   return false
 end
 
+---@return TriforceConfig defaults
+function Config.defaults()
+  return defaults
+end
+
 ---@param opts? TriforceConfig
 function Config.new_config(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  Config.config = setmetatable(vim.tbl_deep_extend('keep', opts or {}, defaults), { __index = defaults })
+  Config.config = setmetatable(vim.tbl_deep_extend('keep', opts or {}, Config.defaults()), { __index = defaults })
 end
 
 ---Setup the plugin with user configuration

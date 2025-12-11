@@ -613,7 +613,7 @@ end
 local function setup_highlights()
   local get_hl = require('volt.utils').get_hl
   local mix = require('volt.color').mix
-  local triforce = require('triforce')
+  local config = require('triforce.config')
 
   -- Get base colors
   local normal_bg = get_hl('Normal').bg
@@ -647,8 +647,8 @@ local function setup_highlights()
     { name = 4, mix_pct = 80 },
   }
 
-  local heat_hls = (triforce.config and triforce.config.heat_highlights)
-    or (triforce.defaults and triforce.defaults().heat_highlights)
+  local heat_hls = (config.config and config.config.heat_highlights)
+    or (config.defaults and config.defaults().heat_highlights)
     or {}
   for _, level in ipairs(heat_levels) do
     local hl = ('TriforceHeat%d'):format(level.name)

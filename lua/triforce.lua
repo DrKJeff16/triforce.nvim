@@ -16,9 +16,12 @@ function Triforce.has_gamification(silent)
   return require('triforce.config').has_gamification(silent)
 end
 
+---@param opts? TriforceConfig
 function Triforce.setup(opts)
+  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+
   local config_module = require('triforce.config')
-  config_module.setup(opts)
+  config_module.setup(opts or {})
 
   local config = config_module.config
   -- Set up keymap if provided
