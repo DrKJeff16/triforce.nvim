@@ -5,6 +5,8 @@
 ---@field [3]? boolean
 ---@field [4]? string
 
+local ERROR = vim.log.levels.ERROR
+
 ---Various utilities to be used for Triforce
 ---@class Triforce.Util
 local Util = {}
@@ -43,11 +45,29 @@ function Util.validate(T)
   end
 end
 
----@param x number
+---@param x number[]|number
 ---@return boolean int
 function Util.is_int(x)
-  Util.validate({ x = { x, { 'number' } } })
+  Util.validate({ x = { x, { 'table', 'number' } } })
 
+  ---@cast x number[]
+  if type(x) == 'table' then
+    if vim.tbl_isempty(x) then
+      return false
+    end
+
+    local int = true
+    for _, val in ipairs(x) do
+      if not Util.is_int(val) then
+        int = false
+        break
+      end
+    end
+
+    return int
+  end
+
+  ---@cast x number
   return (math.ceil(x) == x or math.floor(x) == x)
 end
 
@@ -104,6 +124,58 @@ function Util.get_total_xp_for_level(level, level_config)
   end
 
   return total_xp
+end
+
+---Format seconds to readable time
+---@param secs number
+---@return string time
+function Util.format_time(secs)
+  return ('%dh %dm'):format(math.floor(secs / 3600), math.floor((secs % 3600) / 60))
+end
+
+---Helper functions (copied from typr)
+---@return number day_i
+function Util.getday_i(day, month, year)
+  return tonumber(os.date('%w', os.time({ year = tostring(year), month = month, day = day }))) + 1
+end
+
+---@return string formatted_str
+function Util.double_digits(day)
+  return (day >= 10 and '%s' or '0%s'):format(day)
+end
+
+---@param curr integer
+---@param first integer
+---@param last integer
+---@param back? boolean
+---@return integer cycled
+function Util.cycle_range(curr, first, last, back)
+  Util.validate({
+    curr = { curr, { 'number' } },
+    first = { first, { 'number' } },
+    last = { last, { 'number' } },
+    back = { back, { 'boolean', 'nil' }, true },
+  })
+  back = back ~= nil and back or false
+
+  if not Util.is_int({ curr, first, last }) then
+    error('Value is not an integer!', ERROR)
+  end
+
+  if last < first then
+    first, last = last, first
+  end
+
+  if curr > last or curr < first then
+    error('Number to be cycled is out of range!', ERROR)
+  end
+
+  local cycled = curr + 1 > last and first or curr + 1
+  if back then
+    cycled = curr - 1 < first and last or curr - 1
+  end
+
+  return cycled
 end
 
 return Util
