@@ -21,12 +21,6 @@ local Tracker = {
   debug = false, ---@type boolean
 }
 
----Get XP rewards from config
----@return XPRewards rewards
-local function get_xp_rewards()
-  return require('triforce.config').config.xp_rewards or { char = 1, line = 1, save = 50 }
-end
-
 ---Initialize the tracker
 ---@param debug? boolean
 function Tracker.setup(debug)
@@ -88,7 +82,7 @@ function Tracker.setup(debug)
 end
 
 ---Check if date has rolled over and update daily activity
-local function check_date_rollover()
+function Tracker.check_date_rollover()
   local today = os.date('%Y-%m-%d')
   if today == Tracker.current_date then
     return
@@ -113,7 +107,7 @@ function Tracker.on_text_changed(bufnr)
   local achievement_module = require('triforce.achievement')
 
   -- Check for day rollover
-  check_date_rollover()
+  Tracker.check_date_rollover()
 
   local buftype = vim.api.nvim_get_option_value('buftype', { buf = bufnr })
   if vim.list_contains({ 'terminal', 'help', 'nowrite', 'nofile' }, buftype) then
@@ -128,7 +122,7 @@ function Tracker.on_text_changed(bufnr)
     local new_lines = current_line_count - previous_line_count
     Tracker.current_stats.lines_typed = Tracker.current_stats.lines_typed + new_lines
     Tracker.lines_today = Tracker.lines_today + new_lines
-    stats_module.add_xp(Tracker.current_stats, get_xp_rewards().line * new_lines)
+    stats_module.add_xp(Tracker.current_stats, util.get_xp_rewards().line * new_lines)
   end
 
   -- Update the tracked line count
@@ -149,7 +143,7 @@ function Tracker.on_text_changed(bufnr)
     Tracker.current_stats.chars_by_language[filetype] = (Tracker.current_stats.chars_by_language[filetype] or 0) + 1
   end
 
-  if stats_module.add_xp(Tracker.current_stats, get_xp_rewards().char) then
+  if stats_module.add_xp(Tracker.current_stats, util.get_xp_rewards().char) then
     Tracker.notify_level_up()
   end
 
@@ -165,7 +159,7 @@ function Tracker.on_new_line()
   end
 
   Tracker.current_stats.lines_typed = Tracker.current_stats.lines_typed + 1
-  require('triforce.stats').add_xp(Tracker.current_stats, get_xp_rewards().line)
+  require('triforce.stats').add_xp(Tracker.current_stats, util.get_xp_rewards().line)
 end
 
 ---Track file saves
@@ -174,7 +168,7 @@ function Tracker.on_save()
     return
   end
 
-  local leveled_up = require('triforce.stats').add_xp(Tracker.current_stats, get_xp_rewards().save)
+  local leveled_up = require('triforce.stats').add_xp(Tracker.current_stats, util.get_xp_rewards().save)
   Tracker.dirty = true
 
   if leveled_up then

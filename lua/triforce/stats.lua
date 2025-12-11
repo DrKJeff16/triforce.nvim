@@ -54,32 +54,8 @@ end
 
 ---Get the stats file path
 ---@return string db_path
-local function get_stats_path()
+function Stats.get_stats_path()
   return Stats.db_path or Stats.default_stats().db_path
-end
-
----Prepare stats for JSON encoding (handle empty tables)
----@param stats Stats
----@return Stats copy
-local function prepare_for_save(stats)
-  util.validate({ stats = { stats, { 'table' } } })
-
-  local copy = vim.deepcopy(stats)
-
-  -- Use `vim.empty_dict()` to ensure empty tables encode as `{}` not `[]`
-  if vim.tbl_isempty(copy.achievements) then
-    copy.achievements = vim.empty_dict()
-  end
-
-  if vim.tbl_isempty(copy.chars_by_language) then
-    copy.chars_by_language = vim.empty_dict()
-  end
-
-  if vim.tbl_isempty(copy.daily_activity) then
-    copy.daily_activity = vim.empty_dict()
-  end
-
-  return copy
 end
 
 ---Load stats from disk
@@ -89,7 +65,7 @@ function Stats.load(debug)
   util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
   debug = debug ~= nil and debug or false
 
-  local path = get_stats_path()
+  local path = Stats.get_stats_path()
 
   -- Check if file exists
   if vim.fn.filereadable(path) == 0 then
@@ -172,8 +148,8 @@ function Stats.save(stats)
   end
 
   -- Prepare data
-  local data_to_save = prepare_for_save(stats)
-  local path = get_stats_path()
+  local data_to_save = util.prepare_for_save(stats)
+  local path = Stats.get_stats_path()
 
   -- Encode to JSON
   local ok, json = pcall(vim.json.encode, data_to_save)
@@ -282,13 +258,6 @@ function Stats.end_session(stats)
   stats.last_session_start = 0
 end
 
----Get current date in YYYY-MM-DD format
----@param timestamp? integer Optional timestamp, defaults to current time
-local function get_date_string(timestamp)
-  util.validate({ timestamp = { timestamp, { 'number', 'nil' }, true } })
-  return os.date('%Y-%m-%d', timestamp or os.time())
-end
-
 ---Get timestamp for start of day
 ---@param date_str string Date in YYYY-MM-DD format
 local function get_day_start(date_str)
@@ -326,8 +295,8 @@ function Stats.calculate_streaks(stats)
   local current_streak = 0
   local longest_streak = 0
   local streak = 0
-  local today = get_date_string()
-  local yesterday = get_date_string(os.time() - 86400)
+  local today = util.get_date_string()
+  local yesterday = util.get_date_string(os.time() - 86400)
 
   -- Calculate streaks by iterating through sorted dates
   for i = #dates, 1, -1 do
@@ -386,7 +355,7 @@ function Stats.record_daily_activity(stats, lines_today)
     stats.daily_activity = {}
   end
 
-  local today = get_date_string()
+  local today = util.get_date_string()
   stats.daily_activity[today] = (stats.daily_activity[today] or 0) + lines_today
 
   -- Update streaks

@@ -45,6 +45,44 @@ function Util.validate(T)
   end
 end
 
+---Get current date in YYYY-MM-DD format
+---@param timestamp? integer Optional timestamp, defaults to current time
+function Util.get_date_string(timestamp)
+  Util.validate({ timestamp = { timestamp, { 'number', 'nil' }, true } })
+
+  return os.date('%Y-%m-%d', timestamp or os.time())
+end
+
+---Get XP rewards from config
+---@return XPRewards rewards
+function Util.get_xp_rewards()
+  return require('triforce.config').config.xp_rewards or { char = 1, line = 1, save = 50 }
+end
+
+---Prepare stats for JSON encoding (handle empty tables)
+---@param stats Stats
+---@return Stats copy
+function Util.prepare_for_save(stats)
+  Util.validate({ stats = { stats, { 'table' } } })
+
+  local copy = vim.deepcopy(stats)
+
+  -- Use `vim.empty_dict()` to ensure empty tables encode as `{}` not `[]`
+  if vim.tbl_isempty(copy.achievements) then
+    copy.achievements = vim.empty_dict()
+  end
+
+  if vim.tbl_isempty(copy.chars_by_language) then
+    copy.chars_by_language = vim.empty_dict()
+  end
+
+  if vim.tbl_isempty(copy.daily_activity) then
+    copy.daily_activity = vim.empty_dict()
+  end
+
+  return copy
+end
+
 ---@param x number[]|number
 ---@return boolean int
 function Util.is_int(x)
