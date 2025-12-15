@@ -1,5 +1,62 @@
 local util = require('triforce.util')
 
+---Level component config
+---@class LevelShow
+---Show level number
+---@field level? boolean
+---Show progress bar
+---@field bar? boolean
+---Show percentage
+---@field percent? boolean
+---Show XP numbers (current/needed)
+---@field xp? boolean
+
+---@class BarOptions
+---@field length? integer
+---@field chars? { filled: string, empty: string }
+
+---Level component config
+---@class Triforce.LualineConfig.Level
+---Text prefix before level number
+---@field prefix? string|'Lv.'
+---Stores which components will be shown
+---@field show? LevelShow
+---Bar options
+---@field bar BarOptions
+
+---Achievements component config
+---@class Triforce.LualineConfig.Achievements
+---Nerd Font trophy icon
+---@field icon? string|''
+---Show unlocked/total count
+---@field show_count? boolean
+
+---Streak component config
+---@class Triforce.LualineConfig.Streak
+---Nerd Font flame icon
+---@field icon? string|''
+---Show number of days
+---@field show_days?  boolean
+
+---Session time component config
+---@class Triforce.LualineConfig.SessionTime
+---Nerd Font clock icon
+---@field icon? string|''
+---Show time duration
+---@field show_duration? boolean
+---Can be either `'short'` (`2h 34m`) or `'long'` (`2:34:12`)
+---@field format 'short'|'long'
+
+---@class Triforce.LualineConfig
+---Level component config
+---@field level Triforce.LualineConfig.Level
+---Achievements component config
+---@field achievements Triforce.LualineConfig.Achievements
+---Streak component config
+---@field streak Triforce.LualineConfig.Streak
+---Session time component config
+---@field session_time Triforce.LualineConfig.SessionTime
+
 ---Lualine integration components for Triforce
 ---Provides the following modular statusline components:
 --- - level
@@ -7,48 +64,22 @@ local util = require('triforce.util')
 --- - streak
 --- - session time
 ---@class Triforce.Lualine
-local Lualine = {}
-
----Default configuration for lualine components
----@class Triforce.Lualine.Config
-Lualine.config = {
-  ---Level component config
-  ---@class Triforce.Lualine.Config.Level
-  level = {
-    prefix = 'Lv.', ---@type string Text prefix before level number
-    show_level = true, ---@type boolean Show level number
-    show_bar = true, ---@type boolean Show progress bar
-    show_percent = false, ---@type boolean Show percentage
-    show_xp = false, ---@type boolean Show XP numbers (current/needed)
-    bar_length = 8, ---@type integer Length of progress bar
-    bar_chars = { filled = '█', empty = '░' }, ---@type { filled: string, empty: string } Bar characters
-  },
-
-  ---Achievements component config
-  ---@class Triforce.Lualine.Config.Achievements
-  achievements = {
-    icon = '', ---@type string|'' Nerd Font trophy icon
-    show_count = true, ---@type boolean Show unlocked/total count
-  },
-
-  ---Streak component config
-  ---@class Triforce.Lualine.Config.Streak
-  streak = {
-    icon = '', ---@type string|'' Nerd Font flame icon
-    show_days = true, ---@type boolean Show number of days
-  },
-
-  ---Session time component config
-  ---@class Triforce.Lualine.Config.SessionTime
-  session_time = {
-    icon = '', ---@type string|'' Nerd Font clock icon
-    show_duration = true, ---@type boolean Show time duration
-    format = 'short', ---@type 'short'|'long' 'short' (`2h 34m`) or 'long' (`2:34:12`)
+local Lualine = {
+  ---Default configuration for lualine components
+  config = { ---@type Triforce.LualineConfig
+    level = {
+      prefix = 'Lv.',
+      show = { level = true, bar = true, percent = false, xp = false },
+      bar = { length = 8, chars = { filled = '█', empty = '░' } },
+    },
+    achievements = { icon = '', show_count = true },
+    streak = { icon = '', show_days = true },
+    session_time = { icon = '', show_duration = true, format = 'short' },
   },
 }
 
 ---Setup lualine integration with custom config
----@param opts? Triforce.Lualine.Config User configuration
+---@param opts? Triforce.LualineConfig User configuration
 function Lualine.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
@@ -119,7 +150,7 @@ local function format_time(seconds, format)
 end
 
 ---Level component - Shows level and XP progress
----@param opts? Triforce.Lualine.Config.Level Component-specific options
+---@param opts? Triforce.LualineConfig.Level Component-specific options
 ---@return string component
 function Lualine.level(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -142,22 +173,22 @@ function Lualine.level(opts)
   local parts = {} ---@type string[]
 
   -- Prefix and level number
-  if config.show_level then
+  if config.show.level then
     table.insert(parts, not config.prefix and tostring(stats.level) or (config.prefix .. stats.level))
   end
 
   -- Progress bar
-  if config.show_bar then
-    table.insert(parts, create_progress_bar(xp_progress, xp_needed, config.bar_length, config.bar_chars))
+  if config.show.bar then
+    table.insert(parts, create_progress_bar(xp_progress, xp_needed, config.bar.length, config.bar.chars))
   end
 
   -- Percentage
-  if config.show_percent then
+  if config.show.percent then
     table.insert(parts, ('%d%%'):format(math.floor(xp_progress / xp_needed) * 100))
   end
 
   -- XP numbers
-  if config.show_xp then
+  if config.show.xp then
     table.insert(parts, ('%d/%d'):format(xp_progress, xp_needed))
   end
 
@@ -235,7 +266,7 @@ function Lualine.streak(opts)
 end
 
 ---Session time component - Shows current session duration
----@param opts? Triforce.Lualine.Config.SessionTime Component-specific options
+---@param opts? Triforce.LualineConfig.SessionTime Component-specific options
 ---@return string component
 function Lualine.session_time(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -269,8 +300,8 @@ function Lualine.session_time(opts)
 end
 
 ---Convenience function to get all components at once
----@param opts? Triforce.Lualine.Config Configuration for all components
----@return Triforce.Lualine.Config components Table with level, achievements, streak, session_time functions
+---@param opts? Triforce.LualineConfig Configuration for all components
+---@return Triforce.LualineConfig components Table with level, achievements, streak, session_time functions
 function Lualine.components(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
