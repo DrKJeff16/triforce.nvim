@@ -1,7 +1,10 @@
 ---@class LevelTier
----@field min_level integer Starting level for this tier
----@field max_level integer Ending level for this tier (use math.huge for infinite)
----@field xp_per_level integer XP required per level in this tier
+---Starting level for this tier
+---@field min_level integer
+---Ending level for this tier (use math.huge for infinite)
+---@field max_level integer
+---XP required per level in this tier
+---@field xp_per_level integer
 
 ---@class LevelTier3: LevelTier
 ---@field max_level number
@@ -15,9 +18,12 @@
 ---@field tier_3 LevelTier3
 
 ---@class XPRewards
----@field char number XP gained per character typed (default: `1`)
----@field line number XP gained per new line (default: `1`)
----@field save number XP gained per file save (default: `50`)
+---XP gained per character typed (default: `1`)
+---@field char number
+---XP gained per new line (default: `1`)
+---@field line number
+---XP gained per file save (default: `50`)
+---@field save number
 
 ---@class TriforceConfig.Keymap
 ---Keymap for showing profile. A `nil` value sets no keymap
