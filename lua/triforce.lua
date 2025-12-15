@@ -8,14 +8,6 @@ local Triforce = {
   get_stats = require('triforce.tracker').get_stats,
 }
 
-function Triforce.has_gamification(silent)
-  util.validate({ silent = { silent, { 'boolean', 'nil' }, true } })
-
-  silent = silent ~= nil and silent or false
-
-  return require('triforce.config').has_gamification(silent)
-end
-
 ---@param opts? TriforceConfig
 function Triforce.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
@@ -33,7 +25,7 @@ function Triforce.setup(opts)
     })
   end
 
-  if not Triforce.has_gamification(true) then
+  if not config_module.has_gamification(true) then
     return
   end
 
@@ -46,7 +38,7 @@ end
 
 ---Show profile UI
 function Triforce.show_profile()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -60,7 +52,7 @@ end
 
 ---Reset all stats (useful for testing)
 function Triforce.reset_stats()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -69,7 +61,7 @@ end
 
 ---Debug language tracking
 function Triforce.debug_languages()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -78,7 +70,7 @@ end
 
 ---Force save stats
 function Triforce.save_stats()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -100,7 +92,7 @@ end
 
 ---Debug: Show current XP progress
 function Triforce.debug_xp()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -109,7 +101,7 @@ end
 
 ---Debug: Test achievement notification
 function Triforce.debug_achievement()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -118,7 +110,7 @@ end
 
 ---Debug: Fix level/XP mismatch
 function Triforce.debug_fix_level()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -126,7 +118,7 @@ function Triforce.debug_fix_level()
 end
 
 function Triforce.export_stats()
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -141,7 +133,7 @@ function Triforce.export_stats_to_json(file, indent)
     file = { file, { 'string' } },
     indent = { indent, { 'string', 'nil' }, true },
   })
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -152,7 +144,7 @@ end
 ---@param file string
 function Triforce.export_stats_to_md(file)
   util.validate({ file = { file, { 'string' } } })
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
@@ -162,7 +154,7 @@ end
 ---@param achievements Achievement[]|Achievement
 function Triforce.new_achievements(achievements)
   util.validate({ achievements = { achievements, { 'table' } } })
-  if not Triforce.has_gamification() then
+  if not require('triforce.config').has_gamification() then
     return
   end
 
