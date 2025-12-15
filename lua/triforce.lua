@@ -162,4 +162,4 @@ function Triforce.new_achievements(achievements)
 end
 
 return Triforce
--- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
+-- vim: set ts=2 sts=2 sw=2 et ai si sta:

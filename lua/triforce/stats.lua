@@ -475,4 +475,4 @@ function Stats.export_to_md(stats, target)
 end
 
 return Stats
--- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
+-- vim: set ts=2 sts=2 sw=2 et ai si sta:

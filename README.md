@@ -895,6 +895,4 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 [![Star History Chart](https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left)](https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left)
 
-<!--
-vim:ts=2:sts=2:sw=2:et:ai:si:sta:
--->
+<!-- vim: set ts=2 sts=2 sw=2 et ai si sta: -->

@@ -222,4 +222,4 @@ function RandStats.format_language_name(filetype)
 end
 
 return RandStats
--- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
+-- vim: set ts=2 sts=2 sw=2 et ai si sta:

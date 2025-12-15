@@ -152,4 +152,4 @@ vim.keymap.set('n', '<Plug>(TriforceProfile)', require('triforce').show_profile,
   silent = true,
   desc = 'Triforce: Show profile',
 })
--- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
+-- vim: set ts=2 sts=2 sw=2 et ai si sta:

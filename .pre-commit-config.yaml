@@ -22,12 +22,6 @@ repos:
         entry: selene
         types: [lua]
         verbose: true
-      - id: check_eof
-        name: Run EOF Comments Check
-        language: system
-        entry: make ensure_eof
-        types: [lua]
-        verbose: true
       - id: run_tests
         name: Run Tests
         language: system

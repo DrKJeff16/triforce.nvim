@@ -200,4 +200,4 @@ function Languages.register_custom_languages(custom_langs)
 end
 
 return Languages
--- vim:ts=2:sts=2:sw=2:et:ai:si:sta:
+-- vim: set ts=2 sts=2 sw=2 et ai si sta:
