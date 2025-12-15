@@ -611,8 +611,7 @@ end
 -- Show percentage instead of bar
 function()
   return require('triforce.lualine').level({
-    show_bar = false,
-    show_percent = true,
+    show = { bar = false, percent = true },
   })
 end
 -- Result: Lv.27 90%
@@ -620,10 +619,8 @@ end
 -- Show everything (XP numbers + percentage)
 function()
   return require('triforce.lualine').level({
-    show_bar = true,
-    show_percent = true,
-    show_xp = true,
-    bar_length = 8,
+    show = { bar = true, percent = true, xp = true },
+    bar = { length = 8 },
   })
 end
 -- Result: Lv.27 ████████ 90% 450/500
@@ -631,8 +628,10 @@ end
 -- Customize bar style
 function()
   return require('triforce.lualine').level({
-    bar_chars = { filled = '●', empty = '○' },
-    bar_length = 10,
+    bar = {
+      chars = { filled = '●', empty = '○' },
+      length = 10,
+    },
   })
 end
 -- Result: Lv.27 ●●●●●●●●●○
@@ -648,12 +647,14 @@ end
 
 **Options:**
 - `prefix` (string): Text prefix before level number (default: `'Lv.'`)
-- `show_level` (boolean): Show level number (default: `true`)
-- `show_bar` (boolean): Show progress bar (default: `true`)
-- `show_percent` (boolean): Show percentage (default: `false`)
-- `show_xp` (boolean): Show XP numbers like `450/500` (default: `false`)
-- `bar_length` (number): Progress bar length (default: `6`)
-- `bar_chars` (table): `{ filled = '█', empty = '░' }` (default)
+- `show` (table): Toggles for showing different components:
+    - `level` (boolean): Show level number (default: `true`)
+    - `bar` (boolean): Show progress bar (default: `true`)
+    - `percent` (boolean): Show percentage (default: `false`)
+    - `xp` (boolean): Show XP numbers like `450/500` (default: `false`)
+- `bar` (table): Bar properties:
+    - `length` (number): Progress bar length (default: `6`)
+    - `chars` (table): `{ filled = '█', empty = '░' }` (default)
 
 #### Achievements Component
 
@@ -688,9 +689,7 @@ end
 
 -- Different icon
 function()
-  return require('triforce.lualine').streak({
-    icon = '',
-  })
+  return require('triforce.lualine').streak({ icon = '' })
 end
 -- Result:  5
 ```
@@ -742,19 +741,12 @@ Set defaults for all components:
 require('triforce.lualine').setup({
   level = {
     prefix = 'Level ',
-    bar_length = 8,
-    show_percent = true,
+    bar = { length = 8 },
+    show = { percent = true },
   },
-  achievements = {
-    icon = '',
-  },
-  streak = {
-    icon = '',
-  },
-  session_time = {
-    icon = '',
-    format = 'long',
-  },
+  achievements = { icon = '' },
+  streak = { icon = '' },
+  session_time = { icon = '', format = 'long' },
 })
 
 -- Then use components normally
@@ -805,9 +797,8 @@ require('lualine').setup({
 require('triforce.lualine').setup({
   level = {
     prefix = '',  -- No prefix, just number
-    bar_chars = { filled = '●', empty = '○' },
-    bar_length = 10,
-    show_percent = true,
+    bar = { chars = { filled = '●', empty = '○' }, length = 10 },
+    show = { percent = true },
   },
   achievements = {
     icon = '',  -- medal icon
