@@ -141,6 +141,13 @@ function Config.new_config(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   Config.config = setmetatable(vim.tbl_deep_extend('keep', opts or {}, Config.defaults()), { __index = defaults })
+
+  local keys = vim.tbl_keys(Config.defaults()) ---@type string[]
+  for k, v in pairs(Config.config) do
+    if not vim.list_contains(keys, k) then
+      Config.config[k] = nil
+    end
+  end
 end
 
 ---Setup the plugin with user configuration

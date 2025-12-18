@@ -1,8 +1,6 @@
 -- Example test file for triforce.nvim
 -- Run with: busted or luarocks test --local
 
-local assert = require('luassert')
-
 describe('triforce', function()
   local triforce ---@type Triforce
   local config ---@type Triforce.Config
@@ -37,6 +35,12 @@ describe('triforce', function()
       local ok = pcall(triforce.setup, nil)
       assert.is_true(ok)
       assert.is_true(config.config.enabled)
+    end)
+
+    it('should purge any invalid keys', function()
+      local ok = pcall(triforce.setup, { foo = 'bar' })
+      assert.is_true(ok)
+      assert.are_same(config.config, config.defaults())
     end)
 
     local params = { 1, false, '', function() end }
