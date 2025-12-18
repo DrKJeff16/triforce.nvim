@@ -20,11 +20,13 @@ repos:
         name: Selene
         language: system
         entry: selene
+        files: ^lua/.*\.lua$
         types: [lua]
         verbose: true
       - id: run_tests
         name: Run Tests
         language: system
         entry: make test
+        files: ^(lua|spec)/.*\.lua$
         types: [lua]
         verbose: true
