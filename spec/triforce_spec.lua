@@ -51,6 +51,27 @@ describe('triforce', function()
       end)
     end
 
+    describe('achievement', function()
+      it('should accept new achievements', function()
+        local achievement = require('triforce.achievement')
+        local get_stats = require('triforce.tracker').get_stats
+        local achv = {
+          id = 'test_achv_1',
+          name = 'Test Achievement #1',
+          check = function()
+            return true
+          end,
+          desc = 'Test achievement #1',
+        }
+        local ok = pcall(achievement.new_achievements, { achv }, get_stats())
+
+        assert.is_true(ok)
+
+        local all_achv = achievement.get_all_achievements(get_stats())
+        assert.is_equal(achv, all_achv[#all_achv])
+      end)
+    end)
+
     describe('languages', function()
       it('should handle new languages gracefully', function()
         local ok = pcall(triforce.setup, {
