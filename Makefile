@@ -11,7 +11,7 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 test: ## Run tests with busted
-	@busted
+	@busted spec
 
 lint: ## Run selene linter
 	@selene lua
@@ -31,3 +31,5 @@ install-deps: ## Install development dependencies
 	@$(LUAROCKS_CMD) luassert
 	@$(LUAROCKS_CMD) busted
 	@$(LUAROCKS_CMD) nlua
+
+# vim: set ts=4 sts=4 sw=0 noet ai si sta:
