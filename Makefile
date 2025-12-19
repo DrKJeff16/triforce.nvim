@@ -2,7 +2,7 @@ LUAROCKS_CMD = luarocks install --local
 
 .POSIX:
 
-.PHONY: all test lint format check help ensure_eof
+.PHONY: all test lint format check help
 
 all: help
 
@@ -11,19 +11,24 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 test: ## Run tests with busted
+	@echo -e "Running tests...\n"
 	@busted spec
+	@echo -e "\nDone!"
 
 lint: ## Run selene linter
+	@echo -e "Linting with selene...\n"
 	@selene lua
+	@echo -e "\nDone!"
 
 format: ## Format code with stylua
+	@echo -e "Linting with StyLua...\n"
 	@stylua --check .
+	@echo -e "\nDone!"
 
 format-fix: ensure_eof ## Format code with stylua (fix)
+	@echo -e "Formatting with StyLua...\n"
 	@stylua .
-
-ensure_eof: scripts/ensure_eof_comment.py ## Run EOF checker script
-	@python scripts/ensure_eof_comment.py lua spec plugin -e lua
+	@echo "Done!"
 
 check: lint test ## Run linter and tests
 
