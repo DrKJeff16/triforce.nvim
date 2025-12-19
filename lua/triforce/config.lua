@@ -90,8 +90,8 @@ local defaults = { ---@type TriforceConfig
   achievements = {},
   notifications = { enabled = true, level_up = true, achievements = true },
   auto_save_interval = 300,
-  keymap = { show_profile = nil },
-  custom_languages = nil,
+  keymap = { show_profile = '<leader>tp' },
+  custom_languages = {},
   level_progression = {
     tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },

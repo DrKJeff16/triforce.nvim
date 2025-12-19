@@ -7,18 +7,19 @@ describe('triforce', function()
     -- Clear module cache to get fresh instance
     package.loaded.triforce = nil
     triforce = require('triforce')
-    triforce.setup()
   end)
 
   describe('languages', function()
     it('should handle new languages gracefully', function()
-      local ok = pcall(triforce.setup, {
-        custom_languages = {
-          gleam = { icon = '', name = 'Gleam' },
-          odin = { icon = '', name = 'Odin' },
-        },
-      })
+      local custom_langs = {
+        gleam = { icon = '', name = 'Gleam' },
+        odin = { icon = '', name = 'Odin' },
+      }
+      local ok = pcall(triforce.setup, { custom_languages = custom_langs })
       assert.is_true(ok)
+
+      local config = require('triforce.config')
+      assert.is_same(config.config.custom_languages, custom_langs)
     end)
   end)
 end)
