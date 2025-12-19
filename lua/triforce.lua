@@ -2,10 +2,14 @@ local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
 local INFO = vim.log.levels.INFO
 local util = require('triforce.util')
+local config_mod = require('triforce.config')
 
 ---@class Triforce
 local Triforce = {
   get_stats = require('triforce.tracker').get_stats,
+  open_config = config_mod.open_window,
+  close_config = config_mod.close_window,
+  toggle_config = config_mod.toggle_window,
 }
 
 ---@param opts? TriforceConfig
