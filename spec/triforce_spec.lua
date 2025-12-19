@@ -14,14 +14,14 @@ describe('triforce', function()
 
   describe('setup', function()
     it('should set default configuration', function()
-      triforce.setup()
+      local ok = pcall(triforce.setup)
+      assert.is_true(ok)
       assert.is_true(config.config.enabled)
     end)
 
     it('should merge user configuration with defaults', function()
-      triforce.setup({
-        enabled = false,
-      })
+      local ok = pcall(triforce.setup, { enabled = false })
+      assert.is_true(ok)
       assert.is_false(config.config.enabled)
     end)
 
