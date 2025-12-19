@@ -22,11 +22,14 @@ describe('triforce', function()
         end,
         desc = 'Test achievement #1',
       }
-      local ok = pcall(achievement.new_achievements, { achv }, get_stats())
-
+      local ok, stats
+      ok, stats = pcall(get_stats)
       assert.is_true(ok)
 
-      local all_achv = achievement.get_all_achievements(get_stats())
+      ok = pcall(achievement.new_achievements, { achv }, stats)
+      assert.is_true(ok)
+
+      local all_achv = achievement.get_all_achievements(stats)
       assert.is_equal(achv, all_achv[#all_achv])
     end)
   end)
