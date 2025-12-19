@@ -90,7 +90,7 @@ local defaults = { ---@type TriforceConfig
   achievements = {},
   notifications = { enabled = true, level_up = true, achievements = true },
   auto_save_interval = 300,
-  keymap = { show_profile = '<leader>tp' },
+  keymap = { show_profile = '' },
   custom_languages = {},
   level_progression = {
     tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
@@ -143,7 +143,7 @@ function Config.new_config(opts)
   Config.config = setmetatable(vim.tbl_deep_extend('keep', opts or {}, Config.defaults()), { __index = defaults })
 
   local keys = vim.tbl_keys(Config.defaults()) ---@type string[]
-  for k, v in pairs(Config.config) do
+  for k, _ in pairs(Config.config) do
     if not vim.list_contains(keys, k) then
       Config.config[k] = nil
     end
@@ -199,6 +199,10 @@ function Config.toggle_window()
     return
   end
 
+  Config.open_window()
+end
+
+function Config.open_window()
   local bufnr = vim.api.nvim_create_buf(false, true)
   local data = vim.split(Config.get_config(), '\n', { plain = true, trimempty = true })
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, data)
