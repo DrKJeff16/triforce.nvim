@@ -125,7 +125,7 @@ end
 function Languages.exclude_langs(langs)
   util.validate({ langs = { langs, { 'table' } } })
 
-  Languages.ignored_langs = langs
+  Languages.ignored_langs = vim.tbl_deep_extend('keep', langs, Languages.ignored_langs)
 end
 
 ---Check if language should be tracked

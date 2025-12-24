@@ -21,6 +21,16 @@ describe('triforce', function()
       local config = require('triforce.config')
       assert.is_same(config.config.custom_languages, custom_langs)
     end)
+
+    it('should process ignored languages', function()
+      local ignore = { 'json', 'markdown', 'yaml' }
+      local ok = pcall(triforce.setup, { ignore_ft = ignore })
+
+      assert.is_true(ok)
+
+      local languages = require('triforce.languages')
+      assert.is_same(languages.ignored_langs, ignore)
+    end)
   end)
 end)
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:
