@@ -104,7 +104,8 @@ Usage: :Triforce config
        :Triforce stats export
        :Triforce stats export json <path/to/file>
        :Triforce stats export markdown </path/to/file>
-       :Triforce stats save]],
+       :Triforce stats save
+       ]],
       vim.log.levels.INFO
     )
     return

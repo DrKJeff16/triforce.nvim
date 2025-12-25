@@ -80,18 +80,16 @@ function Triforce.save_stats()
 
   local tracker = require('triforce.tracker')
   if not tracker.current_stats then
-    vim.notify('No stats to save', WARN)
+    vim.notify('No stats to save!', WARN)
     return
   end
 
-  if tracker.current_stats then
-    if require('triforce.stats').save(tracker.current_stats) then
-      vim.notify('Stats saved successfully!', INFO)
-      return
-    end
-
-    error('Failed to save stats!', ERROR)
+  if tracker.current_stats and require('triforce.stats').save(tracker.current_stats) then
+    local path = vim.fn.fnamemodify(tracker.current_stats.db_path, ':~')
+    vim.notify(('Stats saved successfully in `%s`'):format(path), INFO)
+    return
   end
+  error('Failed to save stats!', ERROR)
 end
 
 ---Debug: Show current XP progress
