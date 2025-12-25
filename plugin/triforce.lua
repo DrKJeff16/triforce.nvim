@@ -134,11 +134,13 @@ end, {
     if #args == 1 then
       return { 'profile', 'stats', 'reset', 'debug', 'config' }
     end
-    if #args == 2 and args[2] == 'debug' then
-      return { 'xp', 'achievement', 'languages', 'fix' }
-    end
-    if #args == 2 and args[2] == 'stats' then
-      return { 'export', 'save' }
+    if #args == 2 then
+      if args[2] == 'debug' then
+        return { 'xp', 'achievement', 'languages', 'fix' }
+      end
+      if args[2] == 'stats' then
+        return { 'export', 'save' }
+      end
     end
     if #args == 3 and args[2] == 'stats' and args[3] == 'export' then
       return { 'json', 'markdown' }
