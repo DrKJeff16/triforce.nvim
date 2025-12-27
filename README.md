@@ -20,7 +20,6 @@ and achievements while you work.
     - [XP Rewards](#xp-rewards)
     - [Custom Achievements](#custom-achievements)
 - [Usage](#usage)
-    - [Commands](#commands)
 - [Profile UI](#profile-ui)
     - [Stats Tab](#stats-tab)
     - [Achievements Tab](#achievements-tab)
@@ -375,8 +374,6 @@ require('triforce').setup({
 ---
 
 ## Usage
-
-### Commands
 
 | Command                                                  | Description                                    |
 |----------------------------------------------------------|------------------------------------------------|
