@@ -1,38 +1,38 @@
-# 🕹️ triforce.nvim
+# triforce.nvim
 
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels,
 and achievements while you work.
 
 ![Showcase](https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac)
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [Why I Made This](#-why-i-made-this)
-- [Features](#-features)
-- [Installation](#-installation)
+- [Why I Made This](#why-i-made-this)
+- [Features](#features)
+- [Installation](#installation)
     - [`lazy.nvim`](#lazynvim)
     - [`pckr.nvim`](#pckrnvim)
     - [`paq-nvim`](#paq-nvim)
     - [`vim-plug`](#vim-plug)
-- [Configuration](#%EF%B8%8F-configuration)
+- [Configuration](#configuration)
     - [Configuration Options](#configuration-options)
     - [Level Progression](#level-progression)
     - [XP Rewards](#xp-rewards)
     - [Custom Achievements](#custom-achievements)
-- [Usage](#-usage)
+- [Usage](#usage)
     - [Commands](#commands)
 - [Profile UI](#profile-ui)
     - [Stats Tab](#stats-tab)
     - [Achievements Tab](#achievements-tab)
     - [Stats Tab](#languages-tab)
     - [Keybindings](#keybindings)
-- [Achievements](#-achievements)
-- [Customization](#-customization)
+- [Achievements](#achievements)
+- [Customization](#customization)
     - [Adding Custom Languages](#adding-custom-languages)
     - [Disabling Notifications](#disabling-notifications)
     - [Disabling Auto-Keymap](#disabling-auto-keymap)
     - [Customizing Heatmap Colors](#customizing-heatmap-colors)
-- [Lualine Integration](#-lualine-integration)
+- [Lualine Integration](#lualine-integration)
     - [Available Components](#available-components)
     - [Basic Setup](#basic-setup)
     - [Quick Setup](#quick-setup)
@@ -46,16 +46,16 @@ and achievements while you work.
         - [Minimalist Setup](#minimalist-setup)
         - [Full Stats Dashboard](#full-stats-dashboard)
         - [Custom Style](#custom-style)
-- [Data Storage](#-data-storage)
+- [Data Storage](#data-storage)
     - [Data Format](#data-format)
-- [Roadmap](#%EF%B8%8F-roadmap)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
-- [Support](#-support)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+- [Support](#support)
 
 ---
 
-## 💭 Why I Made This
+## Why I Made This
 
 I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent
 or even get started some days.
@@ -82,7 +82,7 @@ bringing those ideas to life.
 
 ---
 
-## ✨ Features
+## Features
 
 - **📊 Detailed Statistics**: Track lines typed, characters, sessions, coding time, and more
 - **🎮 Gamification**: Earn XP and level up based on your coding activity
@@ -96,7 +96,7 @@ bringing those ideas to life.
 
 ---
 
-## 📦 Installation
+## Installation
 
 **Requirements**:
 
@@ -172,7 +172,7 @@ EOF
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 Triforce comes with sensible defaults, but you can customize everything:
 
@@ -374,7 +374,7 @@ require('triforce').setup({
 
 ---
 
-## 🎮 Usage
+## Usage
 
 ### Commands
 
@@ -428,7 +428,7 @@ The profile includes 3 tabs:
 
 ---
 
-## 🏆 Achievements
+## Achievements
 
 Triforce includes **18 built-in achievements** across 5 categories:
 
@@ -458,7 +458,7 @@ Triforce includes **18 built-in achievements** across 5 categories:
 
 ---
 
-## 🎨 Customization
+## Customization
 
 ### Adding Custom Languages
 
@@ -530,18 +530,12 @@ omit a key, the default color for that level is used.
 
 ---
 
-## 📊 Lualine Integration
+## Lualine Integration
 
 Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim),
 letting you display your coding stats right in your statusline.
 
-<img
-width="378"
-height="74"
-alt="image"
-src="https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f"
-/>
-
+![Lualine Integration](https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f)
 
 ### Available Components
 
@@ -811,7 +805,7 @@ local triforce = require('triforce.lualine').components()
 
 ---
 
-## 📊 Data Storage
+## Data Storage
 
 Stats are saved to `~/.local/share/nvim/triforce_stats.json`.
 
@@ -846,7 +840,7 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
 - [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
@@ -862,13 +856,13 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 
 ---
 
-## 📝 License
+## License
 
 MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [**nvzone/volt**](https://github.com/nvzone/volt): Beautiful UI framework
 - [**Typr**](https://github.com/nvzone/typr): Beautiful Grid Design Component Inspiration
@@ -876,7 +870,7 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-## 📮 Support
+## Support
 
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/gisketch/triforce.nvim/issues)
 - 💡 **Feature Requests**: [GitHub Discussions](https://github.com/gisketch/triforce.nvim/discussions)
