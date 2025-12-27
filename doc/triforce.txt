@@ -22,7 +22,6 @@ TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
     - |triforce-xp-rewards|
     - |triforce-custom-achievements|
 - |triforce-usage|
-    - |triforce-commands|
 - |triforce-profile-ui|
     - |triforce-stats-tab|
     - |triforce-achievements-tab|
@@ -411,9 +410,6 @@ setup option.
 ------------------------------------------------------------------------------
 
 USAGE                                           *triforce-triforce.nvim-usage*
-
-
-COMMANDS ~
 
   -----------------------------------------------------------------------------------------
   Command                                                  Description
