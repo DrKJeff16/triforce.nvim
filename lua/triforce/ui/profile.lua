@@ -668,7 +668,6 @@ function Profile.setup_highlights()
     TriforcePurple = { link = 'Number' },
   }
   for group, hl in pairs(hls) do
-    vim.api.nvim_set_hl(0, group, hl)
     vim.api.nvim_set_hl(Profile.ns, group, hl)
   end
 
@@ -692,13 +691,10 @@ function Profile.setup_highlights()
     -- Otherwise treat it as a color (hex string, number, etc.) and set fg.
     if fg then
       local key = (type(fg) == 'string' and fg:sub(1, 1) ~= '#') and 'link' or 'fg'
-      vim.api.nvim_set_hl(0, hl, { [key] = fg })
       vim.api.nvim_set_hl(Profile.ns, hl, { [key] = fg })
     end
   end
   -- Link to standard highlights
-  vim.api.nvim_set_hl(0, 'FloatBorder', { link = 'TriforceBorder' })
-  vim.api.nvim_set_hl(0, 'Normal', { link = 'TriforceNormal' })
   vim.api.nvim_set_hl(Profile.ns, 'FloatBorder', { link = 'TriforceBorder' })
   vim.api.nvim_set_hl(Profile.ns, 'Normal', { link = 'TriforceNormal' })
 end

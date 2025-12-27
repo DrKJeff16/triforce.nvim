@@ -38,6 +38,14 @@ function Triforce.setup(opts)
   if config.achievements then
     Triforce.new_achievements(config.achievements)
   end
+
+  vim.api.nvim_create_autocmd('ColorScheme', {
+    group = vim.api.nvim_create_augroup('TriforceProfile', { clear = true }),
+    callback = function()
+      local Profile = require('triforce.ui.profile')
+      Profile.setup_highlights()
+    end,
+  })
 end
 
 ---Show profile UI
