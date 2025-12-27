@@ -21,7 +21,11 @@ and achievements while you work.
     - [Custom Achievements](#custom-achievements)
 - [Usage](#-usage)
     - [Commands](#commands)
-    - [Profile UI](#profile-ui)
+- [Profile UI](#profile-ui)
+    - [Stats Tab](#stats-tab)
+    - [Achievements Tab](#achievements-tab)
+    - [Stats Tab](#languages-tab)
+    - [Keybindings](#keybindings)
 - [Achievements](#-achievements)
 - [Customization](#-customization)
     - [Adding Custom Languages](#adding-custom-languages)
@@ -380,53 +384,45 @@ require('triforce').setup({
 | `:Triforce debug languages`                              | Debug language tracking                        |
 | `:Triforce profile`                                      | Open the Triforce profile UI                   |
 | `:Triforce reset`                                        | Reset all stats (useful for testing)           |
-| `:Triforce stats`                                        | Get current stats programmatically             |
+| `:Triforce stats`                                        | Display current stats in a notification        |
 | `:Triforce stats export`                                 | Export stats to a new Neovim buffer            |
 | `:Triforce stats export <json\|markdown> <path/to/file>` | Export stats to JSON or Markdown               |
 | `:Triforce stats save`                                   | Force save stats immediately                   |
 
-### Profile UI
+---
 
-The profile has **3 tabs**:
+## Profile UI
 
-1. **📊 Stats Tab**
-   - Level progress bar
-   - Session/time milestone progress
-   - Activity heatmap (7 months)
-   - Quick stats overview
+The profile includes 3 tabs:
 
-<img
-width="1224"
-height="970"
-alt="image"
-src="https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e"
-/>
+### Stats Tab
 
-2. **🏆 Achievements Tab**
-   - View all unlocked achievements
-   - See locked achievements with unlock requirements
-   - Paginate through achievements (H/L or arrow keys)
+![Stats Tab](https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e)
 
-<img
-width="1219"
-height="774"
-alt="image"
-src="https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77"
-/>
+- Level progress bar
+- Session/time milestone progress
+- Activity heatmap (7 months)
+- Quick stats overview
 
-3. **💻 Languages Tab**
-   - Bar graph showing your most-used languages
-   - See character count breakdown by language
+### Achievements Tab
 
-<img
-width="1210"
-height="784"
-alt="image"
-src="https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81"
-/>
+![Achievements Tab](https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77)
 
-**Keybindings in Profile:**
-- `Tab`: Cycle between tabs
+- View all unlocked achievements
+- See locked achievements with unlock requirements
+- Paginate through achievements (H/L or arrow keys)
+
+### Languages Tab
+
+![Languages Tab](https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81)
+
+- Bar graph showing your most-used languages
+- See character count breakdown by language
+
+### Keybindings
+
+- `<Tab>`: Cycle forward
+- `<S-Tab>`: Cycle backward
 - `H` / `L` or `←` / `→`: Navigate achievement pages
 - `q` / `Esc`: Close profile
 
