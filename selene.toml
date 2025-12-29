@@ -5,3 +5,4 @@ global_usage       = "allow"
 manual_table_clone = "allow"
 mixed_table        = "allow"
 unused_variable    = "allow"
+# vim: set ts=4 sts=4 sw=4 et ai si sta:
