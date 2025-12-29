@@ -27,7 +27,7 @@ format: ## Format code with stylua
 	@stylua --check .
 	@echo -e "\nDone!"
 
-format-fix: ensure_eof ## Format code with stylua (fix)
+format-fix: ## Format code with stylua (fix)
 	@echo -e "Formatting with StyLua...\n"
 	@stylua .
 	@echo "Done!"
