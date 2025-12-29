@@ -229,6 +229,11 @@ function Stats.add_xp(stats, amount)
     amount = { amount, { 'number' } },
   })
 
+  local ft = vim.api.nvim_get_option_value('filetype', { buf = vim.api.nvim_get_current_buf() })
+  if vim.list_contains(require('triforce.languages').ignored_langs, ft) then
+    return false
+  end
+
   local old_level = stats.level
   stats.xp = stats.xp + amount
   stats.level = Stats.calculate_level(stats.xp)
