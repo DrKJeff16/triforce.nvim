@@ -2,9 +2,15 @@
 /.github @DrKJeff16 @gisketch
 /.gitignore @DrKJeff16 @gisketch
 /.pre-commit-config.yaml @DrKJeff16
-/selene.toml @DrKJeff16
-/vim.yml @DrKJeff16
-/lua/triforce/util.lua @DrKJeff16
-/lua/triforce/achievement.lua @DrKJeff16 @gisketch
+/.stylua.toml @DrKJeff16
+/.taplo.toml @DrKJeff16
 /CONTRIBUTING.md @DrKJeff16 @gisketch
-/scripts/ensure_eof_comment.py @DrKJeff16
+/Makefile @DrKJeff16 @gisketch
+/lua/triforce/achievement.lua @DrKJeff16 @gisketch
+/lua/triforce/commands.lua @DrKJeff16 @gisketch
+/lua/triforce/util.lua @DrKJeff16
+/selene.toml @DrKJeff16
+/spec @DrKJeff16 @gisketch
+/stylua.toml @DrKJeff16
+/taplo.toml @DrKJeff16
+/vim.yml @DrKJeff16
