@@ -1,4 +1,4 @@
-*triforce.txt*         For NVIM >=v0.9.0         Last change: 2025 December 27
+*triforce.txt*         For NVIM >=v0.9.0         Last change: 2025 December 29
 
 ==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
@@ -20,7 +20,6 @@ TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
     - |triforce-configuration-options|
     - |triforce-level-progression|
     - |triforce-xp-rewards|
-    - |triforce-custom-achievements|
 - |triforce-usage|
 - |triforce-profile-ui|
     - |triforce-stats-tab|
@@ -28,6 +27,12 @@ TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
     - |triforce-stats-tab|
     - |triforce-keybindings|
 - |triforce-achievements|
+    - |triforce-typing-milestones|
+    - |triforce-level-achievements|
+    - |triforce-session-achievements|
+    - |triforce-time-achievements|
+    - |triforce-polyglot-achievements|
+    - |triforce-custom-achievements|
 - |triforce-customization|
     - |triforce-adding-custom-languages|
     - |triforce-disabling-notifications|
@@ -349,64 +354,6 @@ Or if you prefer to focus on typing volume:
     })
 <
 
-
-CUSTOM ACHIEVEMENTS ~
-
-Triforce now allows you to create new achievements with the `achievements`
-setup option.
-
-**By default it’s just an empty table.**
-
-
-  [!TIP] The `Achievement` type spec is as follows. **DON’T COPY-PASTE
-  DIRECTLY**:
-  >lua
-      {
-        id = 'template_achievement', ---@type string
-        name = '...', ---@type string
-        ---@type fun(stats?: Stats): boolean
-        check = function(stats)
-          return stats.foo > stats.bar -- NOTE: This is just an example
-        end,
-        icon = '...' or nil, ---@type string|nil
-        desc = '...' or nil, ---@type string|nil
-      }
-  <
-**For example:**
-
->lua
-    require('triforce').setup({
-      achievements = {
-        {
-          id = 'first_200',
-          name = 'On Track',
-          desc = 'Type 200 Characters',
-          check = function(stats)
-            return stats.chars_typed >= 200
-          end,
-        },
-        {
-          id = 'first_300',
-          name = 'Newbie',
-          desc = 'Type 300 Characters',
-          check = function(stats)
-            return stats.chars_typed >= 300
-          end,
-        },
-        {
-          id = 'level_100',
-          name = 'God-like',
-          desc = 'Reach level 100',
-          icon = '󰈸',
-          check = function(stats)
-            return stats.level >= 100
-          end,
-        },
-        -- ...
-      },
-    })
-<
-
 ------------------------------------------------------------------------------
 
 USAGE                                           *triforce-triforce.nvim-usage*
@@ -475,29 +422,101 @@ ACHIEVEMENTS                             *triforce-triforce.nvim-achievements*
 
 Triforce includes **18 built-in achievements** across 5 categories:
 
-- **Typing Milestones**
-    1. **First Steps**: Type 100 characters
-    2. **Getting Started**: Type 1,000 characters
-    3. **Dedicated Coder**: Type 10,000 characters
-    4. **Master Scribe**: Type 100,000 characters
-- **Level Achievements**
-    1. **Rising Star**: Reach level 5
-    2. **Expert Coder**: Reach level 10
-    3. **Champion**: Reach level 25
-    4. **Legend**: Reach level 50
-- **Session Achievements**
-    1. **Regular Visitor**: Complete 10 sessions
-    2. **Creature of Habit**: Complete 50 sessions
-    3. **Dedicated Hero**: Complete 100 sessions
-- **Time Achievements**
-    1. **First Hour**: Code for 1 hour total
-    2. **Committed**: Code for 10 hours total
-    3. **Veteran**: Code for 100 hours total
-- **Polyglot Achievements**
-    1. **Polyglot Beginner**: Code in 3 languages
-    2. **Polyglot**: Code in 5 languages
-    3. **Master Polyglot**: Code in 10 languages
-    4. **Language Virtuoso**: Code in 15 languages
+
+TYPING MILESTONES ~
+
+1. **First Steps**: Type 100 characters
+2. **Getting Started**: Type 1,000 characters
+3. **Dedicated Coder**: Type 10,000 characters
+4. **Master Scribe**: Type 100,000 characters
+
+
+LEVEL ACHIEVEMENTS ~
+
+1. **Rising Star**: Reach level 5
+2. **Expert Coder**: Reach level 10
+3. **Champion**: Reach level 25
+4. **Legend**: Reach level 50
+
+
+SESSION ACHIEVEMENTS ~
+
+1. **Regular Visitor**: Complete 10 sessions
+2. **Creature of Habit**: Complete 50 sessions
+3. **Dedicated Hero**: Complete 100 sessions
+
+
+TIME ACHIEVEMENTS ~
+
+1. **First Hour**: Code for 1 hour total
+2. **Committed**: Code for 10 hours total
+3. **Veteran**: Code for 100 hours total
+
+
+POLYGLOT ACHIEVEMENTS ~
+
+1. **Polyglot Beginner**: Code in 3 languages
+2. **Polyglot**: Code in 5 languages
+3. **Master Polyglot**: Code in 10 languages
+4. **Language Virtuoso**: Code in 15 languages
+
+
+CUSTOM ACHIEVEMENTS ~
+
+Triforce now allows you to create new achievements with the `achievements`
+setup option.
+
+**By default it’s just an empty table.**
+
+
+  [!TIP] The `Achievement` type spec is as follows. **DON’T COPY-PASTE
+  DIRECTLY**:
+  >lua
+      {
+        id = 'template_achievement', ---@type string
+        name = '...', ---@type string
+        ---@type fun(stats?: Stats): boolean
+        check = function(stats)
+          return stats.foo > stats.bar -- NOTE: This is just an example
+        end,
+        icon = '...' or nil, ---@type string|nil
+        desc = '...' or nil, ---@type string|nil
+      }
+  <
+**For example:**
+
+>lua
+    require('triforce').setup({
+      achievements = {
+        {
+          id = 'first_200',
+          name = 'On Track',
+          desc = 'Type 200 Characters',
+          check = function(stats)
+            return stats.chars_typed >= 200
+          end,
+        },
+        {
+          id = 'first_300',
+          name = 'Newbie',
+          desc = 'Type 300 Characters',
+          check = function(stats)
+            return stats.chars_typed >= 300
+          end,
+        },
+        {
+          id = 'level_100',
+          name = 'God-like',
+          desc = 'Reach level 100',
+          icon = '󰈸',
+          check = function(stats)
+            return stats.level >= 100
+          end,
+        },
+        -- ...
+      },
+    })
+<
 
 ------------------------------------------------------------------------------
 
