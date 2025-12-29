@@ -13,22 +13,22 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 test: ## Run tests with busted
-	@echo -e "Running tests...\n"
+	@echo "Running tests..."
 	@busted spec
-	@echo -e "\nDone!"
+	@echo "Done!"
 
 lint: ## Run selene linter
-	@echo -e "Linting with selene...\n"
+	@echo "Linting with selene..."
 	@selene lua
-	@echo -e "\nDone!"
+	@echo "Done!"
 
 format: ## Format code with stylua
-	@echo -e "Linting with StyLua...\n"
+	@echo "Linting with StyLua..."
 	@stylua --check .
-	@echo -e "\nDone!"
+	@echo "Done!"
 
 format-fix: ## Format code with stylua (fix)
-	@echo -e "Formatting with StyLua...\n"
+	@echo "Formatting with StyLua..."
 	@stylua .
 	@echo "Done!"
 
