@@ -16,8 +16,27 @@ local Triforce = {
 function Triforce.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
+  -- Check Neovim version compatibility
+  if vim.fn.has('nvim-0.9') ~= 1 then
+    vim.api.nvim_err_writeln('triforce.nvim requires Neovim >= 0.9.0') ---@diagnostic disable-line:deprecated
+    return
+  end
+
+  if vim.g.loaded_triforce ~= 1 then
+    vim.g.loaded_triforce = 1
+  end
+
   local config_module = require('triforce.config')
   config_module.setup(opts or {})
+
+  -- Create <Plug> mappings for users to map to their own keys
+  vim.keymap.set('n', '<Plug>(TriforceProfile)', require('triforce').show_profile, {
+    noremap = true,
+    silent = true,
+    desc = 'Triforce: Show profile',
+  })
+
+  require('triforce.commands').setup()
 
   local config = config_module.config
   -- Set up keymap if provided
