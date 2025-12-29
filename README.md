@@ -18,7 +18,6 @@ and achievements while you work.
     - [Configuration Options](#configuration-options)
     - [Level Progression](#level-progression)
     - [XP Rewards](#xp-rewards)
-    - [Custom Achievements](#custom-achievements)
 - [Usage](#usage)
 - [Profile UI](#profile-ui)
     - [Stats Tab](#stats-tab)
@@ -26,6 +25,12 @@ and achievements while you work.
     - [Stats Tab](#languages-tab)
     - [Keybindings](#keybindings)
 - [Achievements](#achievements)
+    - [Typing Milestones](#typing-milestones)
+    - [Level Achievements](#level-achievements)
+    - [Session Achievements](#session-achievements)
+    - [Time Achievements](#time-achievements)
+    - [Polyglot Achievements](#polyglot-achievements)
+    - [Custom Achievements](#custom-achievements)
 - [Customization](#customization)
     - [Adding Custom Languages](#adding-custom-languages)
     - [Disabling Notifications](#disabling-notifications)
@@ -314,63 +319,6 @@ require('triforce').setup({
 })
 ```
 
-### Custom Achievements
-
-Triforce now allows you to create new achievements with the `achievements` setup option.
-
-**By default it's just an empty table.**
-
-> [!TIP]
-> The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
->
-> ```lua
-> {
->   id = 'template_achievement', ---@type string
->   name = '...', ---@type string
->   ---@type fun(stats?: Stats): boolean
->   check = function(stats)
->     return stats.foo > stats.bar -- NOTE: This is just an example
->   end,
->   icon = '...' or nil, ---@type string|nil
->   desc = '...' or nil, ---@type string|nil
-> }
-> ```
-
-**For example:**
-
-```lua
-require('triforce').setup({
-  achievements = {
-    {
-      id = 'first_200',
-      name = 'On Track',
-      desc = 'Type 200 Characters',
-      check = function(stats)
-        return stats.chars_typed >= 200
-      end,
-    },
-    {
-      id = 'first_300',
-      name = 'Newbie',
-      desc = 'Type 300 Characters',
-      check = function(stats)
-        return stats.chars_typed >= 300
-      end,
-    },
-    {
-      id = 'level_100',
-      name = 'God-like',
-      desc = 'Reach level 100',
-      icon = '󰈸',
-      check = function(stats)
-        return stats.level >= 100
-      end,
-    },
-    -- ...
-  },
-})
-```
-
 ---
 
 ## Usage
@@ -429,29 +377,95 @@ The profile includes 3 tabs:
 
 Triforce includes **18 built-in achievements** across 5 categories:
 
-- 📝 **_Typing Milestones_**
-    1. 🌱 **First Steps**: Type 100 characters
-    2. ⚔️ **Getting Started**: Type 1,000 characters
-    3. 🛡️ **Dedicated Coder**: Type 10,000 characters
-    4. 📜 **Master Scribe**: Type 100,000 characters
-- 📈 **_Level Achievements_**
-    1. ⭐ **Rising Star**: Reach level 5
-    2. 💎 **Expert Coder**: Reach level 10
-    3. 👑 **Champion**: Reach level 25
-    4. 🔱 **Legend**: Reach level 50
-- 🔄 **_Session Achievements_**
-    1. 🔄 **Regular Visitor**: Complete 10 sessions
-    2. 📅 **Creature of Habit**: Complete 50 sessions
-    3. 🏆 **Dedicated Hero**: Complete 100 sessions
-- ⏰ **_Time Achievements_**
-    1. ⏰ **First Hour**: Code for 1 hour total
-    2. ⌛ **Committed**: Code for 10 hours total
-    3. 🕐 **Veteran**: Code for 100 hours total
-- 🌍 **_Polyglot Achievements_**
-    1. 🌍 **Polyglot Beginner**: Code in 3 languages
-    2. 🌎 **Polyglot**: Code in 5 languages
-    3. 🌏 **Master Polyglot**: Code in 10 languages
-    4. 🗺️ **Language Virtuoso**: Code in 15 languages
+### Typing Milestones
+
+1. 🌱 **First Steps**: Type 100 characters
+2. ⚔️ **Getting Started**: Type 1,000 characters
+3. 🛡️ **Dedicated Coder**: Type 10,000 characters
+4. 📜 **Master Scribe**: Type 100,000 characters
+
+### Level Achievements
+
+1. ⭐ **Rising Star**: Reach level 5
+2. 💎 **Expert Coder**: Reach level 10
+3. 👑 **Champion**: Reach level 25
+4. 🔱 **Legend**: Reach level 50
+
+### Session Achievements
+
+1. 🔄 **Regular Visitor**: Complete 10 sessions
+2. 📅 **Creature of Habit**: Complete 50 sessions
+3. 🏆 **Dedicated Hero**: Complete 100 sessions
+
+### Time Achievements
+
+1. ⏰ **First Hour**: Code for 1 hour total
+2. ⌛ **Committed**: Code for 10 hours total
+3. 🕐 **Veteran**: Code for 100 hours total
+
+### Polyglot Achievements
+
+1. 🌍 **Polyglot Beginner**: Code in 3 languages
+2. 🌎 **Polyglot**: Code in 5 languages
+3. 🌏 **Master Polyglot**: Code in 10 languages
+4. 🗺️ **Language Virtuoso**: Code in 15 languages
+
+### Custom Achievements
+
+Triforce now allows you to create new achievements with the `achievements` setup option.
+
+**By default it's just an empty table.**
+
+> [!TIP]
+> The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
+>
+> ```lua
+> {
+>   id = 'template_achievement', ---@type string
+>   name = '...', ---@type string
+>   ---@type fun(stats?: Stats): boolean
+>   check = function(stats)
+>     return stats.foo > stats.bar -- NOTE: This is just an example
+>   end,
+>   icon = '...' or nil, ---@type string|nil
+>   desc = '...' or nil, ---@type string|nil
+> }
+> ```
+
+**For example:**
+
+```lua
+require('triforce').setup({
+  achievements = {
+    {
+      id = 'first_200',
+      name = 'On Track',
+      desc = 'Type 200 Characters',
+      check = function(stats)
+        return stats.chars_typed >= 200
+      end,
+    },
+    {
+      id = 'first_300',
+      name = 'Newbie',
+      desc = 'Type 300 Characters',
+      check = function(stats)
+        return stats.chars_typed >= 300
+      end,
+    },
+    {
+      id = 'level_100',
+      name = 'God-like',
+      desc = 'Reach level 100',
+      icon = '󰈸',
+      check = function(stats)
+        return stats.level >= 100
+      end,
+    },
+    -- ...
+  },
+})
+```
 
 ---
 
