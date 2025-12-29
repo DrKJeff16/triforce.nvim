@@ -25,4 +25,4 @@ jobs:
         uses: AlejandroSuero/selene-linter-action@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --display-style=quiet lua plugin
+          args: --display-style=quiet lua
