@@ -230,7 +230,9 @@ function Stats.add_xp(stats, amount)
   })
 
   local ft = vim.api.nvim_get_option_value('filetype', { buf = vim.api.nvim_get_current_buf() })
-  if vim.list_contains(require('triforce.languages').ignored_langs, ft) then
+  local langs_module = require('triforce.languages')
+  local keys = vim.tbl_keys(langs_module.langs) ---@type string[]
+  if vim.list_contains(langs_module.ignored_langs, ft) or not vim.list_contains(keys, ft) then
     return false
   end
 
