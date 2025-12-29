@@ -1,5 +1,4 @@
--- Example test file for triforce.nvim
--- Run with: busted or luarocks test --local
+local assert = require('luassert')
 
 describe('triforce', function()
   local triforce ---@type Triforce
