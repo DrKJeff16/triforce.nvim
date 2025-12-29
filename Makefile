@@ -4,6 +4,8 @@ LUAROCKS_CMD = luarocks install --local
 
 .PHONY: all test lint format check help
 
+.SUFFIXES:
+
 all: help
 
 help: ## Show this help message
