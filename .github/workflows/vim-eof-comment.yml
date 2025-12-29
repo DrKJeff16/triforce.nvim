@@ -9,12 +9,12 @@ on:
       - opened
     branches:
       - main
-permissions:
-  contents: write
 jobs:
   vim_eof_comment:
     name: vim-eof-comment
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -32,3 +32,9 @@ jobs:
       - name: Run vim-eof-comment
         run: |
           pipenv run vim-eof-comment -e lua,md,Makefile,yaml,toml -i lua:2:Y,md:2:Y -v .
+      - name: Auto Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
+        with:
+          commit_message: "chore: format files with `vim-eof-comment`"
+          commit_options: "--signoff"
+          branch: ${{ github.head_ref }}

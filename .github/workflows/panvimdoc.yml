@@ -30,7 +30,7 @@ jobs:
           docmapping: false
           docmappingprojectname: false
       - name: Auto Commit
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
           commit_message: "docs: auto generate docs"
           branch: ${{ github.head_ref }}
