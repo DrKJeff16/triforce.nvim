@@ -105,7 +105,7 @@ bringing those ideas to life.
 **Requirements**:
 
 - **Neovim** >= 0.9.0
-- [**Volt.nvim**](https://github.com/NvChad/volt.nvim) (UI framework dependency)
+- [`nvzone/volt`](https://github.com/nvzone/volt) (UI framework dependency)
 - A [Nerd Font](https://www.nerdfonts.com/) (for icons)
 
 ### `lazy.nvim`
