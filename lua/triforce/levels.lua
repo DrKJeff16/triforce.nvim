@@ -11,21 +11,8 @@
 
 local util = require('triforce.util')
 
----@class Triforce.Levels
-local Levels = {}
-
-Levels.levels = {} ---@type LevelTitles
-
-function Levels.setup()
-  if not vim.tbl_isempty(Levels.levels) then
-    return
-  end
-
-  Levels.levels = Levels.get_default_titles()
-end
-
 ---@return LevelTitles titles
-function Levels.get_default_titles()
+local function get_default_titles()
   local titles = { ---@type LevelTitle[]
     [10] = { title = 'Deku Scrub', icon = '🌱' },
     [20] = { title = 'Kokiri', icon = '🌳' },
@@ -48,6 +35,15 @@ function Levels.get_default_titles()
   return titles
 end
 
+---@class Triforce.Levels
+local Levels = {}
+
+Levels.levels = {} ---@type LevelTitles
+
+function Levels.setup()
+  Levels.levels = vim.tbl_deep_extend('keep', Levels.levels, get_default_titles())
+end
+
 ---@param levels LevelParams[]|LevelParams
 function Levels.add_levels(levels)
   util.validate({ levels = { levels, { 'table' } } })
@@ -64,8 +60,24 @@ function Levels.add_levels(levels)
   end
 
   ---@cast levels LevelParams
-  local lvl_titles = { [levels.level] = { title = levels.title, icon = levels.icon or '' } }
-  Levels.levels = vim.tbl_deep_extend('keep', Levels.levels, lvl_titles)
+  Levels.levels[levels.level] = { title = levels.title, icon = levels.icon or '' }
+end
+
+---@param stats Stats
+---@return { level: integer, unlocked: boolean, title: string }[] all_levels
+function Levels.get_all_levels(stats)
+  util.validate({ stats = { stats, { 'table' } } })
+
+  local keys = vim.tbl_keys(Levels.levels) ---@type integer[]
+  local res = {} ---@type { level: integer, unlocked: boolean, title: string }[]
+  for _, lvl in ipairs(keys) do
+    table.insert(res, {
+      level = lvl,
+      unlocked = lvl <= stats.level,
+      title = Levels.get_level_title(lvl),
+    })
+  end
+  return res
 end
 
 ---Get Zelda-themed title based on level
@@ -74,11 +86,9 @@ end
 function Levels.get_level_title(level)
   util.validate({ level = { level, { 'number' } } })
 
-  Levels.setup()
-
-  for max, tier in pairs(Levels.levels) do
-    if level <= max then
-      return ('%s %s'):format(tier.icon, tier.title)
+  for lvl, title in pairs(Levels.levels) do
+    if level == lvl then
+      return ('%s %s'):format(title.icon, title.title)
     end
   end
 

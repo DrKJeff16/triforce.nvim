@@ -26,6 +26,7 @@ local achievement_module = require('triforce.achievement')
 local tracker = require('triforce.tracker')
 local languages = require('triforce.languages')
 local random_stats = require('triforce.random_stats')
+local levels_module = require('triforce.levels')
 local util = require('triforce.util')
 
 ---@class Triforce.Ui.Profile
@@ -37,7 +38,9 @@ local Profile = {
   dim_buf = nil, ---@type integer|nil
   ns = vim.api.nvim_create_namespace('TriforceProfile'), ---@type integer
   achievements_page = 1, ---@type integer
+  levels_page = 1, ---@type integer
   achievements_per_page = 5, ---@type integer
+  levels_per_page = 5, ---@type integer
   max_language_entries = 13, ---@type integer
   current_tab = ' Stats', ---@type string
 
@@ -65,6 +68,37 @@ function Profile.redraw_achievements()
     return
   end
   if Profile.current_tab ~= '󰌌 Achievements' then
+    return
+  end
+
+  vim.bo[Profile.buf].modifiable = true
+  volt.gen_data({
+    { buf = Profile.buf, layout = Profile.get_layout(), xpad = Profile.xpad, ns = Profile.ns },
+  })
+
+  local new_height = voltstate[Profile.buf].h
+  local current_lines = vim.api.nvim_buf_line_count(Profile.buf)
+
+  if current_lines < new_height then
+    local empty_lines = {}
+    for _ = 1, (new_height - current_lines) do
+      table.insert(empty_lines, '')
+    end
+    vim.api.nvim_buf_set_lines(Profile.buf, current_lines, current_lines, false, empty_lines)
+  elseif current_lines > new_height then
+    vim.api.nvim_buf_set_lines(Profile.buf, new_height, current_lines, false, {})
+  end
+
+  volt.redraw(Profile.buf, 'all')
+  vim.bo[Profile.buf].modifiable = false
+end
+
+---Helper function to redraw levels tab
+function Profile.redraw_levels()
+  if not Profile.buf then
+    return
+  end
+  if Profile.current_tab ~= '󱡁 Levels' then
     return
   end
 
@@ -245,7 +279,7 @@ function Profile.build_stats_tab()
   end
 
   local streak = Profile.get_current_streak(stats)
-  local level_title = require('triforce.levels').get_level_title(stats.level)
+  local level_title = levels_module.get_level_title(stats.level)
   local xp_current = stats.xp
   local xp_next = stats_module.xp_for_next_level(stats.level)
   local xp_prev = stats.level > 1 and stats_module.xp_for_next_level(stats.level - 1) or 0
@@ -392,7 +426,7 @@ end
 function Profile.build_achievements_tab()
   local stats = tracker.get_stats()
   if not stats then
-    return { { { 'No stats available', 'PmenuSel' } } }
+    return { { { 'No stats available!', 'PmenuSel' } } }
   end
 
   local achievements = achievement_module.get_all_achievements(stats)
@@ -479,6 +513,94 @@ function Profile.build_achievements_tab()
   return voltui.grid_row({
     achievement_info,
     achievement_table,
+    footer,
+  })
+end
+
+---Build levels tab content
+---@return table
+function Profile.build_levels_tab()
+  local stats = tracker.get_stats()
+  if not stats then
+    return { { { 'No stats available!', 'PmenuSel' } } }
+  end
+
+  local levels = levels_module.get_all_levels(stats)
+
+  -- Sort: unlocked first
+  table.sort(levels, function(a, b)
+    return a.unlocked == b.unlocked and (a.level < b.level) or (a.unlocked and not b.unlocked)
+  end)
+
+  local total_levels = #levels
+  local total_pages = math.ceil(total_levels / Profile.levels_per_page)
+
+  -- Ensure current page is within bounds
+  if Profile.levels_page > total_pages then
+    Profile.levels_page = total_pages
+  end
+  if Profile.levels_page < 1 then
+    Profile.levels_page = 1
+  end
+
+  -- Get levels for current page
+  local start_idx = (Profile.levels_page - 1) * Profile.levels_per_page + 1
+  local end_idx = math.min(start_idx + Profile.levels_per_page - 1, total_levels)
+
+  -- Build table rows with virtual text for custom highlighting
+  -- Each cell with custom hl must be an array of {text, hl} pairs
+  local table_data = {
+    { 'Status', 'Achievement', 'Description' }, -- Header (plain strings)
+  }
+
+  for i = start_idx, end_idx do
+    local level = levels[i]
+    local status_icon = level.unlocked and '✓' or '✗'
+    local status_hl = level.unlocked and 'String' or 'Comment'
+    local text_hl = level.unlocked and 'TriforceYellow' or 'Comment'
+    local desc_hl = level.unlocked and 'Normal' or 'Comment'
+
+    -- Only show icon if unlocked
+    local name_display = ('%s'):format(level.level)
+
+    table.insert(table_data, {
+      { { status_icon, status_hl } }, -- Array of virt text chunks
+      { { name_display, text_hl } },
+      { { level.title, desc_hl } },
+    })
+  end
+
+  local levels_table = voltui.table(table_data, Profile.width - Profile.xpad * 2, 'String')
+
+  local unlocked_count = 0
+  for _, a in ipairs(levels) do
+    if a.unlocked then
+      unlocked_count = unlocked_count + 1
+    end
+  end
+
+  -- Compact levels info
+  local levels_info = {
+    { { 'Your Progress!', 'String' } },
+    {},
+  }
+
+  -- Footer with pagination info
+  local footer = {
+    {},
+    {},
+    {
+      { '  <Tab>: Switch Tabs | <S-Tab>: Switch Tabs Backwards | q: Close', 'Comment' },
+    },
+    {
+      { '  H/L or ◀/▶: ', 'Comment' },
+      { ('Page %s/%s'):format(Profile.levels_page, total_pages), 'String' },
+    },
+  }
+
+  return voltui.grid_row({
+    levels_info,
+    levels_table,
     footer,
   })
 end
@@ -693,6 +815,7 @@ function Profile.get_layout()
     [' Stats'] = Profile.build_stats_tab,
     ['󰌌 Achievements'] = Profile.build_achievements_tab,
     ['0 Languages'] = Profile.build_languages_tab,
+    ['󱡁 Levels'] = Profile.build_levels_tab,
   }
 
   return {
@@ -705,7 +828,7 @@ function Profile.get_layout()
     {
       lines = function()
         return voltui.tabs(
-          { ' Stats', '󰌌 Achievements', '0 Languages' },
+          { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' },
           Profile.width - Profile.xpad * 2,
           { active = Profile.current_tab }
         )
@@ -732,7 +855,7 @@ function Profile.cycle_tab(back)
   util.validate({ back = { back, { 'boolean', 'nil' }, true } })
   back = back ~= nil and back or false
 
-  local tabs = { ' Stats', '󰌌 Achievements', '0 Languages' }
+  local tabs = { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' }
   local pos = 1
   for i, tab in ipairs(tabs) do
     if tab == Profile.current_tab then
@@ -856,23 +979,44 @@ function Profile.open()
   local pagination_keys = { 'h', 'H', '<Left>', 'l', 'L', '<Right>' }
   for _, key in ipairs(pagination_keys) do
     vim.keymap.set('n', key, function()
-      if Profile.current_tab ~= '󰌌 Achievements' then
+      if not vim.tbl_contains({ '󰌌 Achievements', '󱡁 Levels' }, Profile.current_tab) then
+        return
+      end
+
+      if Profile.current_tab == '󰌌 Achievements' then
+        if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
+          if Profile.achievements_page > 1 then
+            Profile.achievements_page = Profile.achievements_page - 1
+            Profile.redraw_achievements()
+          end
+        elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
+          local stats = tracker.get_stats()
+          if stats then
+            local achievements = achievement_module.get_all_achievements(stats)
+            local total_pages = math.ceil(#achievements / Profile.achievements_per_page)
+            if Profile.achievements_page < total_pages then
+              Profile.achievements_page = Profile.achievements_page + 1
+              Profile.redraw_achievements()
+            end
+          end
+        end
+
         return
       end
 
       if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
-        if Profile.achievements_page > 1 then
-          Profile.achievements_page = Profile.achievements_page - 1
-          Profile.redraw_achievements()
+        if Profile.levels_page > 1 then
+          Profile.levels_page = Profile.levels_page - 1
+          Profile.redraw_levels()
         end
       elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
         local stats = tracker.get_stats()
         if stats then
-          local achievements = achievement_module.get_all_achievements(stats)
-          local total_pages = math.ceil(#achievements / Profile.achievements_per_page)
-          if Profile.achievements_page < total_pages then
-            Profile.achievements_page = Profile.achievements_page + 1
-            Profile.redraw_achievements()
+          local levels = levels_module.get_all_levels(stats)
+          local total_pages = math.ceil(#levels / Profile.levels_per_page)
+          if Profile.levels_page < total_pages then
+            Profile.levels_page = Profile.levels_page + 1
+            Profile.redraw_levels()
           end
         end
       end
