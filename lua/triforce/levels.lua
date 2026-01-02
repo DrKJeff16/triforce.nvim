@@ -4,10 +4,25 @@
 
 ---@alias LevelTitles table<integer, LevelTitle>
 
+---@class LevelParams
+---@field level integer
+---@field title string
+---@field icon? string
+
 local util = require('triforce.util')
 
 ---@class Triforce.Levels
 local Levels = {}
+
+Levels.levels = {} ---@type LevelTitles
+
+function Levels.setup()
+  if not vim.tbl_isempty(Levels.levels) then
+    return
+  end
+
+  Levels.levels = Levels.get_default_titles()
+end
 
 ---@return LevelTitles titles
 function Levels.get_default_titles()
@@ -33,15 +48,35 @@ function Levels.get_default_titles()
   return titles
 end
 
+---@param levels LevelParams[]|LevelParams
+function Levels.add_levels(levels)
+  util.validate({ levels = { levels, { 'table' } } })
+  if vim.tbl_isempty(levels) then
+    return
+  end
+
+  ---@cast levels LevelParams[]
+  if vim.islist(levels) then
+    for _, lvl in ipairs(levels) do
+      Levels.add_levels(lvl)
+    end
+    return
+  end
+
+  ---@cast levels LevelParams
+  local lvl_titles = { [levels.level] = { title = levels.title, icon = levels.icon or '' } }
+  Levels.levels = vim.tbl_deep_extend('keep', Levels.levels, lvl_titles)
+end
+
 ---Get Zelda-themed title based on level
 ---@param level integer
 ---@return string title
 function Levels.get_level_title(level)
   util.validate({ level = { level, { 'number' } } })
 
-  local titles = Levels.get_default_titles()
+  Levels.setup()
 
-  for max, tier in pairs(titles) do
+  for max, tier in pairs(Levels.levels) do
     if level <= max then
       return ('%s %s'):format(tier.icon, tier.title)
     end

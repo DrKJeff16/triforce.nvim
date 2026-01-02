@@ -37,6 +37,7 @@ function Triforce.setup(opts)
   })
 
   require('triforce.commands').setup()
+  require('triforce.levels').setup()
 
   local config = config_module.config
   -- Set up keymap if provided
