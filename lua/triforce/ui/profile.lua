@@ -2,6 +2,20 @@
 ---@field lang string
 ---@field count integer
 
+---@alias Months
+---|1
+---|2
+---|3
+---|4
+---|5
+---|6
+---|7
+---|8
+---|9
+---|10
+---|11
+---|12
+
 ---Profile UI using Volt
 local volt = require('volt')
 local voltui = require('volt.ui')
@@ -33,28 +47,23 @@ local Profile = {
   xpad = 2, ---@type integer
 }
 
--- Set up keybindings
+---Close up profile window
 function Profile.close()
-  if Profile.win and vim.api.nvim_win_is_valid(Profile.win) then
-    vim.api.nvim_win_close(Profile.win, true)
-  end
-  if Profile.dim_win and vim.api.nvim_win_is_valid(Profile.dim_win) then
-    vim.api.nvim_win_close(Profile.dim_win, true)
-  end
-  if Profile.buf and vim.api.nvim_buf_is_valid(Profile.buf) then
-    vim.api.nvim_buf_delete(Profile.buf, { force = true })
-  end
-  if Profile.dim_buf and vim.api.nvim_buf_is_valid(Profile.dim_buf) then
-    vim.api.nvim_buf_delete(Profile.dim_buf, { force = true })
-  end
+  pcall(vim.api.nvim_buf_delete, Profile.buf, { force = true })
+  pcall(vim.api.nvim_buf_delete, Profile.dim_buf, { force = true })
+  pcall(vim.api.nvim_win_close, Profile.win, true)
+  pcall(vim.api.nvim_win_close, Profile.dim_win, true)
   Profile.buf = nil
   Profile.win = nil
   Profile.dim_win = nil
   Profile.dim_buf = nil
 end
 
--- Helper function to redraw achievements tab
+---Helper function to redraw achievements tab
 function Profile.redraw_achievements()
+  if not Profile.buf then
+    return
+  end
   if Profile.current_tab ~= '󰌌 Achievements' then
     return
   end
@@ -81,40 +90,6 @@ function Profile.redraw_achievements()
   vim.bo[Profile.buf].modifiable = false
 end
 
----Get Zelda-themed title based on level
----@param level integer
----@return string title
-function Profile.get_level_title(level)
-  util.validate({ level = { level, { 'number' } } })
-
-  local titles = {
-    { max = 10, title = 'Deku Scrub', icon = '🌱' },
-    { max = 20, title = 'Kokiri', icon = '🌳' },
-    { max = 30, title = 'Hylian Soldier', icon = '🗡️' },
-    { max = 40, title = 'Knight', icon = '⚔️' },
-    { max = 50, title = 'Royal Guard', icon = '🛡️' },
-    { max = 60, title = 'Master Swordsman', icon = '⚡' },
-    { max = 70, title = 'Hero of Time', icon = '🔺' },
-    { max = 80, title = 'Sage', icon = '✨' },
-    { max = 90, title = 'Triforce Bearer', icon = '🔱' },
-    { max = 100, title = 'Champion', icon = '👑' },
-    { max = 120, title = 'Divine Beast Pilot', icon = '🦅' },
-    { max = 150, title = 'Ancient Hero', icon = '🏛️' },
-    { max = 180, title = 'Legendary Warrior', icon = '⚜️' },
-    { max = 200, title = 'Goddess Chosen', icon = '🌟' },
-    { max = 250, title = 'Demise Slayer', icon = '💀' },
-    { max = 300, title = 'Eternal Legend', icon = '💫' },
-  }
-
-  for _, tier in ipairs(titles) do
-    if level <= tier.max then
-      return ('%s %s'):format(tier.icon, tier.title)
-    end
-  end
-
-  return '💫 Eternal Legend' -- Max title for level > 300
-end
-
 ---Get activity level highlight based on lines typed
 ---@param lines integer
 ---@return 'LineNr'|'TriforceHeat0'|'TriforceHeat1'|'TriforceHeat2'|'TriforceHeat3' hl
@@ -135,17 +110,20 @@ function Profile.get_activity_hl(lines)
   return 'TriforceHeat0' -- Brightest
 end
 
-local BASE_DAYS_IN_MONTHS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
-
-local function is_leap_year(y)
-  return (y % 4 == 0 and y % 100 ~= 0) or (y % 400 == 0)
+---@param year integer
+---@return boolean leap
+local function is_leap_year(year)
+  return (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0)
 end
 
-local function days_in_month(month, y)
+---@param month Months
+---@param year integer
+local function days_in_month(month, year)
+  local days_in_months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
   if month ~= 2 then
-    return BASE_DAYS_IN_MONTHS[month]
+    return days_in_months[month]
   end
-  return is_leap_year(y) and 29 or 28
+  return is_leap_year(year) and 29 or 28
 end
 
 ---Build activity heatmap (copied from typr structure)
@@ -267,7 +245,7 @@ function Profile.build_stats_tab()
   end
 
   local streak = Profile.get_current_streak(stats)
-  local level_title = Profile.get_level_title(stats.level)
+  local level_title = require('triforce.levels').get_level_title(stats.level)
   local xp_current = stats.xp
   local xp_next = stats_module.xp_for_next_level(stats.level)
   local xp_prev = stats.level > 1 and stats_module.xp_for_next_level(stats.level - 1) or 0
