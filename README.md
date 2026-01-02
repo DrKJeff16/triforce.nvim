@@ -16,6 +16,7 @@ and achievements while you work.
     - [`vim-plug`](#vim-plug)
 - [Configuration](#configuration)
     - [Configuration Options](#configuration-options)
+    - [Custom Levels](#custom-levels)
     - [Level Progression](#level-progression)
     - [XP Rewards](#xp-rewards)
 - [Usage](#usage)
@@ -253,10 +254,47 @@ require('triforce').setup({
 | `keymap.show_profile`        | `string\|nil` | `nil`                             | Keymap for opening profile            |
 | `custom_languages`           | `table\|nil`  | `nil`                             | Custom language definitions           |
 | `ignore_ft`                  | `table\|nil`  | `{}`                              | List of excluded filetypes            |
+| `levels`                     | `table\|nil`  | [See below](#custom-levels)       | List of custom levels                 |
 | `level_progression`          | `table\|nil`  | [See below](#level-progression)   | Custom XP requirements per level tier |
 | `xp_rewards`                 | `table\|nil`  | [See below](#xp-rewards)          | Custom XP rewards for actions         |
 | `achievements`               | `table`       | [See below](#custom-achievements) | Custom achievements                   |
 | `heat_highlights`            | `table\|nil`  | Defaults shown above              | Override heatmap highlights (hex or links) |
+
+### Custom Levels
+
+By default, Triforce provides a Zelda-themed set of levels with title and icons:
+
+```lua
+{
+  [10] = { title = 'Deku Scrub', icon = '🌱' },
+  [20] = { title = 'Kokiri', icon = '🌳' },
+  [30] = { title = 'Hylian Soldier', icon = '🗡️' },
+  [40] = { title = 'Knight', icon = '⚔️' },
+  [50] = { title = 'Royal Guard', icon = '🛡️' },
+  [60] = { title = 'Master Swordsman', icon = '⚡' },
+  [70] = { title = 'Hero of Time', icon = '🔺' },
+  [80] = { title = 'Sage', icon = '✨' },
+  [90] = { title = 'Triforce Bearer', icon = '🔱' },
+  [100] = { title = 'Champion', icon = '👑' },
+  [120] = { title = 'Divine Beast Pilot', icon = '🦅' },
+  [150] = { title = 'Ancient Hero', icon = '🏛️' },
+  [180] = { title = 'Legendary Warrior', icon = '⚜️' },
+  [200] = { title = 'Goddess Chosen', icon = '🌟' },
+  [250] = { title = 'Demise Slayer', icon = '💀' },
+  [300] = { title = 'Eternal Legend', icon = '💫' },
+}
+```
+
+You can add custom levels in your config aswell!
+
+```lua
+require('triforce').setup({
+  levels = {
+    { level = 5, title = 'Newbie', icon = '🌱' },
+    { level = 25, title = 'Charmful Coder' } -- NOTE: You can omit your icon for an empty one if you wished
+  },
+})
+```
 
 ### Level Progression
 
