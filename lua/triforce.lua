@@ -59,6 +59,10 @@ function Triforce.setup(opts)
     Triforce.new_achievements(config.achievements)
   end
 
+  if config.levels and not vim.tbl_isempty(config.levels) then
+    require('triforce.levels').add_levels(config.levels)
+  end
+
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = vim.api.nvim_create_augroup('TriforceProfile', { clear = true }),
     callback = function()

@@ -80,6 +80,8 @@
 ---@field achievements? Achievement[]
 ---List of ignored filetypes
 ---@field ignore_ft? string[]
+---List of custom level titles
+---@field levels? LevelParams[]
 
 local util = require('triforce.util')
 
@@ -92,6 +94,7 @@ local defaults = { ---@type TriforceConfig
   auto_save_interval = 300,
   keymap = { show_profile = '' },
   custom_languages = {},
+  levels = {},
   level_progression = {
     tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
