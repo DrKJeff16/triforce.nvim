@@ -24,6 +24,7 @@ and achievements while you work.
     - [Stats Tab](#stats-tab)
     - [Achievements Tab](#achievements-tab)
     - [Stats Tab](#languages-tab)
+    - [Levels Tab](#levels-tab)
     - [Keybindings](#keybindings)
 - [Achievements](#achievements)
     - [Typing Milestones](#typing-milestones)
@@ -391,9 +392,8 @@ The profile includes 3 tabs:
 
 ![Achievements Tab](https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77)
 
-- View all unlocked achievements
-- See locked achievements with unlock requirements
-- Paginate through achievements (H/L or arrow keys)
+- View all unlocked achievements and locked achievements with unlock requirements
+- Paginate through achievements (`H` / `L` or arrow keys)
 
 ### Languages Tab
 
@@ -402,11 +402,18 @@ The profile includes 3 tabs:
 - Bar graph showing your most-used languages
 - See character count breakdown by language
 
+### Levels Tab
+
+![Levels Tab](https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77)
+
+- View unlocked levels first, then locked ones
+- Paginate through achievements (`H` / `L` or arrow keys)
+
 ### Keybindings
 
 - `<Tab>`: Cycle forward
 - `<S-Tab>`: Cycle backward
-- `H` / `L` or `←` / `→`: Navigate achievement pages
+- `H` / `L` or `←` / `→`: Navigate achievement/levels pages
 - `q` / `Esc`: Close profile
 
 ---
