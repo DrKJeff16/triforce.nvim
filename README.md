@@ -377,11 +377,11 @@ require('triforce').setup({
 
 ## Profile UI
 
-The profile includes 3 tabs:
+The profile includes 4 tabs:
 
 ### Stats Tab
 
-![Stats Tab](https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e)
+![Stats Tab](https://github.com/user-attachments/assets/87557fc0-0ac2-455b-a79d-8df0e99490d5)
 
 - Level progress bar
 - Session/time milestone progress
@@ -390,21 +390,21 @@ The profile includes 3 tabs:
 
 ### Achievements Tab
 
-![Achievements Tab](https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77)
+![Achievements Tab](https://github.com/user-attachments/assets/d127c685-14b9-4201-8533-994c501535c9)
 
 - View all unlocked achievements and locked achievements with unlock requirements
 - Paginate through achievements (`H` / `L` or arrow keys)
 
 ### Languages Tab
 
-![Languages Tab](https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81)
+![Languages Tab](https://github.com/user-attachments/assets/fc773690-6119-47cd-9400-ee277b7c4777)
 
 - Bar graph showing your most-used languages
 - See character count breakdown by language
 
 ### Levels Tab
 
-![Levels Tab](https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77)
+![Levels Tab](https://github.com/user-attachments/assets/404aedbd-e213-4919-a083-0f8fd4283b14)
 
 - View unlocked levels first, then locked ones
 - Paginate through achievements (`H` / `L` or arrow keys)
