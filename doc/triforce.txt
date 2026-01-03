@@ -427,7 +427,7 @@ USAGE                                           *triforce-triforce.nvim-usage*
 
 PROFILE UI                                 *triforce-triforce.nvim-profile-ui*
 
-The profile includes 3 tabs:
+The profile includes 4 tabs:
 
 
 STATS TAB ~
@@ -1019,10 +1019,10 @@ Star this repo if you find it useful!
 2. Links                                                      *triforce-links*
 
 1. *Showcase*: https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac
-2. *Stats Tab*: https://github.com/user-attachments/assets/38bef3f2-9534-45c6-a0f6-8d34a166a42e
-3. *Achievements Tab*: https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77
-4. *Languages Tab*: https://github.com/user-attachments/assets/a8d3c98c-16d5-4e15-8c39-538e3bb7ce81
-5. *Levels Tab*: https://github.com/user-attachments/assets/53913333-214e-47de-af99-1da58c40fd77
+2. *Stats Tab*: https://github.com/user-attachments/assets/87557fc0-0ac2-455b-a79d-8df0e99490d5
+3. *Achievements Tab*: https://github.com/user-attachments/assets/d127c685-14b9-4201-8533-994c501535c9
+4. *Languages Tab*: https://github.com/user-attachments/assets/fc773690-6119-47cd-9400-ee277b7c4777
+5. *Levels Tab*: https://github.com/user-attachments/assets/404aedbd-e213-4919-a083-0f8fd4283b14
 6. *Lualine Integration*: https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f
 7. *Star History Chart*: https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left
 
