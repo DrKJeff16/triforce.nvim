@@ -851,22 +851,31 @@ function Profile.get_layout()
 end
 
 ---@param back? boolean
-function Profile.cycle_tab(back)
-  util.validate({ back = { back, { 'boolean', 'nil' }, true } })
+---@param num? integer
+function Profile.cycle_tab(back, num)
+  util.validate({
+    back = { back, { 'boolean', 'nil' }, true },
+    num = { num, { 'number', 'nil' }, true },
+  })
   back = back ~= nil and back or false
+  num = num or 0
 
   local tabs = { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' }
+  local positions = vim.tbl_keys(tabs) ---@type integer[]
   local pos = 1
-  for i, tab in ipairs(tabs) do
-    if tab == Profile.current_tab then
-      pos = i
-      break
+  if not vim.list_contains(positions, num) then
+    for i, tab in ipairs(tabs) do
+      if tab == Profile.current_tab then
+        pos = i
+        break
+      end
     end
-  end
 
-  -- Cycle through tabs
-  pos = util.cycle_range(pos, 1, #tabs, back)
-  Profile.current_tab = tabs[pos]
+    pos = util.cycle_range(pos, 1, #tabs, back)
+    Profile.current_tab = tabs[pos]
+  else
+    Profile.current_tab = tabs[num]
+  end
 
   -- Make buffer modifiable
   vim.bo[Profile.buf].modifiable = true
@@ -974,6 +983,13 @@ function Profile.open()
   vim.keymap.set('n', '<S-Tab>', function()
     Profile.cycle_tab(true)
   end, { buffer = Profile.buf, noremap = true, silent = true })
+
+  local tabs = { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' }
+  for i = 1, #tabs, 1 do
+    vim.keymap.set('n', ('%s'):format(i), function()
+      Profile.cycle_tab(nil, i)
+    end, { buffer = Profile.buf, noremap = true, silent = true })
+  end
 
   -- Pagination keymaps for achievements
   local pagination_keys = { 'h', 'H', '<Left>', 'l', 'L', '<Right>' }
