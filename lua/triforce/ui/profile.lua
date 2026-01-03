@@ -550,7 +550,7 @@ function Profile.build_levels_tab()
   -- Build table rows with virtual text for custom highlighting
   -- Each cell with custom hl must be an array of {text, hl} pairs
   local table_data = {
-    { 'Status', 'Achievement', 'Description' }, -- Header (plain strings)
+    { 'Status', 'Level', 'Title' }, -- Header (plain strings)
   }
 
   for i = start_idx, end_idx do
