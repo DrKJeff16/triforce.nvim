@@ -42,7 +42,8 @@ local Profile = {
   achievements_per_page = 5, ---@type integer
   levels_per_page = 5, ---@type integer
   max_language_entries = 13, ---@type integer
-  current_tab = ' Stats', ---@type string
+  current_tab = '1   Stats', ---@type string
+  all_tabs = { '1   Stats', '2  󰌌 Achievements', '3   Languages', '4  󱡁 Levels' },
 
   -- Dimensions
   width = 80, ---@type integer
@@ -67,7 +68,7 @@ function Profile.redraw_achievements()
   if not Profile.buf then
     return
   end
-  if Profile.current_tab ~= '󰌌 Achievements' then
+  if Profile.current_tab ~= '2  󰌌 Achievements' then
     return
   end
 
@@ -98,7 +99,7 @@ function Profile.redraw_levels()
   if not Profile.buf then
     return
   end
-  if Profile.current_tab ~= '󱡁 Levels' then
+  if Profile.current_tab ~= '4  󱡁 Levels' then
     return
   end
 
@@ -279,7 +280,6 @@ function Profile.build_stats_tab()
   end
 
   local streak = Profile.get_current_streak(stats)
-  local level_title = levels_module.get_level_title(stats.level)
   local xp_current = stats.xp
   local xp_next = stats_module.xp_for_next_level(stats.level)
   local xp_prev = stats.level > 1 and stats_module.xp_for_next_level(stats.level - 1) or 0
@@ -590,7 +590,7 @@ function Profile.build_levels_tab()
     {},
     {},
     {
-      { '  <Tab>: Switch Tabs | <S-Tab>: Switch Tabs Backwards | q: Close', 'Comment' },
+      { '  <Tab>: Switch Tabs | <S-Tab>: Switch Tabs Backwards | q: Close |', 'Comment' },
     },
     {
       { '  H/L or ◀/▶: ', 'Comment' },
@@ -812,10 +812,10 @@ end
 ---@return table
 function Profile.get_layout()
   local components = {
-    [' Stats'] = Profile.build_stats_tab,
-    ['󰌌 Achievements'] = Profile.build_achievements_tab,
-    ['0 Languages'] = Profile.build_languages_tab,
-    ['󱡁 Levels'] = Profile.build_levels_tab,
+    ['1   Stats'] = Profile.build_stats_tab,
+    ['2  󰌌 Achievements'] = Profile.build_achievements_tab,
+    ['3   Languages'] = Profile.build_languages_tab,
+    ['4  󱡁 Levels'] = Profile.build_levels_tab,
   }
 
   return {
@@ -827,11 +827,7 @@ function Profile.get_layout()
     },
     {
       lines = function()
-        return voltui.tabs(
-          { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' },
-          Profile.width - Profile.xpad * 2,
-          { active = Profile.current_tab }
-        )
+        return voltui.tabs(Profile.all_tabs, Profile.width - Profile.xpad * 2, { active = Profile.current_tab })
       end,
       name = 'tabs',
     },
@@ -860,21 +856,20 @@ function Profile.cycle_tab(back, num)
   back = back ~= nil and back or false
   num = num or 0
 
-  local tabs = { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' }
-  local positions = vim.tbl_keys(tabs) ---@type integer[]
+  local positions = vim.tbl_keys(Profile.all_tabs) ---@type integer[]
   local pos = 1
   if not vim.list_contains(positions, num) then
-    for i, tab in ipairs(tabs) do
+    for i, tab in ipairs(Profile.all_tabs) do
       if tab == Profile.current_tab then
         pos = i
         break
       end
     end
 
-    pos = util.cycle_range(pos, 1, #tabs, back)
-    Profile.current_tab = tabs[pos]
+    pos = util.cycle_range(pos, 1, #Profile.all_tabs, back)
+    Profile.current_tab = Profile.all_tabs[pos]
   else
-    Profile.current_tab = tabs[num]
+    Profile.current_tab = Profile.all_tabs[num]
   end
 
   -- Make buffer modifiable
@@ -984,8 +979,7 @@ function Profile.open()
     Profile.cycle_tab(true)
   end, { buffer = Profile.buf, noremap = true, silent = true })
 
-  local tabs = { ' Stats', '󰌌 Achievements', '0 Languages', '󱡁 Levels' }
-  for i = 1, #tabs, 1 do
+  for i = 1, #Profile.all_tabs, 1 do
     vim.keymap.set('n', ('%s'):format(i), function()
       Profile.cycle_tab(nil, i)
     end, { buffer = Profile.buf, noremap = true, silent = true })
@@ -995,11 +989,11 @@ function Profile.open()
   local pagination_keys = { 'h', 'H', '<Left>', 'l', 'L', '<Right>' }
   for _, key in ipairs(pagination_keys) do
     vim.keymap.set('n', key, function()
-      if not vim.tbl_contains({ '󰌌 Achievements', '󱡁 Levels' }, Profile.current_tab) then
+      if not vim.tbl_contains({ '2  󰌌 Achievements', '4  󱡁 Levels' }, Profile.current_tab) then
         return
       end
 
-      if Profile.current_tab == '󰌌 Achievements' then
+      if Profile.current_tab == '2  󰌌 Achievements' then
         if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
           if Profile.achievements_page > 1 then
             Profile.achievements_page = Profile.achievements_page - 1
