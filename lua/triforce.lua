@@ -36,8 +36,8 @@ function Triforce.setup(opts)
     desc = 'Triforce: Show profile',
   })
 
-  require('triforce.commands').setup()
   require('triforce.levels').setup()
+  require('triforce.commands').setup()
 
   local config = config_module.config
   -- Set up keymap if provided
