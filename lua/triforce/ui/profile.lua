@@ -63,43 +63,56 @@ function Profile.close()
   Profile.dim_buf = nil
 end
 
----Helper function to redraw achievements tab
-function Profile.redraw_achievements()
-  if not Profile.buf then
-    return
-  end
-  if Profile.current_tab ~= 2 then
-    return
-  end
-
-  vim.bo[Profile.buf].modifiable = true
-  volt.gen_data({
-    { buf = Profile.buf, layout = Profile.get_layout(), xpad = Profile.xpad, ns = Profile.ns },
-  })
-
-  local new_height = voltstate[Profile.buf].h
-  local current_lines = vim.api.nvim_buf_line_count(Profile.buf)
-
-  if current_lines < new_height then
-    local empty_lines = {}
-    for _ = 1, (new_height - current_lines) do
-      table.insert(empty_lines, '')
+function Profile.pagination_fun(key)
+  return function()
+    if not vim.tbl_contains({ 2, 4 }, Profile.current_tab) then
+      return
     end
-    vim.api.nvim_buf_set_lines(Profile.buf, current_lines, current_lines, false, empty_lines)
-  elseif current_lines > new_height then
-    vim.api.nvim_buf_set_lines(Profile.buf, new_height, current_lines, false, {})
-  end
 
-  volt.redraw(Profile.buf, 'all')
-  vim.bo[Profile.buf].modifiable = false
+    if Profile.current_tab == 2 then
+      if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
+        if Profile.achievements_page > 1 then
+          Profile.achievements_page = Profile.achievements_page - 1
+          Profile.redraw()
+        end
+      elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
+        local stats = tracker.get_stats()
+        if stats then
+          local achievements = achievement_module.get_all_achievements(stats)
+          if Profile.achievements_page < math.ceil(#achievements / Profile.achievements_per_page) then
+            Profile.achievements_page = Profile.achievements_page + 1
+            Profile.redraw()
+          end
+        end
+      end
+
+      return
+    end
+
+    if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
+      if Profile.levels_page > 1 then
+        Profile.levels_page = Profile.levels_page - 1
+        Profile.redraw()
+      end
+    elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
+      local stats = tracker.get_stats()
+      if stats then
+        local levels = levels_module.get_all_levels(stats)
+        if Profile.levels_page < math.ceil(#levels / Profile.levels_per_page) then
+          Profile.levels_page = Profile.levels_page + 1
+          Profile.redraw()
+        end
+      end
+    end
+  end
 end
 
----Helper function to redraw levels tab
-function Profile.redraw_levels()
+---Helper function to redraw either the achievements or levels tabs
+function Profile.redraw()
   if not Profile.buf then
     return
   end
-  if Profile.current_tab ~= 4 then
+  if not vim.list_contains({ 2, 4 }, Profile.current_tab) then
     return
   end
 
@@ -436,11 +449,8 @@ function Profile.build_achievements_tab()
     return a.check(stats) == b.check(stats) and (a.name < b.name) or (a.check(stats) and not b.check(stats))
   end)
 
-  -- Calculate pagination
   local total_achievements = #achievements
   local total_pages = math.ceil(total_achievements / Profile.achievements_per_page)
-
-  -- Ensure current page is within bounds
   if Profile.achievements_page > total_pages then
     Profile.achievements_page = total_pages
   end
@@ -496,8 +506,6 @@ function Profile.build_achievements_tab()
     },
     {},
   }
-
-  -- Footer with pagination info
   local footer = {
     {},
     {},
@@ -579,13 +587,7 @@ function Profile.build_levels_tab()
     end
   end
 
-  -- Compact levels info
-  local levels_info = {
-    { { 'Your Progress!', 'String' } },
-    {},
-  }
-
-  -- Footer with pagination info
+  local levels_info = { { { 'Your Progress!', 'String' } }, {} }
   local footer = {
     {},
     {},
@@ -613,7 +615,6 @@ function Profile.build_languages_tab()
     return { { { 'No stats available', 'Comment' } } }
   end
 
-  -- Get language data and sort by character count
   local lang_data = {} ---@type TriforceLangData[]
   for lang, count in pairs(stats.chars_by_language or {}) do
     if not languages.is_excluded(lang) then
@@ -625,21 +626,15 @@ function Profile.build_languages_tab()
     return a.count > b.count
   end)
 
-  -- Limit to max entries
   local display_count = math.min(#lang_data, Profile.max_language_entries)
-
-  -- Prepare data for bar graph
   local graph_values = {}
   local max_chars = 0
-
-  -- Get max for scaling
   for i = 1, display_count do
     if lang_data[i].count > max_chars then
       max_chars = lang_data[i].count
     end
   end
 
-  -- Fill graph values (scale to 100)
   for i = 1, Profile.max_language_entries do
     table.insert(
       graph_values,
@@ -662,7 +657,7 @@ function Profile.build_languages_tab()
   local graph_width = math.min(Profile.max_language_entries * 4, Profile.width - Profile.xpad * 2)
   local graph_data = {
     val = graph_values,
-    -- footer_label = { " Character count by language" },
+    footer_label = { ' Character count by language' },
     format_labels = function(x)
       return max_chars == 0 and '0' or tostring(math.floor((x * max_chars / 100)))
     end,
@@ -674,17 +669,11 @@ function Profile.build_languages_tab()
   }
 
   local graph_lines = voltui.graphs.bar(graph_data)
-
-  -- Center the graph by calculating left padding
   local left_pad = 2
-
-  -- Centered graph section
   local centered_graph = voltui.grid_col({
-    { lines = { {} }, w = left_pad }, -- Left spacing
+    { lines = { {} }, w = left_pad },
     { lines = graph_lines, w = graph_width },
   })
-
-  -- Footer
   local footer = {
     {},
     {},
@@ -709,7 +698,6 @@ function Profile.build_languages_tab()
   end
 
   local graph_x_axis = { graph_x_axis_parts }
-
   if display_count == 0 then
     graph_x_axis = {
       {},
@@ -717,15 +705,13 @@ function Profile.build_languages_tab()
     }
   end
 
-  -- Language summary info
   local language_info, summary_parts = { {} }, {}
   local pre_msgs = { ' You code primarily in ', ', with ', ' and ' }
   local hls = { 'TriforceRed', 'TriforceBlue', 'TriforcePurple' }
   local i, added = 1, 1
   if display_count > 0 then
-    local display_name
     while display_count >= i and added <= 3 do
-      display_name = languages.get_display_name(lang_data[i].lang)
+      local display_name = languages.get_display_name(lang_data[i].lang)
       if display_name then
         if added <= #pre_msgs then
           table.insert(summary_parts, { pre_msgs[added] })
@@ -744,23 +730,13 @@ function Profile.build_languages_tab()
     language_info = { summary_parts, {} }
   end
 
-  return voltui.grid_row({
-    language_info,
-    centered_graph,
-    graph_x_axis,
-    footer,
-  })
+  return voltui.grid_row({ language_info, centered_graph, graph_x_axis, footer })
 end
 
 ---Set up custom highlights
 function Profile.setup_highlights()
-  local get_hl = require('volt.utils').get_hl
   local config = require('triforce.config')
-
-  -- Get base colors
-  local normal_bg = get_hl('Normal').bg
-
-  -- Set custom highlights for Triforce (linked to standard highlights)
+  local normal_bg = require('volt.utils').get_hl('Normal').bg
   if normal_bg then
     vim.api.nvim_set_hl(Profile.ns, 'TriforceNormal', { bg = normal_bg })
     vim.api.nvim_set_hl(Profile.ns, 'TriforceBorder', { link = 'String' })
@@ -768,7 +744,6 @@ function Profile.setup_highlights()
     normal_bg = '#000000' -- Fallback for transparent backgrounds
   end
 
-  -- Create Triforce highlight groups - change these to customize colors
   local hls = { ---@type table<string, vim.api.keyset.highlight>
     TriforceRed = { link = 'Keyword' },
     TriforceGreen = { link = 'String' },
@@ -796,14 +771,11 @@ function Profile.setup_highlights()
     local hl = ('TriforceHeat%d'):format(level.name)
     local fg = heat_hls[hl]
 
-    -- If fg is a group name (string without leading '#'), link to that group.
-    -- Otherwise treat it as a color (hex string, number, etc.) and set fg.
     if fg then
       local key = (type(fg) == 'string' and fg:sub(1, 1) ~= '#') and 'link' or 'fg'
       vim.api.nvim_set_hl(Profile.ns, hl, { [key] = fg })
     end
   end
-  -- Link to standard highlights
   vim.api.nvim_set_hl(Profile.ns, 'FloatBorder', { link = 'TriforceBorder' })
   vim.api.nvim_set_hl(Profile.ns, 'Normal', { link = 'TriforceNormal' })
 end
@@ -916,6 +888,14 @@ function Profile.cycle_tab(back, num)
   -- Redraw content
   volt.redraw(Profile.buf, 'all')
   vim.bo[Profile.buf].modifiable = false
+
+  for _, key in ipairs({ 'h', 'H', '<Left>', 'l', 'L', '<Right>' }) do
+    if not vim.list_contains({ 2, 4 }, Profile.current_tab) then
+      vim.keymap.del('n', key, { buffer = Profile.buf })
+    else
+      vim.keymap.set('n', key, Profile.pagination_fun(key), { buffer = Profile.buf })
+    end
+  end
 end
 
 ---Open profile window
@@ -947,14 +927,9 @@ function Profile.open()
   })
 
   Profile.height = voltstate[Profile.buf].h
-
-  -- Window config
-  local row = math.floor((vim.o.lines - Profile.height) / 2)
-  local col = math.floor((vim.o.columns - Profile.width) / 2)
-
   Profile.win = vim.api.nvim_open_win(Profile.buf, true, {
-    row = row,
-    col = col,
+    row = math.floor((vim.o.lines - Profile.height) / 2),
+    col = math.floor((vim.o.columns - Profile.width) / 2),
     width = Profile.width,
     height = Profile.height,
     relative = 'editor',
@@ -989,55 +964,12 @@ function Profile.open()
     end, { buffer = Profile.buf, noremap = true, silent = true })
   end
 
-  -- Pagination keymaps for achievements
-  local pagination_keys = { 'h', 'H', '<Left>', 'l', 'L', '<Right>' }
-  for _, key in ipairs(pagination_keys) do
-    vim.keymap.set('n', key, function()
-      if not vim.tbl_contains({ 2, 4 }, Profile.current_tab) then
-        return
-      end
-
-      if Profile.current_tab == 2 then
-        if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
-          if Profile.achievements_page > 1 then
-            Profile.achievements_page = Profile.achievements_page - 1
-            Profile.redraw_achievements()
-          end
-        elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
-          local stats = tracker.get_stats()
-          if stats then
-            local achievements = achievement_module.get_all_achievements(stats)
-            local total_pages = math.ceil(#achievements / Profile.achievements_per_page)
-            if Profile.achievements_page < total_pages then
-              Profile.achievements_page = Profile.achievements_page + 1
-              Profile.redraw_achievements()
-            end
-          end
-        end
-
-        return
-      end
-
-      if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
-        if Profile.levels_page > 1 then
-          Profile.levels_page = Profile.levels_page - 1
-          Profile.redraw_levels()
-        end
-      elseif vim.list_contains({ 'l', 'L', '<Right>' }, key) then
-        local stats = tracker.get_stats()
-        if stats then
-          local levels = levels_module.get_all_levels(stats)
-          local total_pages = math.ceil(#levels / Profile.levels_per_page)
-          if Profile.levels_page < total_pages then
-            Profile.levels_page = Profile.levels_page + 1
-            Profile.redraw_levels()
-          end
-        end
-      end
-    end, { buffer = Profile.buf })
+  if vim.list_contains({ 2, 4 }, Profile.current_tab) then
+    for _, key in ipairs({ 'h', 'H', '<Left>', 'l', 'L', '<Right>' }) do
+      vim.keymap.set('n', key, Profile.pagination_fun(key), { buffer = Profile.buf })
+    end
   end
 
-  -- Set filetype
   vim.bo[Profile.buf].filetype = 'triforce-profile'
 end
 
