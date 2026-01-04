@@ -888,6 +888,7 @@ function Profile.cycle_tab(back, num)
   -- Redraw content
   volt.redraw(Profile.buf, 'all')
   vim.bo[Profile.buf].modifiable = false
+  vim.api.nvim_win_set_cursor(Profile.win, { 1, 0 })
 
   for _, key in ipairs({ 'h', 'H', '<Left>', 'l', 'L', '<Right>' }) do
     if not vim.list_contains({ 2, 4 }, Profile.current_tab) then
@@ -952,7 +953,8 @@ function Profile.open()
     after_close = Profile.close,
   })
 
-  -- Tab switching
+  vim.api.nvim_win_set_cursor(Profile.win, { 1, 0 })
+
   vim.keymap.set('n', '<Tab>', Profile.cycle_tab, { buffer = Profile.buf, noremap = true, silent = true })
   vim.keymap.set('n', '<S-Tab>', function()
     Profile.cycle_tab(true)
