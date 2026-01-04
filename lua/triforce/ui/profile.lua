@@ -42,7 +42,7 @@ local Profile = {
   achievements_per_page = 5, ---@type integer
   levels_per_page = 5, ---@type integer
   max_language_entries = 13, ---@type integer
-  current_tab = '1   Stats', ---@type string
+  current_tab = 1, ---@type integer
   all_tabs = { '1   Stats', '2  󰌌 Achievements', '3   Languages', '4  󱡁 Levels' },
 
   -- Dimensions
@@ -68,7 +68,7 @@ function Profile.redraw_achievements()
   if not Profile.buf then
     return
   end
-  if Profile.current_tab ~= '2  󰌌 Achievements' then
+  if Profile.current_tab ~= 2 then
     return
   end
 
@@ -99,7 +99,7 @@ function Profile.redraw_levels()
   if not Profile.buf then
     return
   end
-  if Profile.current_tab ~= '4  󱡁 Levels' then
+  if Profile.current_tab ~= 4 then
     return
   end
 
@@ -812,10 +812,10 @@ end
 ---@return table
 function Profile.get_layout()
   local components = {
-    ['1   Stats'] = Profile.build_stats_tab,
-    ['2  󰌌 Achievements'] = Profile.build_achievements_tab,
-    ['3   Languages'] = Profile.build_languages_tab,
-    ['4  󱡁 Levels'] = Profile.build_levels_tab,
+    Profile.build_stats_tab,
+    Profile.build_achievements_tab,
+    Profile.build_languages_tab,
+    Profile.build_levels_tab,
   }
 
   return {
@@ -827,7 +827,11 @@ function Profile.get_layout()
     },
     {
       lines = function()
-        return voltui.tabs(Profile.all_tabs, Profile.width - Profile.xpad * 2, { active = Profile.current_tab })
+        return voltui.tabs(
+          Profile.all_tabs,
+          Profile.width - Profile.xpad * 2,
+          { active = Profile.all_tabs[Profile.current_tab] }
+        )
       end,
       name = 'tabs',
     },
@@ -859,17 +863,17 @@ function Profile.cycle_tab(back, num)
   local positions = vim.tbl_keys(Profile.all_tabs) ---@type integer[]
   local pos = 1
   if not vim.list_contains(positions, num) then
-    for i, tab in ipairs(Profile.all_tabs) do
-      if tab == Profile.current_tab then
+    for i, _ in ipairs(Profile.all_tabs) do
+      if i == Profile.current_tab then
         pos = i
         break
       end
     end
 
     pos = util.cycle_range(pos, 1, #Profile.all_tabs, back)
-    Profile.current_tab = Profile.all_tabs[pos]
+    Profile.current_tab = pos
   else
-    Profile.current_tab = Profile.all_tabs[num]
+    Profile.current_tab = num
   end
 
   -- Make buffer modifiable
@@ -989,11 +993,11 @@ function Profile.open()
   local pagination_keys = { 'h', 'H', '<Left>', 'l', 'L', '<Right>' }
   for _, key in ipairs(pagination_keys) do
     vim.keymap.set('n', key, function()
-      if not vim.tbl_contains({ '2  󰌌 Achievements', '4  󱡁 Levels' }, Profile.current_tab) then
+      if not vim.tbl_contains({ 2, 4 }, Profile.current_tab) then
         return
       end
 
-      if Profile.current_tab == '2  󰌌 Achievements' then
+      if Profile.current_tab == 2 then
         if vim.list_contains({ 'h', 'H', '<Left>' }, key) then
           if Profile.achievements_page > 1 then
             Profile.achievements_page = Profile.achievements_page - 1
