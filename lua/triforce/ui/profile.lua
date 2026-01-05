@@ -291,7 +291,7 @@ function Profile.get_current_streak(stats)
 end
 
 ---Build Stats tab content
----@return table
+---@return string[][][]|string[][]
 function Profile.build_stats_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -425,7 +425,7 @@ function Profile.build_stats_tab()
 end
 
 ---Build Achievements tab content
----@return table
+---@return string[][][]|string[][]
 function Profile.build_achievements_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -448,12 +448,8 @@ function Profile.build_achievements_tab()
     Profile.achievements_page = 1
   end
 
-  -- Get achievements for current page
   local start_idx = (Profile.achievements_page - 1) * Profile.achievements_per_page + 1
   local end_idx = math.min(start_idx + Profile.achievements_per_page - 1, total_achievements)
-
-  -- Build table rows with virtual text for custom highlighting
-  -- Each cell with custom hl must be an array of {text, hl} pairs
   local table_data = {
     { 'Status', 'Achievement', 'Description' }, -- Header (plain strings)
   }
@@ -530,7 +526,7 @@ function Profile.build_achievements_tab()
 end
 
 ---Build levels tab content
----@return table
+---@return string[][][]|string[][]
 function Profile.build_levels_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -561,29 +557,25 @@ function Profile.build_levels_tab()
 
   -- Build table rows with virtual text for custom highlighting
   -- Each cell with custom hl must be an array of {text, hl} pairs
-  local table_data = {
-    { 'Status', 'Level', 'Title' }, -- Header (plain strings)
+  local table_data = { ---@type string[][][]|string[][]
+    { 'Unlocked', 'Level', 'Title' }, -- Header (plain strings)
   }
 
   for i = start_idx, end_idx do
     local level = levels[i]
-    local status_icon = level.unlocked and '✓' or '✗'
-    local status_hl = level.unlocked and 'String' or 'Comment'
+    local unlocked_icon = level.unlocked and '✓' or '✗'
+    local unlocked_hl = level.unlocked and 'String' or 'Comment'
     local text_hl = level.unlocked and 'TriforceYellow' or 'Comment'
     local desc_hl = level.unlocked and 'Normal' or 'Comment'
-
-    -- Only show icon if unlocked
     local name_display = ('%s'):format(level.level)
-
     table.insert(table_data, {
-      { { status_icon, status_hl } }, -- Array of virt text chunks
+      { { unlocked_icon, unlocked_hl } }, -- Array of virt text chunks
       { { name_display, text_hl } },
       { { level.title, desc_hl } },
     })
   end
 
   local levels_table = voltui.table(table_data, Profile.width - Profile.xpad * 2, 'String')
-
   local unlocked_count = 0
   for _, a in ipairs(levels) do
     if a.unlocked then
@@ -591,16 +583,14 @@ function Profile.build_levels_tab()
     end
   end
 
-  local levels_info = {
+  local levels_info = { ---@type string[][][]|string[][]
     {
       { 'Current level: ' },
       { ('%d'):format(stats.level), 'Number' },
     },
     {},
-    {},
   }
-  local footer = {
-    {},
+  local footer = { ---@type string[][][]|string[][]
     {},
     {
       { '  ' },
@@ -633,7 +623,7 @@ function Profile.build_levels_tab()
 end
 
 ---Build Languages tab content
----@return table
+---@return string[][][]|string[][]
 function Profile.build_languages_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -814,16 +804,16 @@ function Profile.setup_highlights()
 end
 
 ---Get layout for tab system
----@return table
+---@return VoltData.Layout[]
 function Profile.get_layout()
-  local components = {
+  local components = { ---@type table<string, fun(): (string[][][]|string[][])>
     Profile.build_stats_tab,
     Profile.build_achievements_tab,
     Profile.build_languages_tab,
     Profile.build_levels_tab,
   }
 
-  return {
+  return { ---@type VoltData.Layout[]
     {
       lines = function()
         return { {} }
@@ -882,15 +872,11 @@ function Profile.cycle_tab(back, num)
     Profile.current_tab = num
   end
 
-  -- Make buffer modifiable
   vim.bo[Profile.buf].modifiable = true
-
-  -- Reinitialize layout with new content
   volt.gen_data({
     { buf = Profile.buf, layout = Profile.get_layout(), xpad = Profile.xpad, ns = Profile.ns },
   })
 
-  -- Get new height and ensure buffer has enough lines
   local new_height = voltstate[Profile.buf].h
   local current_lines = vim.api.nvim_buf_line_count(Profile.buf)
 
@@ -906,7 +892,6 @@ function Profile.cycle_tab(back, num)
     vim.api.nvim_buf_set_lines(Profile.buf, new_height, current_lines, false, {})
   end
 
-  -- Update window height if needed
   if new_height ~= Profile.height then
     Profile.height = new_height
     vim.api.nvim_win_set_config(Profile.win, {
@@ -919,7 +904,6 @@ function Profile.cycle_tab(back, num)
     })
   end
 
-  -- Redraw content
   volt.redraw(Profile.buf, 'all')
   vim.bo[Profile.buf].modifiable = false
   vim.api.nvim_win_set_cursor(Profile.win, { 1, 0 })
