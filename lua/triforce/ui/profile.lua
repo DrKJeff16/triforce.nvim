@@ -787,9 +787,7 @@ function Profile.setup_highlights()
     { name = 4, mix_pct = 80 },
   }
 
-  local heat_hls = (config.config and config.config.heat_highlights)
-    or (config.defaults and config.defaults().heat_highlights)
-    or {}
+  local heat_hls = config.config.heat_highlights or config.defaults().heat_highlights
   for _, level in ipairs(heat_levels) do
     local hl = ('TriforceHeat%d'):format(level.name)
     local fg = heat_hls[hl]

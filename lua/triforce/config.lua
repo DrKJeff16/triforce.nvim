@@ -42,68 +42,55 @@
 
 ---Default highlight groups for the heats
 ---@class Triforce.Config.Heat
+---@field TriforceHeat0? string
 ---@field TriforceHeat1? string
 ---@field TriforceHeat2? string
 ---@field TriforceHeat3? string
 ---@field TriforceHeat4? string
 
----Triforce setup configuration
----@class TriforceConfig
----Enable the plugin
----@field enabled? boolean
----Enable gamification features (stats, XP, achievements)
----@field gamification_enabled? boolean
----Notification configuration
----@field notifications? TriforceConfig.Notifications
----Auto-save stats interval in seconds (default: `300`)
----@field auto_save_interval? integer
----Keymap configuration
----@field keymap? TriforceConfig.Keymap
----Custom language definitions:
----
----```lua
------ Example
----{ rust = { icon = "", name = "Rust" } }
----```
----@field custom_languages? table<string, TriforceLanguage>
----Custom level progression tiers
----@field level_progression? LevelProgression
----Custom XP reward amounts for different actions
----@field xp_rewards? XPRewards
----Custom path for data file
----@field db_path? string
----Default highlight groups for the heats
----@field heat_highlights? Triforce.Config.Heat
----Enable debugging messages
----@field debug? boolean
----List of user-defined achievements
----@field achievements? Achievement[]
----List of ignored filetypes
----@field ignore_ft? string[]
----List of custom level titles
----@field levels? LevelParams[]
-
 local util = require('triforce.util')
 
-local defaults = { ---@type TriforceConfig
-  enabled = true,
-  gamification_enabled = true,
-  debug = false,
-  achievements = {},
-  notifications = { enabled = true, level_up = true, achievements = true },
-  auto_save_interval = 300,
-  keymap = { show_profile = '' },
-  custom_languages = {},
-  levels = {},
-  level_progression = {
+---Triforce setup configuration
+---@class TriforceConfig
+local defaults = {
+  ---Enable the plugin
+  enabled = true, ---@type boolean
+  ---Enable gamification features (stats, XP, achievements)
+  gamification_enabled = true, ---@type boolean
+  ---Enable debugging messages
+  debug = false, ---@type boolean
+  ---List of user-defined achievements
+  achievements = {}, ---@type Achievement[]
+  ---Notification configuration
+  notifications = { enabled = true, level_up = true, achievements = true }, ---@type TriforceConfig.Notifications
+  ---Auto-save stats interval in seconds (default: `300`)
+  auto_save_interval = 300, ---@type integer
+  ---Keymap configuration
+  keymap = { show_profile = '' }, ---@type TriforceConfig.Keymap
+  ---Custom language definitions:
+  ---
+  ---```lua
+  ----- Example
+  ---{ rust = { icon = "", name = "Rust" } }
+  ---```
+  custom_languages = {}, ---@type table<string, TriforceLanguage>
+  ---List of custom level titles
+  levels = {}, ---@type LevelParams[]
+  ---Custom level progression tiers
+  level_progression = { ---@type LevelProgression
     tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
     tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 },
   },
-  ignore_ft = {},
-  xp_rewards = { char = 1, line = 1, save = 50 },
-  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'),
-  heat_highlights = {
+  ---List of ignored filetypes
+  ignore_ft = {}, ---@type string[]
+  ---Custom XP reward amounts for different actions
+  xp_rewards = { char = 1, line = 1, save = 50 }, ---@type XPRewards
+  ---Custom path for data file
+  db_path = vim.fs.joinpath(vim.fn.stdpath('data'), 'triforce_stats.json'), ---@type string
+  ---Default highlight groups for the heats
+  heat_highlights = { ---@type Triforce.Config.Heat
+    TriforceHeat0 = '#f0f0f0',
     TriforceHeat1 = '#f0f0a0',
     TriforceHeat2 = '#f0a0a0',
     TriforceHeat3 = '#a0a0a0',
