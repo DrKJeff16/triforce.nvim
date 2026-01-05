@@ -20,15 +20,15 @@ local uv = vim.uv or vim.loop
 local util = require('triforce.util')
 
 ---@class Triforce.Stats
+---Configurable level progression
+---@field level_config LevelProgression
+---@field db_path? string
 local Stats = {
-  ---Configurable level progression
-  level_config = { ---@type LevelProgression
-    -- XP required per level for each tier
+  level_config = {
     tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
     tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
     tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
   },
-  db_path = nil, ---@type string|nil
 }
 
 ---@return Stats stats

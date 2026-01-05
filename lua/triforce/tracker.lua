@@ -5,9 +5,9 @@ local util = require('triforce.util')
 local uv = vim.uv or vim.loop
 
 ---@class Triforce.Tracker
+---@field current_stats? Stats
+---@field augroup? integer
 local Tracker = {
-  current_stats = nil, ---@type Stats|nil
-  autocmd_group = nil, ---@type integer|nil
   ---Track line count per buffer to detect new lines
   buffer_line_counts = {}, ---@type table<integer, integer>
   ---Track lines typed today
@@ -33,15 +33,15 @@ function Tracker.setup(debug)
   Tracker.current_date = os.date('%Y-%m-%d')
   Tracker.lines_today = 0
   stats_module.start_session(Tracker.current_stats)
-  Tracker.autocmd_group = vim.api.nvim_create_augroup('TriforceTracker', { clear = true })
+  Tracker.augroup = vim.api.nvim_create_augroup('TriforceTracker', { clear = true })
   vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI' }, {
-    group = Tracker.autocmd_group,
+    group = Tracker.augroup,
     callback = function(ev)
       Tracker.on_text_changed(ev.buf)
     end,
   })
   vim.api.nvim_create_autocmd('BufWritePre', {
-    group = Tracker.autocmd_group,
+    group = Tracker.augroup,
     callback = function(ev)
       if vim.api.nvim_get_option_value('modified', { buf = ev.buf }) then
         Tracker.on_save()
@@ -49,7 +49,7 @@ function Tracker.setup(debug)
     end,
   })
   vim.api.nvim_create_autocmd('VimLeavePre', {
-    group = Tracker.autocmd_group,
+    group = Tracker.augroup,
     callback = function()
       Tracker.shutdown()
     end,
@@ -194,7 +194,7 @@ function Tracker.notify_level_up()
   end
 
   local notifications = require('triforce.config').config.notifications
-  if not notifications or not (notifications.enabled and notifications.level_up) then
+  if not (notifications and notifications.enabled and notifications.level_up) then
     return
   end
 
@@ -210,14 +210,14 @@ function Tracker.notify_level_up()
 end
 
 ---Notify user of achievement unlock
----@param achievement_name string
----@param achievement_desc? string
----@param achievement_icon? string
-function Tracker.notify_achievement(achievement_name, achievement_desc, achievement_icon)
+---@param name string
+---@param desc? string
+---@param icon? string
+function Tracker.notify_achievement(name, desc, icon)
   util.validate({
-    achievement_name = { achievement_name, { 'string' } },
-    achievement_desc = { achievement_desc, { 'string', 'nil' }, true },
-    achievement_icon = { achievement_icon, { 'string', 'nil' }, true },
+    name = { name, { 'string' } },
+    desc = { desc, { 'string', 'nil' }, true },
+    icon = { icon, { 'string', 'nil' }, true },
   })
 
   local notifications = require('triforce.config').config.notifications
@@ -225,9 +225,9 @@ function Tracker.notify_achievement(achievement_name, achievement_desc, achievem
     return
   end
 
-  local message = (achievement_icon or '🏆') .. ' ' .. achievement_name
-  if achievement_desc then
-    message = message .. '\n\n' .. achievement_desc
+  local message = (icon or '🏆') .. ' ' .. name
+  if desc then
+    message = message .. '\n\n' .. desc
   end
 
   vim.notify(message, INFO, { title = ' Achievement Unlocked', timeout = 3500 })
@@ -276,7 +276,7 @@ end
 ---Debug: Print current language stats
 function Tracker.debug_languages()
   if not Tracker.current_stats then
-    vim.notify('No stats loaded', WARN)
+    vim.notify('No stats loaded!', WARN)
     return
   end
 
@@ -301,7 +301,7 @@ end
 ---Debug: Show current XP progress
 function Tracker.debug_xp()
   if not Tracker.current_stats then
-    vim.notify('No stats loaded', WARN)
+    vim.notify('No stats loaded!', WARN)
     return
   end
 
@@ -331,7 +331,7 @@ end
 ---Debug: Show random achievement notification (for testing)
 function Tracker.debug_achievement()
   if not Tracker.current_stats then
-    vim.notify('No stats loaded', WARN)
+    vim.notify('No stats loaded!', WARN)
     return
   end
 
