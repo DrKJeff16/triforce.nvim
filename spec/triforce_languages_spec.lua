@@ -1,4 +1,4 @@
-local assert = require('luassert')
+local assert = require('luassert') ---@type Luassert
 
 describe('triforce', function()
   local triforce ---@type Triforce
