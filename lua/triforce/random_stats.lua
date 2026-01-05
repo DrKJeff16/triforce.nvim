@@ -42,7 +42,7 @@ function RandStats.get_random_fact(stats)
 
     if stats.chars_typed >= 100000 then
       local novels = math.floor(stats.chars_typed / 300000)
-      table.insert(facts, ("You've written the equivalent of %d novel%s"):format(novels, novels > 1 and 's' or ''))
+      table.insert(facts, ("You've written the equivalent of `%d` novel%s"):format(novels, novels > 1 and 's' or ''))
     end
 
     if stats.chars_typed >= 10000 then
@@ -53,24 +53,24 @@ function RandStats.get_random_fact(stats)
 
   -- Line-based facts
   if stats.lines_typed > 0 then
-    table.insert(facts, ("You've created %s lines of code"):format(RandStats.format_number(stats.lines_typed)))
+    table.insert(facts, ("You've written `%s` lines of code"):format(RandStats.format_number(stats.lines_typed)))
 
     if stats.lines_typed >= 1000 then
-      table.insert(facts, ("That's %d screens of code"):format(math.floor(stats.lines_typed / 50)))
+      table.insert(facts, ("That's `%d` screens of code"):format(math.floor(stats.lines_typed / 50)))
     end
 
     if chars_per_line > 0 then
-      table.insert(facts, ('Average line length: %d characters'):format(chars_per_line))
+      table.insert(facts, ('Average line length: `%d` characters'):format(chars_per_line))
     end
   end
 
   -- Time-based facts
   if total_hours > 0 then
-    table.insert(facts, ("You've coded for %d hours total"):format(total_hours))
+    table.insert(facts, ("You've coded for `%d` hours total"):format(total_hours))
 
     if total_hours >= 100 then
       local days = math.floor(total_hours / 24)
-      table.insert(facts, ("That's %d full days of coding!"):format(days))
+      table.insert(facts, ("That's `%d` full days of coding"):format(days))
     end
 
     if total_hours >= 1000 then
@@ -87,7 +87,7 @@ function RandStats.get_random_fact(stats)
     table.insert(facts, ("You've started %d coding sessions"):format(stats.sessions))
 
     if stats.sessions >= 100 then
-      table.insert(facts, 'Consistency is key - keep it up!')
+      table.insert(facts, 'Consistency is key - keep it up')
     end
   end
 
@@ -95,11 +95,11 @@ function RandStats.get_random_fact(stats)
   if unique_languages > 0 then
     table.insert(
       facts,
-      ('You code in %d different language%s'):format(unique_languages, unique_languages > 1 and 's' or '')
+      ('You code in `%d` different language%s'):format(unique_languages, unique_languages > 1 and 's' or '')
     )
 
     if top_lang then
-      table.insert(facts, ('Your favorite language is %s'):format(RandStats.format_language_name(top_lang)))
+      table.insert(facts, ('%s is your favorite language'):format(RandStats.format_language_name(top_lang)))
     end
 
     if unique_languages >= 5 then
@@ -107,13 +107,12 @@ function RandStats.get_random_fact(stats)
     end
 
     if unique_languages >= 10 then
-      table.insert(facts, 'Master of many languages - impressive versatility')
+      table.insert(facts, "You've become a master of programming languages")
     end
   end
 
-  -- XP and level facts
   if stats.level > 1 then
-    table.insert(facts, ("You're level %d with %s XP"):format(stats.level, RandStats.format_number(stats.xp)))
+    table.insert(facts, ("You're level `%d` with %s XP"):format(stats.level, RandStats.format_number(stats.xp)))
 
     if stats.level >= 10 then
       table.insert(facts, "You've reached expert territory")
@@ -132,7 +131,7 @@ function RandStats.get_random_fact(stats)
   if stats.current_streak > 0 then
     table.insert(
       facts,
-      ('Current streak: %d day%s'):format(stats.current_streak, stats.current_streak > 1 and 's' or '')
+      ('Current streak: `%d` day%s'):format(stats.current_streak, stats.current_streak > 1 and 's' or '')
     )
 
     if stats.current_streak >= 7 then
@@ -145,7 +144,7 @@ function RandStats.get_random_fact(stats)
   end
 
   if stats.longest_streak > 0 and stats.longest_streak > stats.current_streak then
-    table.insert(facts, ('Longest streak: %d days'):format(stats.longest_streak))
+    table.insert(facts, ('Longest streak: `%d` days'):format(stats.longest_streak))
   end
 
   -- Fun comparative facts
@@ -191,32 +190,10 @@ end
 function RandStats.format_language_name(filetype)
   util.validate({ filetype = { filetype, { 'string' } } })
 
-  local language_names = {
-    lua = 'Lua',
-    python = 'Python',
-    javascript = 'JavaScript',
-    typescript = 'TypeScript',
-    rust = 'Rust',
-    go = 'Go',
-    c = 'C',
-    cpp = 'C++',
-    java = 'Java',
-    ruby = 'Ruby',
-    php = 'PHP',
-    html = 'HTML',
-    css = 'CSS',
-    vue = 'Vue',
-    svelte = 'Svelte',
-    jsx = 'JSX',
-    tsx = 'TSX',
-    json = 'JSON',
-    yaml = 'YAML',
-    toml = 'TOML',
-    markdown = 'Markdown',
-    vim = 'Vimscript',
-    sh = 'Shell',
-    bash = 'Bash',
-  }
+  local language_names = {} ---@type table<string, string>
+  for ft, spec in pairs(require('triforce.languages').langs) do
+    language_names[ft] = spec.name
+  end
 
   return language_names[filetype] or filetype
 end
