@@ -304,7 +304,7 @@ function Profile.build_stats_tab()
   -- Compact fact display with streak integration
   local fact_section = {
     {
-      { ' ' .. random_fact .. '.', 'Normal' },
+      { ' ' .. random_fact .. '.', 'TriforceRed' },
     },
     {},
   }
@@ -418,7 +418,15 @@ function Profile.build_stats_tab()
   local footer = {
     {},
     {},
-    { { '  <Tab>: Switch Tabs | <S-Tab>: Switch Tabs Backwards | q: Close', 'Comment' } },
+    {
+      { '  ', 'Comment' },
+      { '<Tab>', 'TriforceGreen' },
+      { ': Switch Tabs | ', 'Comment' },
+      { '<S-Tab>', 'TriforceGreen' },
+      { ': Switch Tabs Backwards | ', 'Comment' },
+      { 'q', 'TriforceGreen' },
+      { ': Close', 'Comment' },
+    },
     {},
   }
 
@@ -510,11 +518,25 @@ function Profile.build_achievements_tab()
     {},
     {},
     {
-      { '  <Tab>: Switch Tabs | <S-Tab>: Switch Tabs Backwards | q: Close', 'Comment' },
+      { '  ', 'Comment' },
+      { '<Tab>', 'TriforceGreen' },
+      { ': Switch Tabs | ', 'Comment' },
+      { '<S-Tab>', 'TriforceGreen' },
+      { ': Switch Tabs Backwards | ', 'Comment' },
+      { 'q', 'TriforceGreen' },
+      { ': Close', 'Comment' },
     },
     {
-      { '  H/L or ◀/▶: ', 'Comment' },
-      { ('Page %s/%s'):format(Profile.achievements_page, total_pages), 'String' },
+      { '  ', 'Comment' },
+      { 'H', 'TriforceGreen' },
+      { '/', 'Comment' },
+      { 'L', 'TriforceGreen' },
+      { 'or ', 'Comment' },
+      { '◀', 'TriforceGreen' },
+      { '/', 'Comment' },
+      { '▶', 'TriforceGreen' },
+      { ': ', 'Comment' },
+      { ('Page %s/%s'):format(Profile.achievements_page, total_pages), 'Number' },
     },
   }
 
@@ -587,16 +609,37 @@ function Profile.build_levels_tab()
     end
   end
 
-  local levels_info = { { { 'Your Progress!', 'String' } }, {} }
+  local levels_info = {
+    {
+      { 'Current level: ' },
+      { ('%d'):format(stats.level), 'Number' },
+    },
+    {},
+    {},
+  }
   local footer = {
     {},
     {},
     {
-      { '  <Tab>: Switch Tabs | <S-Tab>: Switch Tabs Backwards | q: Close |', 'Comment' },
+      { '  ' },
+      { '<Tab>', 'TriforceGreen' },
+      { ': Switch Tabs | ', 'Comment' },
+      { '<S-Tab>', 'TriforceGreen' },
+      { ': Switch Tabs Backwards | ', 'Comment' },
+      { 'q', 'TriforceGreen' },
+      { ': Close |', 'Comment' },
     },
     {
-      { '  H/L or ◀/▶: ', 'Comment' },
-      { ('Page %s/%s'):format(Profile.levels_page, total_pages), 'String' },
+      { '  ' },
+      { 'H', 'TriforceGreen' },
+      { '/', 'Comment' },
+      { 'L', 'TriforceGreen' },
+      { ' or ', 'Comment' },
+      { '◀', 'TriforceGreen' },
+      { '/', 'Comment' },
+      { '▶', 'TriforceGreen' },
+      { ': ', 'Comment' },
+      { ('Page %s/%s'):format(Profile.levels_page, total_pages), 'Number' },
     },
   }
 
@@ -677,7 +720,15 @@ function Profile.build_languages_tab()
   local footer = {
     {},
     {},
-    { { '  <Tab>: Switch Tabs Forwards | <S-Tab>: Switch Tabs Backwards | q: Close', 'Comment' } },
+    {
+      { '  ', 'Comment' },
+      { '<Tab>', 'TriforceGreen' },
+      { ': Switch Tabs Forwards | ', 'Comment' },
+      { '<S-Tab>', 'TriforceGreen' },
+      { ': Switch Tabs Backwards | ', 'Comment' },
+      { 'q', 'TriforceGreen' },
+      { ': Close', 'Comment' },
+    },
     {},
   }
 
