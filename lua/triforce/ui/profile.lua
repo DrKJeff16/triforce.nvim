@@ -825,7 +825,7 @@ function Profile.get_layout()
         return voltui.tabs(
           Profile.all_tabs,
           Profile.width - Profile.xpad * 2,
-          { active = Profile.all_tabs[Profile.current_tab] }
+          { active = Profile.all_tabs[Profile.current_tab], hlon = 'pmenusel', hloff = 'pmenu' }
         )
       end,
       name = 'tabs',
