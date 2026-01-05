@@ -83,7 +83,7 @@ function Triforce.show_profile()
     tracker.setup()
   end
 
-  require('triforce.ui.profile').open()
+  require('triforce.ui.profile').toggle()
 end
 
 ---Reset all stats (useful for testing)

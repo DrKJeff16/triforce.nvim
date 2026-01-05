@@ -63,6 +63,16 @@ function Profile.close()
   Profile.dim_buf = nil
 end
 
+---Toggle profile window
+function Profile.toggle()
+  if Profile.buf == nil and Profile.win == nil and Profile.dim_win == nil and Profile.dim_buf == nil then
+    Profile.open()
+    return
+  end
+
+  Profile.close()
+end
+
 function Profile.pagination_fun(key)
   return function()
     if not vim.tbl_contains({ 2, 4 }, Profile.current_tab) then
