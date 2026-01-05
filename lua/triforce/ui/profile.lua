@@ -176,7 +176,7 @@ end
 
 ---Build activity heatmap (copied from typr structure)
 ---@param stats Stats
----@return table lines
+---@return string[][][]|string[][] lines
 function Profile.build_activity_heatmap(stats)
   if not stats or not stats.daily_activity then
     return { { { '  No activity data yet', 'Comment' } } }
@@ -205,7 +205,7 @@ function Profile.build_activity_heatmap(stats)
   end
 
   -- Build lines structure (typr style)
-  local lines = {
+  local lines = { ---@type string[][][]|string[][]
     { { '   ', 'TriforceGreen' }, { '  ' } },
     {},
   }
@@ -217,7 +217,6 @@ function Profile.build_activity_heatmap(stats)
     table.insert(lines[1], { idx == #month_seq and '' or '  ' })
   end
 
-  -- Separator line
   local hrline = voltui.separator('─', squares_len * 2 + (months_to_show - 1 + 5), 'Comment')
   table.insert(lines[2], hrline[1])
 
@@ -253,19 +252,16 @@ function Profile.build_activity_heatmap(stats)
     end
   end
 
-  -- Add border (typr style)
   voltui.border(lines)
 
   -- Header with legend (typr style)
-  local header = {
+  local header = { ---@type string[][][]|string[][]
     { ' 󰃭 Activity' },
     { '_pad_' },
-    { '    Less ' },
+    { 'Less ' },
   }
 
-  local hlgroups = { 'LineNr', 'TriforceHeat4', 'TriforceHeat3', 'TriforceHeat2', 'TriforceHeat1' }
-
-  for _, hl in ipairs(hlgroups) do
+  for _, hl in ipairs({ 'LineNr', 'TriforceHeat4', 'TriforceHeat3', 'TriforceHeat2', 'TriforceHeat1', 'TriforceHeat0' }) do
     table.insert(header, { '󱓻 ', hl })
   end
 
@@ -297,27 +293,16 @@ function Profile.build_stats_tab()
   local xp_next = stats_module.xp_for_next_level(stats.level)
   local xp_prev = stats.level > 1 and stats_module.xp_for_next_level(stats.level - 1) or 0
   local xp_progress = ((xp_current - xp_prev) / (xp_next - xp_prev)) * 100
-
-  -- Get random fact
-  local random_fact = random_stats.get_random_fact(stats)
-
-  -- Compact fact display with streak integration
   local fact_section = {
-    {
-      { ' ' .. random_fact .. '.', 'TriforceRed' },
-    },
+    { { ' ' .. random_stats.get_random_fact(stats) .. '.', 'TriforceRed' } },
     {},
   }
 
-  -- Three progress bars section
-  local barlen = (Profile.width - Profile.xpad * 2) / 3 - 1
-
-  -- Dynamic session goal (increments by 100)
+  local barlen = math.floor((Profile.width - Profile.xpad * 2) / 3) - 1
   local session_goal = math.ceil(stats.sessions / 100) * 100
   session_goal = session_goal == stats.sessions and (session_goal + 100) or session_goal
   local session_progress = (stats.sessions / session_goal) * 100
 
-  -- Dynamic time goal (10h -> 25h -> 50h -> 100h -> 200h -> 300h...)
   local current_hours = stats.time_coding / 3600
   local time_goal_hours
   if current_hours < 10 then
@@ -336,8 +321,6 @@ function Profile.build_stats_tab()
   end
   local time_goal = time_goal_hours * 3600
   local time_progress = (stats.time_coding / time_goal) * 100
-
-  -- 1. Level progress
   local level_stats = {
     { { ' 󰓏', 'TriforceYellow' }, { ' Level ~ ' }, { tostring(stats.level), 'TriforceYellow' } },
     {},
@@ -348,8 +331,6 @@ function Profile.build_stats_tab()
       hl = { on = 'TriforceYellow', off = 'Comment' },
     }),
   }
-
-  -- 2. Session milestone progress
   local session_stats = {
     {
       { '󰪺', 'TriforceRed' },
@@ -364,8 +345,6 @@ function Profile.build_stats_tab()
       hl = { on = 'TriforceRed', off = 'Comment' },
     }),
   }
-
-  -- 3. Time goal progress
   local time_stats = {
     {
       { '󱑈', 'TriforceBlue' },
@@ -380,7 +359,6 @@ function Profile.build_stats_tab()
       hl = { on = 'TriforceBlue', off = 'Comment' },
     }),
   }
-
   local progress_section = voltui.grid_col({
     { lines = level_stats, w = barlen, pad = 2 },
     { lines = session_stats, w = barlen, pad = 2 },
@@ -404,17 +382,12 @@ function Profile.build_stats_tab()
       streak > 0 and (tostring(streak) .. ' day' .. (streak > 1 and 's' or '')) or '0',
     },
   }
-
   local table_ui = voltui.table(stats_table, Profile.width - Profile.xpad * 2, 'String')
-
-  -- Activity heatmap
   local heatmap_lines = Profile.build_activity_heatmap(stats)
   local heatmap_row = voltui.grid_col({
     { lines = {}, w = 1 },
     { lines = heatmap_lines, w = Profile.width - Profile.xpad * 2 },
   })
-
-  -- Footer
   local footer = {
     {},
     {},
@@ -437,7 +410,6 @@ function Profile.build_stats_tab()
     table_ui,
     { {} },
     heatmap_row,
-    -- heatmap_lines,
     footer,
   })
 end
