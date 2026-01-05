@@ -9,6 +9,11 @@
 ---@field title string
 ---@field icon? string
 
+---@class LevelSpec
+---@field level integer
+---@field unlocked boolean
+---@field title string
+
 local util = require('triforce.util')
 
 ---@return LevelTitles titles
@@ -64,12 +69,12 @@ function Levels.add_levels(levels)
 end
 
 ---@param stats Stats
----@return { level: integer, unlocked: boolean, title: string }[] all_levels
+---@return LevelSpec[] all_levels
 function Levels.get_all_levels(stats)
   util.validate({ stats = { stats, { 'table' } } })
 
   local keys = vim.tbl_keys(Levels.levels) ---@type integer[]
-  local res = {} ---@type { level: integer, unlocked: boolean, title: string }[]
+  local res = {} ---@type LevelSpec[]
   for _, lvl in ipairs(keys) do
     table.insert(res, {
       level = lvl,
