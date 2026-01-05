@@ -711,9 +711,9 @@ function Profile.build_languages_tab()
   local graph_x_axis_parts = { { spacing_str } }
   for i = 1, math.min(Profile.max_language_entries, #lang_data) do
     local icon = languages.get_icon(lang_data[i].lang)
-    local hl = 'Comment'
     if icon then
-      table.insert(graph_x_axis_parts, { icon ~= '' and icon or '', icon ~= '' and hl or 'Comment' })
+      local hl = icon ~= '' and 'TriforceHeat0' or 'Comment'
+      table.insert(graph_x_axis_parts, { icon, hl })
       if i < math.min(Profile.max_language_entries, #lang_data) then
         table.insert(graph_x_axis_parts, { (' '):rep(4) }) -- 4 spaces between icons
       end
