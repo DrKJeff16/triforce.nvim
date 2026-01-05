@@ -832,6 +832,7 @@ function Profile.cycle_tab(back, num)
   back = back ~= nil and back or false
   num = num or 0
 
+  local old_tab = Profile.current_tab
   local positions = vim.tbl_keys(Profile.all_tabs) ---@type integer[]
   local pos = 1
   if not vim.list_contains(positions, num) then
@@ -891,9 +892,9 @@ function Profile.cycle_tab(back, num)
   vim.api.nvim_win_set_cursor(Profile.win, { 1, 0 })
 
   for _, key in ipairs({ 'h', 'H', '<Left>', 'l', 'L', '<Right>' }) do
-    if not vim.list_contains({ 2, 4 }, Profile.current_tab) then
+    if vim.list_contains({ 2, 4 }, old_tab) and not vim.list_contains({ 2, 4 }, Profile.current_tab) then
       vim.keymap.del('n', key, { buffer = Profile.buf })
-    else
+    elseif vim.list_contains({ 2, 4 }, Profile.current_tab) then
       vim.keymap.set('n', key, Profile.pagination_fun(key), { buffer = Profile.buf })
     end
   end
