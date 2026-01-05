@@ -22,10 +22,12 @@ on:
       - opened
       - ready_for_review
 jobs:
-  deps:
+  busted:
+    name: Run Tests using Busted
     runs-on: ubuntu-latest
-    name: Install Lua and LuaRocks Dependencies
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
       - name: Install Lua
         uses: leafo/gh-actions-lua@v12
       - name: Install LuaRocks
@@ -34,12 +36,8 @@ jobs:
         run: |
           luarocks install luassert
           luarocks install nlua
-  busted:
-    name: Run Tests using Busted
-    runs-on: ubuntu-latest
-    needs: deps
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Extend PATH
+        run: |
+          echo "$(luarocks path --lr-bin)" >> $GITHUB_PATH
       - name: Run Busted
         uses: lunarmodules/busted@v2.2.0
