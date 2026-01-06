@@ -25,16 +25,32 @@ local ERROR = vim.log.levels.ERROR
 ---@class Triforce.Util
 local Util = {}
 
+---Checks whether `data` is of type `t` or not.
+---
+---If `data` is `nil`, the function will always return `false`.
+---@param t type Any return value the `type()` function would return
+---@param data any The data to be type-checked
+---@return boolean check
+function Util.is_type(t, data)
+  return data ~= nil and type(data) == t
+end
+
+---@param feature string
+---@return boolean has
+function Util.vim_has(feature)
+  return vim.fn.has(feature) == 1
+end
+
 ---Dynamic `vim.validate()` wrapper. Covers both legacy and newer implementations
 ---@param T table<string, vim.validate.Spec|ValidateSpec>
 function Util.validate(T)
-  if vim.fn.has('nvim-0.11') ~= 1 then
+  if not Util.vim_has('nvim-0.11') then
     vim.validate({ T = { T, { 'table' } } })
   else
     vim.validate('T', T, { 'table' }, false)
   end
 
-  if vim.fn.has('nvim-0.11') ~= 1 then
+  if not Util.vim_has('nvim-0.11') then
     ---Filter table to fit legacy standard
     ---@cast T table<string, vim.validate.Spec>
     for name, spec in pairs(T) do
@@ -131,7 +147,7 @@ function Util.is_int(x)
   Util.validate({ x = { x, { 'table', 'number' } } })
 
   ---@cast x number[]
-  if type(x) == 'table' then
+  if Util.is_type('table', x) then
     if vim.tbl_isempty(x) then
       return false
     end
@@ -161,7 +177,7 @@ function Util.is_dict(T)
   end
 
   for k, _ in pairs(T) do
-    if type(k) == 'string' or not Util.is_int(k) then
+    if Util.is_type('string', k) or not Util.is_int(k) then
       return true
     end
   end

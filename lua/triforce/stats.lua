@@ -81,9 +81,9 @@ function Stats.load(debug)
   local content = table.concat(lines, '\n')
 
   ---Parse JSON
-  ---@type boolean, Stats?
+  ---@type boolean, Stats
   local ok, stats = pcall(vim.json.decode, content)
-  if not ok or type(stats) ~= 'table' then
+  if not (ok and util.is_type('table', stats)) then
     -- Backup corrupted file
     local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
@@ -103,7 +103,7 @@ function Stats.load(debug)
   -- Migrate daily_activity from boolean to number (old format compatibility)
   if stats.daily_activity then
     for date, value in pairs(stats.daily_activity) do
-      if type(value) == 'boolean' then
+      if util.is_type('boolean', value) then
         -- Old format: true → 0 (can't recover historical line counts)
         stats.daily_activity[date] = value and 0 or 0
       end
@@ -467,7 +467,7 @@ function Stats.export_to_md(stats, target)
   local data = '# Triforce Stats\n'
   for k, v in pairs(stats) do
     data = ('%s\n## %s\n\n**Value**:'):format(data, k:sub(1, 1):upper() .. k:sub(2))
-    if type(v) == 'table' then
+    if util.is_type('table', v) then
       data = ('%s\n'):format(data)
       for key, val in pairs(v) do
         data = ('%s- **%s**: `%s`\n'):format(data, key, vim.inspect(val))

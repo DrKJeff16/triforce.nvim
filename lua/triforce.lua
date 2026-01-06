@@ -17,7 +17,7 @@ function Triforce.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   -- Check Neovim version compatibility
-  if vim.fn.has('nvim-0.9') ~= 1 then
+  if not util.vim_has('nvim-0.9') then
     vim.api.nvim_err_writeln('triforce.nvim requires Neovim >= 0.9.0') ---@diagnostic disable-line:deprecated
     return
   end

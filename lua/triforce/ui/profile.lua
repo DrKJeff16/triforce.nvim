@@ -713,10 +713,9 @@ function Profile.setup_highlights()
   local heat_hls = config.config.heat_highlights or config.defaults().heat_highlights
   for _, level in ipairs(heat_levels) do
     local hl = ('TriforceHeat%d'):format(level.name)
-    local fg = heat_hls[hl]
-
+    local fg = heat_hls[hl] ---@type string|nil
     if fg then
-      local key = (type(fg) == 'string' and fg:sub(1, 1) ~= '#') and 'link' or 'fg'
+      local key = (util.is_type('string', fg) and fg:sub(1, 1) ~= '#') and 'link' or 'fg'
       vim.api.nvim_set_hl(Profile.ns, hl, { [key] = fg })
     end
   end
