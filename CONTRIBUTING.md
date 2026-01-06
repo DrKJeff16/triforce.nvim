@@ -12,9 +12,9 @@ Contributions are welcome! You will find here a set of guidelines for you.
   ```bash
   git checkout -b feature/amazing-feature
   ```
-3. Commit your changes:
+3. Add then commit your changes:
   ```bash
-  git commit -m 'feat(scope): add amazing feature'
+  git commit -m 'feat(scope): add amazing feature' # USE Conventional Commits PLEASE
   ```
 4. Push to the branch:
   ```bash
@@ -54,12 +54,8 @@ require('lazy').setup({
 ### With Symlinks
 
 ```bash
-# Clone the repo
-git clone https://github.com/gisketch/triforce.nvim.git
-cd triforce.nvim
-
-# Symlink to Neovim config for testing
-ln -s "$(pwd)" ~/.local/share/nvim/site/pack/plugins/start/triforce.nvim
+git clone https://github.com/gisketch/triforce.nvim.git # Clone the repo
+ln -s "$(pwd)/triforce.nvim" ~/.local/share/nvim/site/pack/plugins/start/triforce.nvim # Symlink to Neovim config for testing
 ```
 
 <!-- vim: set ts=2 sts=2 sw=2 et ai si sta: -->
