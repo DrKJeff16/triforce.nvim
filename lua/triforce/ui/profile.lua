@@ -2,27 +2,18 @@
 ---@field lang string
 ---@field count integer
 
+---@class Triforce.UIDimensions
+---@field float? { buf: integer, win: integer }|nil
+---@field dim_float? { buf: integer, win: integer }|nil
+---@field width integer
+---@field height integer
+---@field xpad integer
+
 ---@alias PaginationKey 'h'|'H'|'<Left>'|'l'|'L'|'<Right>'
 
----@alias Months
----|1
----|2
----|3
----|4
----|5
----|6
----|7
----|8
----|9
----|10
----|11
----|12
-
----Profile UI using Volt
 local volt = require('volt')
 local voltui = require('volt.ui')
 local voltstate = require('volt.state') ---@type table<integer, { h: integer }>
-
 local stats_module = require('triforce.stats')
 local achievement_module = require('triforce.achievement')
 local tracker = require('triforce.tracker')
@@ -30,13 +21,6 @@ local languages = require('triforce.languages')
 local random_stats = require('triforce.random_stats')
 local levels_module = require('triforce.levels')
 local util = require('triforce.util')
-
----@class Triforce.UIDimensions
----@field float? { buf: integer, win: integer }|nil
----@field dim_float? { buf: integer, win: integer }|nil
----@field width integer
----@field height integer
----@field xpad integer
 
 ---@class Triforce.Ui.Profile
 ---@field dimensions Triforce.UIDimensions
@@ -59,17 +43,17 @@ local Profile = {
 ---Close up profile window
 function Profile.close()
   pcall(vim.api.nvim_win_close, Profile.dimensions.float.win, true)
-  pcall(vim.api.nvim_win_close, Profile.dim_float.win, true)
+  pcall(vim.api.nvim_win_close, Profile.dimensions.dim_float.win, true)
   pcall(vim.api.nvim_buf_delete, Profile.dimensions.float.buf, { force = true })
-  pcall(vim.api.nvim_buf_delete, Profile.dim_float.buf, { force = true })
+  pcall(vim.api.nvim_buf_delete, Profile.dimensions.dim_float.buf, { force = true })
 
   Profile.dimensions.float = nil
-  Profile.dim_float = nil
+  Profile.dimensions.dim_float = nil
 end
 
 ---Toggle profile window
 function Profile.toggle()
-  if not (Profile.dimensions.float or Profile.dim_float) then
+  if not (Profile.dimensions.float or Profile.dimensions.dim_float) then
     Profile.open()
     return
   end
@@ -163,13 +147,13 @@ end
 
 ---Get activity level highlight based on lines typed
 ---@param lines integer
----@return 'LineNr'|'TriforceHeat0'|'TriforceHeat1'|'TriforceHeat2'|'TriforceHeat3' hl
+---@return 'TriforceHeat4'|'TriforceHeat0'|'TriforceHeat1'|'TriforceHeat2'|'TriforceHeat3' hl
 function Profile.get_activity_hl(lines)
   if lines == 0 then
-    return 'LineNr'
+    return 'TriforceHeat4' -- Lightest
   end
   if lines <= 50 then
-    return 'TriforceHeat3' -- Lightest
+    return 'TriforceHeat3' -- Light
   end
   if lines <= 150 then
     return 'TriforceHeat2' -- Light-medium
@@ -179,28 +163,6 @@ function Profile.get_activity_hl(lines)
   end
 
   return 'TriforceHeat0' -- Brightest
-end
-
----@param year integer
----@return boolean leap
-local function is_leap_year(year)
-  return (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0)
-end
-
----@param month Months
----@param year integer
----@return integer days
-local function days_in_month(month, year)
-  util.validate({
-    month = { month, { 'number' } },
-    year = { year, { 'number' } },
-  })
-
-  local days_in_months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
-  if month ~= 2 then
-    return days_in_months[month]
-  end
-  return is_leap_year(year) and 29 or 28
 end
 
 ---Build activity heatmap (copied from typr structure)
@@ -219,8 +181,6 @@ function Profile.build_activity_heatmap(stats)
 
   local months_to_show = 7
   local squares_len = months_to_show * 4
-
-  -- Build an explicit wrapped sequence of the last 7 months ending at current month
   local current_year_num = tonumber(year)
   local month_seq = {}
   for offset = months_to_show - 1, 0, -1 do
@@ -263,7 +223,7 @@ function Profile.build_activity_heatmap(stats)
       end
     end
 
-    for day_num = 1, days_in_month(month_idx, my.year) do
+    for day_num = 1, util.days_in_month(month_idx, my.year) do
       local day_of_week = util.getday_i(day_num, month_idx, my.year)
       local date_key = ('%s-%s-%s'):format(month_year, util.double_digits(month_idx), util.double_digits(day_num))
 
@@ -282,7 +242,7 @@ function Profile.build_activity_heatmap(stats)
     { 'Less ' },
   }
 
-  for _, hl in ipairs({ 'LineNr', 'TriforceHeat4', 'TriforceHeat3', 'TriforceHeat2', 'TriforceHeat1', 'TriforceHeat0' }) do
+  for _, hl in ipairs({ 'TriforceHeat4', 'TriforceHeat3', 'TriforceHeat2', 'TriforceHeat1', 'TriforceHeat0' }) do
     table.insert(header, { '󱓻 ', hl })
   end
 
@@ -374,8 +334,6 @@ function Profile.build_stats_tab()
     { lines = session_stats, w = barlen, pad = 2 },
     { lines = time_stats, w = barlen },
   })
-
-  -- Stats table
   local stats_table = {
     {
       ' Sessions',
@@ -450,10 +408,7 @@ function Profile.build_achievements_tab()
 
   local start_idx = (Profile.achievements_page - 1) * Profile.achievements_per_page + 1
   local end_idx = math.min(start_idx + Profile.achievements_per_page - 1, total_achievements)
-  local table_data = {
-    { 'Status', 'Achievement', 'Description' }, -- Header (plain strings)
-  }
-
+  local table_data = { { 'Status', 'Achievement', 'Description' } }
   for i = start_idx, end_idx do
     local achievement = achievements[i]
     local checked = achievement.check(stats)
@@ -462,7 +417,6 @@ function Profile.build_achievements_tab()
     local text_hl = checked and 'TriforceYellow' or 'Comment'
     local desc_hl = checked and 'Normal' or 'Comment'
     local name_display = checked and (achievement.icon .. ' ' .. achievement.name) or achievement.name
-
     table.insert(table_data, {
       { { status_icon, status_hl } },
       { { name_display, text_hl } },
@@ -478,7 +432,6 @@ function Profile.build_achievements_tab()
     end
   end
 
-  -- Compact achievement info
   local achievement_info = {
     {
       { ' Hey, listen!', 'Identifier' },
@@ -540,8 +493,6 @@ function Profile.build_levels_tab()
 
   local total_levels = #levels
   local total_pages = math.ceil(total_levels / Profile.levels_per_page)
-
-  -- Ensure current page is within bounds
   if Profile.levels_page > total_pages then
     Profile.levels_page = total_pages
   end
@@ -552,10 +503,8 @@ function Profile.build_levels_tab()
   local start_idx = (Profile.levels_page - 1) * Profile.levels_per_page + 1
   local end_idx = math.min(start_idx + Profile.levels_per_page - 1, total_levels)
 
-  -- Build table rows with virtual text for custom highlighting
-  -- Each cell with custom hl must be an array of {text, hl} pairs
   local table_data = { ---@type string[][][]|string[][]
-    { 'Unlocked', 'Level', 'Title' }, -- Header (plain strings)
+    { 'Unlocked', 'Level', 'Title' },
   }
 
   for i = start_idx, end_idx do
@@ -566,7 +515,7 @@ function Profile.build_levels_tab()
     local desc_hl = level.unlocked and 'Normal' or 'Comment'
     local name_display = ('%s'):format(level.level)
     table.insert(table_data, {
-      { { unlocked_icon, unlocked_hl } }, -- Array of virt text chunks
+      { { unlocked_icon, unlocked_hl } },
       { { name_display, text_hl } },
       { { level.title, desc_hl } },
     })
@@ -654,18 +603,6 @@ function Profile.build_languages_tab()
     )
   end
 
-  -- -- Create labels with icons
-  -- local labels = {}
-  -- for i = 1, Profile.max_language_entries do
-  --   if i <= display_count then
-  --     local icon = languages.get_icon(lang_data[i].lang)
-  --     labels[i] = icon ~= '' and icon or lang_data[i].lang:sub(1, 1)
-  --   else
-  --     labels[i] = '·' -- Empty slot
-  --   end
-  -- end
-
-  -- Calculate graph width (narrower for centering)
   local graph_width = math.min(Profile.max_language_entries * 4, Profile.dimensions.width - Profile.dimensions.xpad * 2)
   local graph_data = {
     val = graph_values,
@@ -673,13 +610,8 @@ function Profile.build_languages_tab()
     format_labels = function(x)
       return max_chars == 0 and '0' or tostring(math.floor((x * max_chars / 100)))
     end,
-    baropts = {
-      w = 3,
-      gap = 2,
-      hl = 'TriforceYellow',
-    },
+    baropts = { w = 3, gap = 2, hl = 'TriforceYellow' },
   }
-
   local graph_lines = voltui.graphs.bar(graph_data)
   local left_pad = 2
   local centered_graph = voltui.grid_col({
@@ -700,8 +632,6 @@ function Profile.build_languages_tab()
     },
     {},
   }
-
-  -- Calculate dynamic spacing based on max label width
   local max_label_length = tostring(max_chars):len()
   local x_axis_spacing = 6 + max_label_length
   local spacing_str = (' '):rep(x_axis_spacing)
@@ -719,10 +649,7 @@ function Profile.build_languages_tab()
 
   local graph_x_axis = { graph_x_axis_parts }
   if display_count == 0 then
-    graph_x_axis = {
-      {},
-      { { ('%sNo language data yet. Start coding!'):format((' '):rep(2)), 'Comment' } },
-    }
+    graph_x_axis = { {}, { { ('%sNo language data yet. Start coding!'):format((' '):rep(2)), 'Comment' } } }
   end
 
   local language_info, summary_parts = { {} }, {}
@@ -783,7 +710,6 @@ function Profile.setup_highlights()
     { name = 3, mix_pct = 65 },
     { name = 4, mix_pct = 80 },
   }
-
   local heat_hls = config.config.heat_highlights or config.defaults().heat_highlights
   for _, level in ipairs(heat_levels) do
     local hl = ('TriforceHeat%d'):format(level.name)
@@ -807,7 +733,6 @@ function Profile.get_layout()
     Profile.build_languages_tab,
     Profile.build_levels_tab,
   }
-
   return { ---@type VoltData.Layout[]
     {
       lines = function()
@@ -860,7 +785,6 @@ function Profile.cycle_tab(back, num)
         break
       end
     end
-
     pos = util.cycle_range(pos, 1, #Profile.all_tabs, back)
     Profile.current_tab = pos
   else
@@ -879,8 +803,6 @@ function Profile.cycle_tab(back, num)
 
   local new_height = voltstate[Profile.dimensions.float.buf].h
   local current_lines = vim.api.nvim_buf_line_count(Profile.dimensions.float.buf)
-
-  -- Add more lines if needed
   if current_lines < new_height then
     local empty_lines = {}
     for _ = 1, (new_height - current_lines) do
@@ -888,20 +810,19 @@ function Profile.cycle_tab(back, num)
     end
     vim.api.nvim_buf_set_lines(Profile.dimensions.float.buf, current_lines, current_lines, false, empty_lines)
   elseif current_lines > new_height then
-    -- Remove extra lines if buffer is too big
     vim.api.nvim_buf_set_lines(Profile.dimensions.float.buf, new_height, current_lines, false, {})
   end
 
   if new_height ~= Profile.dimensions.height then
-    Profile.dimensions.height = new_height
     vim.api.nvim_win_set_config(Profile.dimensions.float.win, {
-      row = math.floor((vim.o.lines - Profile.dimensions.height) / 2),
+      row = math.floor((vim.o.lines - new_height) / 2),
       col = math.floor((vim.o.columns - Profile.dimensions.width) / 2),
       width = Profile.dimensions.width,
-      height = Profile.dimensions.height,
+      height = new_height,
       relative = 'editor',
       border = 'none',
     })
+    Profile.dimensions.height = new_height
   end
 
   volt.redraw(Profile.dimensions.float.buf, 'all')
@@ -924,12 +845,11 @@ function Profile.open()
   end
 
   Profile.dimensions.float = {}
-  Profile.dim_float = {}
+  Profile.dimensions.dim_float = {}
 
   Profile.dimensions.float.buf = vim.api.nvim_create_buf(false, true)
-
-  Profile.dim_float.buf = vim.api.nvim_create_buf(false, true)
-  Profile.dim_float.win = vim.api.nvim_open_win(Profile.dim_float.buf, false, {
+  Profile.dimensions.dim_float.buf = vim.api.nvim_create_buf(false, true)
+  Profile.dimensions.dim_float.win = vim.api.nvim_open_win(Profile.dimensions.dim_float.buf, false, {
     focusable = false,
     row = 1,
     col = 0,
@@ -941,7 +861,7 @@ function Profile.open()
   })
 
   vim.bo[Profile.dimensions.float.buf].filetype = 'triforce-profile'
-  vim.wo[Profile.dim_float.win].winblend = 20
+  vim.wo[Profile.dimensions.dim_float.win].winblend = 20
 
   volt.gen_data({
     {
@@ -964,24 +884,19 @@ function Profile.open()
     zindex = 100,
   })
 
-  -- Apply highlights
   Profile.setup_highlights()
   vim.api.nvim_win_set_hl_ns(Profile.dimensions.float.win, Profile.ns)
+  vim.api.nvim_win_set_cursor(Profile.dimensions.float.win, { 1, 0 })
 
-  -- Run Volt to render content
   volt.run(
     Profile.dimensions.float.buf,
     { h = Profile.dimensions.height, w = Profile.dimensions.width - Profile.dimensions.xpad * 2 }
   )
-
-  -- Use Volt's built-in mapping system
   volt.mappings({
-    bufs = { Profile.dimensions.float.buf, Profile.dim_float.buf },
+    bufs = { Profile.dimensions.float.buf, Profile.dimensions.dim_float.buf },
     winclosed_event = true,
     after_close = Profile.close,
   })
-
-  vim.api.nvim_win_set_cursor(Profile.dimensions.float.win, { 1, 0 })
 
   vim.keymap.set('n', '<Tab>', Profile.cycle_tab, { buffer = Profile.dimensions.float.buf })
   vim.keymap.set('n', '<S-Tab>', function()

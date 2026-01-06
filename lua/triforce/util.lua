@@ -5,6 +5,20 @@
 ---@field [3]? boolean
 ---@field [4]? string
 
+---@alias Months
+---|1
+---|2
+---|3
+---|4
+---|5
+---|6
+---|7
+---|8
+---|9
+---|10
+---|11
+---|12
+
 local ERROR = vim.log.levels.ERROR
 
 ---Various utilities to be used for Triforce
@@ -49,6 +63,28 @@ function Util.validate(T)
     table.insert(spec, 1, name)
     vim.validate(unpack(spec))
   end
+end
+
+---@param year integer
+---@return boolean leap
+function Util.is_leap_year(year)
+  return (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0)
+end
+
+---@param month Months
+---@param year integer
+---@return integer days
+function Util.days_in_month(month, year)
+  Util.validate({
+    month = { month, { 'number' } },
+    year = { year, { 'number' } },
+  })
+
+  local days_in_months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+  if month ~= 2 then
+    return days_in_months[month]
+  end
+  return Util.is_leap_year(year) and 29 or 28
 end
 
 ---Get current date in YYYY-MM-DD format
