@@ -481,5 +481,13 @@ function Stats.export_to_md(stats, target)
   uv.fs_close(fd)
 end
 
+---Get streak with proper calculation
+---@param stats Stats
+---@return integer current
+function Stats.get_current_streak(stats)
+  local current = Stats.calculate_streaks(stats)
+  return current
+end
+
 return Stats
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:
