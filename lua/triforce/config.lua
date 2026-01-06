@@ -177,8 +177,8 @@ function Config.close_window()
     return
   end
 
-  vim.api.nvim_buf_delete(Config.float.bufnr, { force = true })
   pcall(vim.api.nvim_win_close, Config.float.win, true)
+  pcall(vim.api.nvim_buf_delete, Config.float.bufnr, { force = true })
 
   Config.float = nil
 end
@@ -199,20 +199,18 @@ function Config.open_window()
 
   local height = math.floor(vim.o.lines * 0.85)
   local width = math.floor(vim.o.columns * 0.85)
-  local title = 'Triforce Config'
   local win = vim.api.nvim_open_win(bufnr, true, {
     focusable = true,
     border = 'single',
     col = math.floor((vim.o.columns - width) / 2) - 1,
     row = math.floor((vim.o.lines - height) / 2) - 1,
-    noautocmd = true,
     relative = 'editor',
     style = 'minimal',
-    title = title,
+    title = 'Triforce Config',
     title_pos = 'center',
     width = width,
     height = height,
-    zindex = 30,
+    zindex = 50,
   })
 
   vim.wo[win].signcolumn = 'no'
@@ -226,7 +224,7 @@ function Config.open_window()
   vim.bo[bufnr].buftype = 'nowrite'
   vim.bo[bufnr].modifiable = false
 
-  vim.keymap.set('n', 'q', Config.close_window, { buffer = bufnr, noremap = true, silent = true })
+  vim.keymap.set('n', 'q', Config.close_window, { buffer = bufnr })
 
   Config.float = { bufnr = bufnr, win = win }
 end
