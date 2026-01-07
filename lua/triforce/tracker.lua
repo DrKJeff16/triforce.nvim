@@ -43,7 +43,10 @@ function Tracker.setup(debug)
   vim.api.nvim_create_autocmd('BufWritePre', {
     group = Tracker.augroup,
     callback = function(ev)
-      if vim.api.nvim_get_option_value('modified', { buf = ev.buf }) then
+      local opts = { buf = ev.buf } ---@type vim.api.keyset.option
+      local ft = vim.api.nvim_get_option_value('filetype', opts)
+      local modified = vim.api.nvim_get_option_value('modified', opts)
+      if modified and not vim.list_contains(require('triforce.languages').ignored_langs, ft) then
         Tracker.on_save()
       end
     end,
