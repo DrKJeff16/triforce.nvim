@@ -147,7 +147,7 @@ function Stats.save(stats, path)
     stats = { stats, { 'table', 'nil' }, true },
     path = { path, { 'string', 'nil' }, true },
   })
-  if not stats then
+  if not stats or vim.tbl_isempty(stats) then
     return false
   end
   path = (path and util.is_file(path)) and path or Stats.get_stats_path()
