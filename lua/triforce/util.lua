@@ -274,5 +274,12 @@ function Util.cycle_range(curr, first, last, back)
   return cycled
 end
 
+---@param path string
+function Util.is_file(path)
+  Util.validate({ path = { path, { 'string' } } })
+
+  return vim.fn.filereadable(path) == 1
+end
+
 return Util
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:

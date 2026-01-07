@@ -140,30 +140,29 @@ end
 
 ---Save stats to disk
 ---@param stats? Stats
+---@param path? string
 ---@return boolean success
-function Stats.save(stats)
-  util.validate({ stats = { stats, { 'table', 'nil' }, true } })
+function Stats.save(stats, path)
+  util.validate({
+    stats = { stats, { 'table', 'nil' }, true },
+    path = { path, { 'string', 'nil' }, true },
+  })
   if not stats then
     return false
   end
+  path = (path and util.is_file(path)) and path or Stats.get_stats_path()
 
-  -- Prepare data
   local data_to_save = util.prepare_for_save(stats)
-  local path = Stats.get_stats_path()
-  local backup_path = path .. '.bak'
-
-  -- Encode to JSON
   local ok, json = pcall(vim.json.encode, data_to_save)
   if not ok then
     vim.notify('Failed to encode stats to JSON', ERROR)
     return false
   end
 
+  local backup_path = path .. '.bak'
   local file_stat = uv.fs_stat(path)
   local fd
-
-  -- Create backup of existing file
-  if file_stat then
+  if file_stat then -- Create backup of existing file
     local bak_fd = uv.fs_open(backup_path, 'w', tonumber('644', 8))
     fd = uv.fs_open(path, 'r', tonumber('644', 8))
     if fd and bak_fd then
