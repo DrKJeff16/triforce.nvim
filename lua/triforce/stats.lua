@@ -150,6 +150,7 @@ function Stats.save(stats)
   -- Prepare data
   local data_to_save = util.prepare_for_save(stats)
   local path = Stats.get_stats_path()
+  local backup_path = path .. '.bak'
 
   -- Encode to JSON
   local ok, json = pcall(vim.json.encode, data_to_save)
@@ -158,16 +159,31 @@ function Stats.save(stats)
     return false
   end
 
+  local file_stat = uv.fs_stat(path)
+  local fd
+
   -- Create backup of existing file
-  if vim.fn.filereadable(path) == 1 then
-    local backup_path = path .. '.bak'
-    vim.fn.writefile(vim.fn.readfile(path), backup_path)
+  if file_stat then
+    local bak_fd = uv.fs_open(backup_path, 'w', tonumber('644', 8))
+    fd = uv.fs_open(path, 'r', tonumber('644', 8))
+    if fd and bak_fd then
+      uv.fs_write(bak_fd, uv.fs_read(fd, file_stat.size))
+      uv.fs_close(bak_fd)
+      uv.fs_close(fd)
+    end
+  end
+
+  fd = uv.fs_open(path, 'w', tonumber('644', 8))
+  if not fd then
+    vim.notify('Failed to write stats file to: ' .. path, ERROR)
+    return false
   end
 
   -- Write to file using vim.fn.writefile (more reliable on Windows)
-  local write_ok = vim.fn.writefile({ json }, path)
+  local write_ok = uv.fs_write(fd, json)
+  uv.fs_close(fd)
 
-  if write_ok == -1 then
+  if not write_ok then
     vim.notify('Failed to write stats file to: ' .. path, ERROR)
     return false
   end
