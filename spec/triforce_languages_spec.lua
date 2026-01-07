@@ -2,11 +2,13 @@ local assert = require('luassert') ---@type Luassert
 
 describe('triforce', function()
   local triforce ---@type Triforce
+  local languages ---@type Triforce.Languages
 
   before_each(function()
     -- Clear module cache to get fresh instance
     package.loaded.triforce = nil
     triforce = require('triforce')
+    languages = require('triforce.languages')
   end)
 
   describe('languages', function()
@@ -27,8 +29,6 @@ describe('triforce', function()
       local ok = pcall(triforce.setup, { ignore_ft = ignore })
 
       assert.is_true(ok)
-
-      local languages = require('triforce.languages')
       assert.is_same(languages.ignored_langs, ignore)
     end)
   end)
