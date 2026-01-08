@@ -5,19 +5,7 @@
 ---@field [3]? boolean
 ---@field [4]? string
 
----@alias Months
----|1
----|2
----|3
----|4
----|5
----|6
----|7
----|8
----|9
----|10
----|11
----|12
+---@alias Months 1|2|3|4|5|6|7|8|9|10|11|12
 
 local ERROR = vim.log.levels.ERROR
 
@@ -81,6 +69,73 @@ function Util.validate(T)
   end
 end
 
+---Emulates the behaviour of Python's builtin `range()` function.
+---@param x integer
+---@param y integer
+---@param step integer
+---@return integer[] range_list
+---@overload fun(x: integer): range_list: integer[]
+---@overload fun(x: integer, y: integer): range_list: integer[]
+function Util.range(x, y, step)
+  Util.validate({
+    x = { x, { 'number' } },
+    y = { y, { 'number', 'nil' }, true },
+    step = { step, { 'number', 'nil' }, true },
+  })
+
+  if not Util.is_int(x) then
+    error(('Argument `x` is not an integer: `%s`'):format(x), ERROR)
+  end
+
+  local range_list = {} ---@type integer[]
+  if not (y or step) then
+    y = x
+    x = 1
+    step = x <= y and 1 or -1
+
+    table.insert(range_list, x)
+    for v = x + step, y, step do
+      table.insert(range_list, v)
+    end
+  elseif y and not step then
+    if not Util.is_int(y) then
+      error(('Argument `y` is not an integer: `%s`'):format(y), ERROR)
+    end
+    step = x <= y and 1 or -1
+
+    table.insert(range_list, x)
+    for v = x + step, y, step do
+      table.insert(range_list, v)
+    end
+  elseif y and step then
+    if not Util.is_int({ y, step }) then
+      error('Arguments `y` and/or `step` are not an integer!', ERROR)
+    end
+    if step == 0 then
+      error('Argument `step` cannot be `0`!', ERROR)
+    end
+    if x > y and step >= 1 then
+      error('Index out of bounds!', ERROR)
+    end
+    if x > y and step <= -1 then
+      local p = x
+      x = y
+      y = p
+      step = step * -1
+    end
+
+    table.insert(range_list, x)
+    for v = x + step, y, step do
+      table.insert(range_list, v)
+    end
+  else
+    error(('Argument `y` is nil while `step` is not: `%s`'):format(step), ERROR)
+  end
+
+  table.sort(range_list)
+  return range_list
+end
+
 ---@param year integer
 ---@return boolean leap
 function Util.is_leap_year(year)
@@ -95,6 +150,10 @@ function Util.days_in_month(month, year)
     month = { month, { 'number' } },
     year = { year, { 'number' } },
   })
+
+  if not vim.list_contains(Util.range(12), month) then
+    error('Cannot calculate days in month!', ERROR)
+  end
 
   local days_in_months = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
   if month ~= 2 then
