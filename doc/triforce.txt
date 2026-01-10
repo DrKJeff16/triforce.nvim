@@ -1,4 +1,4 @@
-*triforce.txt*          For NVIM >=v0.9.0         Last change: 2026 January 03
+*triforce.txt*          For NVIM >=v0.9.0         Last change: 2026 January 10
 
 ==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
@@ -7,7 +7,7 @@
 levels, and achievements while you work.
 
 
-TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
+TABLE OF CONTENTS                                 *triforce-table-of-contents*
 
 - |triforce-why-i-made-this|
 - |triforce-features|
@@ -63,7 +63,7 @@ TABLE OF CONTENTS                   *triforce-triforce.nvim-table-of-contents*
 
 ------------------------------------------------------------------------------
 
-WHY I MADE THIS                       *triforce-triforce.nvim-why-i-made-this*
+WHY I MADE THIS                                     *triforce-why-i-made-this*
 
 I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay
 consistent or even get started some days. That’s part of why I fell in love
@@ -91,7 +91,7 @@ process so much smoother and helped me focus on bringing those ideas to life.
 
 ------------------------------------------------------------------------------
 
-FEATURES                                     *triforce-triforce.nvim-features*
+FEATURES                                                   *triforce-features*
 
 - **Detailed Statistics**: Track lines typed, characters, sessions, coding time, and more
 - **Gamification**: Earn XP and level up based on your coding activity
@@ -105,7 +105,7 @@ FEATURES                                     *triforce-triforce.nvim-features*
 
 ------------------------------------------------------------------------------
 
-INSTALLATION                             *triforce-triforce.nvim-installation*
+INSTALLATION                                           *triforce-installation*
 
 **Requirements**:
 
@@ -184,7 +184,7 @@ VIM-PLUG ~
 
 ------------------------------------------------------------------------------
 
-CONFIGURATION                           *triforce-triforce.nvim-configuration*
+CONFIGURATION                                         *triforce-configuration*
 
 Triforce comes with sensible defaults, but you can customize everything:
 
@@ -398,7 +398,7 @@ Or if you prefer to focus on typing volume:
 
 ------------------------------------------------------------------------------
 
-USAGE                                           *triforce-triforce.nvim-usage*
+USAGE                                                         *triforce-usage*
 
   -----------------------------------------------------------------------------------------
   Command                                                  Description
@@ -425,7 +425,7 @@ USAGE                                           *triforce-triforce.nvim-usage*
   -----------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 
-PROFILE UI                                 *triforce-triforce.nvim-profile-ui*
+PROFILE UI                                               *triforce-profile-ui*
 
 The profile includes 4 tabs:
 
@@ -465,7 +465,7 @@ KEYBINDINGS ~
 
 ------------------------------------------------------------------------------
 
-ACHIEVEMENTS                             *triforce-triforce.nvim-achievements*
+ACHIEVEMENTS                                           *triforce-achievements*
 
 Triforce includes **18 built-in achievements** across 5 categories:
 
@@ -567,7 +567,7 @@ setup option.
 
 ------------------------------------------------------------------------------
 
-CUSTOMIZATION                           *triforce-triforce.nvim-customization*
+CUSTOMIZATION                                         *triforce-customization*
 
 
 ADDING CUSTOM LANGUAGES ~
@@ -644,7 +644,7 @@ omit a key, the default color for that level is used.
 
 ------------------------------------------------------------------------------
 
-LUALINE INTEGRATION               *triforce-triforce.nvim-lualine-integration*
+LUALINE INTEGRATION                             *triforce-lualine-integration*
 
 Triforce provides **modular statusline components** for lualine.nvim
 <https://github.com/nvim-lualine/lualine.nvim>, letting you display your coding
@@ -932,7 +932,7 @@ CUSTOM STYLE
 
 ------------------------------------------------------------------------------
 
-DATA STORAGE                             *triforce-triforce.nvim-data-storage*
+DATA STORAGE                                           *triforce-data-storage*
 
 Stats are saved to `~/.local/share/nvim/triforce_stats.json`.
 
@@ -969,7 +969,7 @@ DATA FORMAT ~
 
 ------------------------------------------------------------------------------
 
-ROADMAP                                       *triforce-triforce.nvim-roadmap*
+ROADMAP                                                     *triforce-roadmap*
 
 - **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
 - **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
@@ -985,13 +985,13 @@ ROADMAP                                       *triforce-triforce.nvim-roadmap*
 
 ------------------------------------------------------------------------------
 
-LICENSE                                       *triforce-triforce.nvim-license*
+LICENSE                                                     *triforce-license*
 
 MIT License - see LICENSE <./LICENSE> for details.
 
 ------------------------------------------------------------------------------
 
-ACKNOWLEDGMENTS                       *triforce-triforce.nvim-acknowledgments*
+ACKNOWLEDGMENTS                                     *triforce-acknowledgments*
 
 - **nvzone/volt** <https://github.com/nvzone/volt>: Beautiful UI framework
 - **Typr** <https://github.com/nvzone/typr>: Beautiful Grid Design Component Inspiration
@@ -999,14 +999,14 @@ ACKNOWLEDGMENTS                       *triforce-triforce.nvim-acknowledgments*
 
 ------------------------------------------------------------------------------
 
-SUPPORT                                       *triforce-triforce.nvim-support*
+SUPPORT                                                     *triforce-support*
 
 - **Bug Reports**: GitHub Issues <https://github.com/gisketch/triforce.nvim/issues>
 - **Feature Requests**: GitHub Discussions <https://github.com/gisketch/triforce.nvim/discussions>
 
 ------------------------------------------------------------------------------
 
-STAR HISTORY                             *triforce-triforce.nvim-star-history*
+STAR HISTORY                                           *triforce-star-history*
 
 **Made with for the Neovim community**
 
