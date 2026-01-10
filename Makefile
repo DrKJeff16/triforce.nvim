@@ -1,8 +1,9 @@
+TAGS_CMD = nvim --clean --headless -c 'helptags doc/' -c 'qa!'
 LUAROCKS_CMD = luarocks install --local
 
 .POSIX:
 
-.PHONY: all test lint format check help
+.PHONY: all test lint format check help helptags
 
 .SUFFIXES:
 
@@ -11,6 +12,10 @@ all: help
 help: ## Show this help message
 	@echo -e "Usage: make [target]\n\nAvailable targets:"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+helptags: ## Generate Neovim helptags
+	@echo -e "Generating helptags...\n"
+	@$(TAGS_CMD) > /dev/null 2>&1
 
 test: ## Run tests with busted
 	@echo "Running tests..."
