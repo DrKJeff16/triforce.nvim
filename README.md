@@ -1,5 +1,7 @@
 # triforce.nvim
 
+[![Mentioned in Awesome Neovim](https://awesome.re/mentioned-badge.svg)](https://github.com/rockerBOO/awesome-neovim)
+
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels,
 and achievements while you work.
 
