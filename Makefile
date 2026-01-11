@@ -12,6 +12,7 @@ all: help
 help: ## Show this help message
 	@echo -e "Usage: make [target]\n\nAvailable targets:"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  %-15s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo
 
 helptags: ## Generate Neovim helptags
 	@echo -e "Generating helptags...\n"
