@@ -92,7 +92,7 @@ function Levels.get_all_levels(stats)
   return res
 end
 
----Get title mased on given level
+---Get title based on given level
 ---@param level integer
 ---@return string title
 function Levels.get_level_title(level)
