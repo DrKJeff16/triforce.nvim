@@ -14,6 +14,7 @@
 ---@field unlocked boolean
 ---@field title string
 
+local ERROR = vim.log.levels.ERROR
 local util = require('triforce.util')
 
 ---@return LevelTitles titles
@@ -91,19 +92,29 @@ function Levels.get_all_levels(stats)
   return res
 end
 
----Get Zelda-themed title based on level
+---Get title mased on given level
 ---@param level integer
 ---@return string title
 function Levels.get_level_title(level)
   util.validate({ level = { level, { 'number' } } })
-
-  for lvl, title in pairs(Levels.levels) do
-    if level == lvl then
-      return ('%s %s'):format(title.icon, title.title)
-    end
+  if not util.is_int(level) then
+    error('Parameter level is not an integer!', ERROR)
   end
 
-  return '💫 Eternal Legend' -- Max title for level > 300
+  local res_title = ''
+  local max_lvl
+  for lvl, title in pairs(Levels.levels) do
+    max_lvl = lvl
+    if level == lvl then
+      res_title = ('%s %s'):format(title.icon, title.title)
+      break
+    end
+  end
+  if res_title == '' and level >= max_lvl then
+    res_title = '💫 Eternal Legend' -- Max title for level > 300
+  end
+
+  return res_title
 end
 
 return Levels
