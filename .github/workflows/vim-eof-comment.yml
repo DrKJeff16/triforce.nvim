@@ -27,7 +27,8 @@ jobs:
           pip install -U vim-eof-comment
       - name: Run vim-eof-comment
         run: |
-          vim-eof-comment -e py,pyi,md,Makefile,yaml,toml -i py:4:Y,pyi:4:Y,md:2:Y -nv .
+          vim-eof-comment -e lua,Makefile,yaml,toml -i lua:2:Y -v .
+          vim-eof-comment -e md -nv .
       - name: Auto Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
