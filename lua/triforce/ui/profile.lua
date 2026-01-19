@@ -23,21 +23,25 @@ local levels_module = require('triforce.levels')
 local util = require('triforce.util')
 
 ---@class Triforce.Ui.Profile
----@field dimensions Triforce.UIDimensions
-local Profile = {
-  ns = vim.api.nvim_create_namespace('TriforceProfile'), ---@type integer
-  achievements_page = 1, ---@type integer
-  levels_page = 1, ---@type integer
-  achievements_per_page = 5, ---@type integer
-  levels_per_page = 5, ---@type integer
-  max_language_entries = 13, ---@type integer
-  current_tab = 1, ---@type integer
-  all_tabs = { '1   Stats', '2  󰌌 Achievements', '3   Languages', '4  󱡁 Levels' },
-  dimensions = {
-    width = math.floor(vim.o.columns * 0.66),
-    height = math.floor(vim.o.lines * 0.85),
-    xpad = 2,
-  },
+local Profile = {}
+
+Profile.ns = vim.api.nvim_create_namespace('TriforceProfile') ---@type integer
+Profile.achievements_page = 1 ---@type integer
+Profile.levels_page = 1 ---@type integer
+Profile.achievements_per_page = 5 ---@type integer
+Profile.levels_per_page = 5 ---@type integer
+Profile.max_language_entries = 13 ---@type integer
+Profile.current_tab = 1 ---@type integer
+Profile.all_tabs = { ---@type string[]
+  '1   Stats',
+  '2  󰌌 Achievements',
+  '3   Languages',
+  '4  󱡁 Levels',
+}
+Profile.dimensions = { ---@type Triforce.UIDimensions
+  width = math.floor(vim.o.columns * 0.66),
+  height = math.floor(vim.o.lines * 0.85),
+  xpad = 2,
 }
 
 ---Close up profile window
@@ -253,7 +257,7 @@ function Profile.build_activity_heatmap(stats)
 end
 
 ---Build Stats tab content
----@return string[][][]|string[][]
+---@return string[][][]|string[][] lines
 function Profile.build_stats_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -383,7 +387,7 @@ function Profile.build_stats_tab()
 end
 
 ---Build Achievements tab content
----@return string[][][]|string[][]
+---@return string[][][]|string[][] lines
 function Profile.build_achievements_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -477,7 +481,7 @@ function Profile.build_achievements_tab()
 end
 
 ---Build levels tab content
----@return string[][][]|string[][]
+---@return string[][][]|string[][] lines
 function Profile.build_levels_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -569,7 +573,7 @@ function Profile.build_levels_tab()
 end
 
 ---Build Languages tab content
----@return string[][][]|string[][]
+---@return string[][][]|string[][] lines
 function Profile.build_languages_tab()
   local stats = tracker.get_stats()
   if not stats then
@@ -724,7 +728,7 @@ function Profile.setup_highlights()
 end
 
 ---Get layout for tab system
----@return VoltData.Layout[]
+---@return VoltData.Layout[] layout
 function Profile.get_layout()
   local components = { ---@type table<string, fun(): (string[][][]|string[][])>
     Profile.build_stats_tab,

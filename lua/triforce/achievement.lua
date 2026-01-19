@@ -195,6 +195,8 @@ end
 
 ---@param achievement Achievement[]|Achievement
 ---@param stats Stats
+---@overload fun(achievemnt: Achievement, stats: Stats)
+---@overload fun(achievemnt: Achievement[], stats: Stats)
 function Achievement.new_achievements(achievement, stats)
   util.validate({ achievement = { achievement, { 'table' } } })
 

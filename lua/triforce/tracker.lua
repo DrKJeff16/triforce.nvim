@@ -7,22 +7,28 @@ local uv = vim.uv or vim.loop
 ---@class Triforce.Tracker
 ---@field current_stats? Stats
 ---@field augroup? integer
-local Tracker = {
-  ---Track line count per buffer to detect new lines
-  buffer_line_counts = {}, ---@type table<integer, integer>
-  ---Track lines typed today
-  lines_today = 0, ---@type integer
-  ---Track current date to detect day rollover
-  current_date = os.date('%Y-%m-%d'), ---@type string|osdate
-  ---Flag to track if stats need saving
-  dirty = false, ---@type boolean
-  ---Last save timestamp to prevent rapid saves
-  last_save_time = 0, ---@type integer
-  debug = false, ---@type boolean
-}
+local Tracker = {}
+
+---Track line count per buffer to detect new lines
+Tracker.buffer_line_counts = {} ---@type table<integer, integer>
+
+---Track lines typed today
+Tracker.lines_today = 0 ---@type integer
+
+---Track current date to detect day rollover
+Tracker.current_date = os.date('%Y-%m-%d') ---@type string|osdate
+
+---Flag to track if stats need saving
+Tracker.dirty = false ---@type boolean
+
+---Last save timestamp to prevent rapid saves
+Tracker.last_save_time = 0 ---@type integer
+
+Tracker.debug = false ---@type boolean
 
 ---Initialize the tracker
----@param debug? boolean
+---@param debug boolean
+---@overload fun()
 function Tracker.setup(debug)
   util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
 
@@ -214,8 +220,10 @@ end
 
 ---Notify user of achievement unlock
 ---@param name string
----@param desc? string
----@param icon? string
+---@param desc string
+---@param icon string
+---@overload fun(name: string)
+---@overload fun(name: string, desc: string)
 function Tracker.notify_achievement(name, desc, icon)
   util.validate({
     name = { name, { 'string' } },
@@ -237,7 +245,7 @@ function Tracker.notify_achievement(name, desc, icon)
 end
 
 ---Get current stats
----@return Stats|nil
+---@return Stats|nil stats
 function Tracker.get_stats()
   return Tracker.current_stats
 end

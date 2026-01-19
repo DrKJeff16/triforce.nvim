@@ -12,7 +12,8 @@ local Triforce = {
   toggle_config = config_mod.toggle_window,
 }
 
----@param opts? TriforceConfig
+---@param opts TriforceConfig
+---@overload fun()
 function Triforce.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
@@ -161,7 +162,8 @@ end
 
 ---Export stats to JSON
 ---@param file string
----@param indent? string
+---@param indent string
+---@overload fun(file: string)
 function Triforce.export_stats_to_json(file, indent)
   util.validate({
     file = { file, { 'string' } },
@@ -186,6 +188,8 @@ function Triforce.export_stats_to_md(file)
 end
 
 ---@param achievements Achievement[]|Achievement
+---@overload fun(achievements: Achievement)
+---@overload fun(achievements: Achievement[])
 function Triforce.new_achievements(achievements)
   util.validate({ achievements = { achievements, { 'table' } } })
   if not require('triforce.config').has_gamification() then

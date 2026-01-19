@@ -23,12 +23,12 @@ local util = require('triforce.util')
 ---Configurable level progression
 ---@field level_config LevelProgression
 ---@field db_path? string
-local Stats = {
-  level_config = {
-    tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
-    tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
-    tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
-  },
+local Stats = {}
+
+Stats.level_config = {
+  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
+  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
+  tier_3 = { min_level = 21, max_level = math.huge, xp_per_level = 1000 }, -- Levels 21+: 1000 XP each
 }
 
 ---@return Stats stats
@@ -59,8 +59,9 @@ function Stats.get_stats_path()
 end
 
 ---Load stats from disk
----@param debug? boolean
+---@param debug boolean
 ---@return Stats merged
+---@overload fun(): merged: Stats
 function Stats.load(debug)
   util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
   debug = debug ~= nil and debug or false
@@ -139,9 +140,11 @@ function Stats.load(debug)
 end
 
 ---Save stats to disk
----@param stats? Stats
----@param path? string
+---@param stats Stats
+---@param path string
 ---@return boolean success
+---@overload fun(): success: boolean
+---@overload fun(stats: Stats): success: boolean
 function Stats.save(stats, path)
   util.validate({
     stats = { stats, { 'table', 'nil' }, true },
@@ -401,18 +404,20 @@ function Stats.export_stats(stats)
     style = 'minimal',
   })
 
-  vim.bo[bufnr].filetype = 'lua'
-  vim.bo[bufnr].modified = false
-  vim.bo[bufnr].modifiable = false
+  ---@type vim.api.keyset.option, vim.api.keyset.option
+  local buf_opts, win_opts = { buf = bufnr }, { win = win }
+  vim.api.nvim_set_option_value('filetype', 'lua', buf_opts)
+  vim.api.nvim_set_option_value('modified', false, buf_opts)
+  vim.api.nvim_set_option_value('modifiable', false, buf_opts)
 
-  vim.wo[win].number = false
-  vim.wo[win].signcolumn = 'no'
-  vim.wo[win].colorcolumn = ''
-  vim.wo[win].wrap = true
-  vim.wo[win].list = false
+  vim.api.nvi_set_option_value('number', false, win_opts)
+  vim.api.nvi_set_option_value('signcolumn', 'no', win_opts)
+  vim.api.nvi_set_option_value('colorcolumn', '', win_opts)
+  vim.api.nvi_set_option_value('wrap', true, win_opts)
+  vim.api.nvi_set_option_value('list', false, win_opts)
 
   vim.keymap.set('n', 'q', function()
-    vim.api.nvim_buf_delete(bufnr, { force = true })
+    pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
     pcall(vim.api.nvim_win_close, win, true)
   end, { noremap = true, silent = true, buffer = bufnr })
 end
@@ -420,7 +425,8 @@ end
 ---Export data to a specified JSON file
 ---@param stats Stats
 ---@param target string
----@param indent? string
+---@param indent string
+---@overload fun(stats: Stats, target: string)
 function Stats.export_to_json(stats, target, indent)
   util.validate({
     stats = { stats, { 'table' } },

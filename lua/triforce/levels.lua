@@ -51,6 +51,8 @@ function Levels.setup()
 end
 
 ---@param levels LevelParams[]|LevelParams
+---@overload fun(levels: LevelParams)
+---@overload fun(levels: LevelParams[])
 function Levels.add_levels(levels)
   util.validate({ levels = { levels, { 'table' } } })
   if vim.tbl_isempty(levels) then

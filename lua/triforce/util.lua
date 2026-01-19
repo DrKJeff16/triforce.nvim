@@ -32,31 +32,9 @@ end
 ---Dynamic `vim.validate()` wrapper. Covers both legacy and newer implementations
 ---@param T table<string, vim.validate.Spec|ValidateSpec>
 function Util.validate(T)
-  if not Util.vim_has('nvim-0.11') then
-    vim.validate({ T = { T, { 'table' } } })
-  else
-    vim.validate('T', T, { 'table' }, false)
-  end
-
-  if not Util.vim_has('nvim-0.11') then
-    ---Filter table to fit legacy standard
-    ---@cast T table<string, vim.validate.Spec>
-    for name, spec in pairs(T) do
-      while #spec > 3 do
-        table.remove(spec, #spec)
-      end
-
-      T[name] = spec
-    end
-
-    vim.validate(T)
-    return
-  end
-
-  ---Filter table to fit non-legacy standard
-  ---@cast T table<string, ValidateSpec>
+  local max = vim.fn.has('nvim-0.11') == 1 and 3 or 4
   for name, spec in pairs(T) do
-    while #spec > 4 do
+    while #spec > max do
       table.remove(spec, #spec)
     end
 
@@ -64,8 +42,12 @@ function Util.validate(T)
   end
 
   for name, spec in pairs(T) do
-    table.insert(spec, 1, name)
-    vim.validate(unpack(spec))
+    if vim.fn.has('nvim-0.11') == 1 then
+      table.insert(spec, 1, name)
+      vim.validate(unpack(spec))
+    else
+      vim.validate(spec)
+    end
   end
 end
 
@@ -163,7 +145,9 @@ function Util.days_in_month(month, year)
 end
 
 ---Get current date in YYYY-MM-DD format
----@param timestamp? integer Optional timestamp, defaults to current time
+---@param timestamp integer Optional timestamp, defaults to current time
+---@return string date_str
+---@overload fun(): date_str: string
 function Util.get_date_string(timestamp)
   Util.validate({ timestamp = { timestamp, { 'number', 'nil' }, true } })
 
@@ -202,6 +186,8 @@ end
 
 ---@param x number[]|number
 ---@return boolean int
+---@overload fun(x: number): int: boolean
+---@overload fun(x: number[]): int: boolean
 function Util.is_int(x)
   Util.validate({ x = { x, { 'table', 'number' } } })
 
@@ -289,11 +275,15 @@ function Util.format_time(secs)
 end
 
 ---Helper functions (copied from typr)
+---@param day integer
+---@param month Months
+---@param year integer
 ---@return number day_i
 function Util.getday_i(day, month, year)
   return tonumber(os.date('%w', os.time({ year = tostring(year), month = month, day = day }))) + 1
 end
 
+---@param day integer
 ---@return string formatted_str
 function Util.double_digits(day)
   return (day >= 10 and '%s' or '0%s'):format(day)
@@ -302,8 +292,9 @@ end
 ---@param curr integer
 ---@param first integer
 ---@param last integer
----@param back? boolean
+---@param back boolean
 ---@return integer cycled
+---@overload fun(curr: integer, first: integer, last: integer): cycled: integer
 function Util.cycle_range(curr, first, last, back)
   Util.validate({
     curr = { curr, { 'number' } },
@@ -334,6 +325,7 @@ function Util.cycle_range(curr, first, last, back)
 end
 
 ---@param path string
+---@return boolean file
 function Util.is_file(path)
   Util.validate({ path = { path, { 'string' } } })
 

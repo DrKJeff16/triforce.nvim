@@ -104,8 +104,9 @@ local Config = {
   config = {}, ---@type TriforceConfig
 }
 
----@param silent? boolean
+---@param silent boolean
 ---@return boolean gamified
+---@overload fun(): gamified: boolean
 function Config.has_gamification(silent)
   util.validate({ silent = { silent, { 'boolean', 'nil' }, true } })
 
@@ -126,7 +127,8 @@ function Config.defaults()
   return defaults
 end
 
----@param opts? TriforceConfig
+---@param opts TriforceConfig
+---@overload fun()
 function Config.new_config(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
@@ -141,7 +143,8 @@ function Config.new_config(opts)
 end
 
 ---Setup the plugin with user configuration
----@param opts? TriforceConfig User configuration options
+---@param opts TriforceConfig User configuration options
+---@overload fun()
 function Config.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 

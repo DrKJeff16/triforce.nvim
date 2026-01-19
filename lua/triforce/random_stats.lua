@@ -168,7 +168,7 @@ end
 
 ---Format large numbers with commas
 ---@param num number
----@return string
+---@return string str
 function RandStats.format_number(num)
   util.validate({ num = { num, { 'number' } } })
 
