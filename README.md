@@ -86,7 +86,7 @@ bringing those ideas to life.
   - [Exporting](#exporting)
   - [Data Format](#data-format)
 - [Roadmap](#roadmap)
-  - [Acknowledgments](#acknowledgments)
+- [Acknowledgments](#acknowledgments)
 - [License](#license)
 
 ---
