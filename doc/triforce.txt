@@ -88,7 +88,7 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
     - |triforce-exporting|
     - |triforce-data-format|
 - |triforce-roadmap|
-    - |triforce-acknowledgments|
+- |triforce-acknowledgments|
 - |triforce-license|
 
 ------------------------------------------------------------------------------
