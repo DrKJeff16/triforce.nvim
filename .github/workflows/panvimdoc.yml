@@ -34,3 +34,5 @@ jobs:
         with:
           commit_message: "docs: auto generate docs"
           branch: ${{ github.head_ref }}
+
+# vim: set ts=2 sts=2 sw=2 et ai si sta:
