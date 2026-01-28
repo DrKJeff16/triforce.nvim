@@ -900,7 +900,9 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 
 ## Roadmap
 
-- [ ] **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
+- [ ] **VCS Support**: Allow individual tracking per Git branch/tag.
+- [ ] **Sounds for Achievements and Level up**: Add SFX feedback for leveling up
+  or completing achievements for dopamine!
 - [ ] **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
 - [ ] **Leaderboards**: Compete with friends or the community
 - [X] **Exclude by Filetype**: Add filetypes you don't want to track
