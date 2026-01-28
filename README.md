@@ -55,11 +55,11 @@ and achievements while you work.
     - [Full Stats Dashboard](#full-stats-dashboard)
     - [Custom Style](#custom-style)
 - [Data Storage](#data-storage)
+  - [Exporting](#exporting)
   - [Data Format](#data-format)
 - [Roadmap](#roadmap)
+  - [Acknowledgments](#acknowledgments)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
-- [Support](#support)
 
 ---
 
@@ -106,7 +106,7 @@ bringing those ideas to life.
 
 ## Installation
 
-**Requirements**:
+Triforce has the following requirements:
 
 - **Neovim** >= 0.9.0
 - [`nvzone/volt`](https://github.com/nvzone/volt) (UI framework dependency)
@@ -118,14 +118,7 @@ bringing those ideas to life.
 {
   'gisketch/triforce.nvim',
   dependencies = { 'nvzone/volt' },
-  config = function()
-    require('triforce').setup({
-      -- Optional: Add your configuration here
-      keymap = {
-        show_profile = '<leader>tp', -- Open profile with <leader>tp
-      },
-    })
-  end,
+  opts = {},
 }
 ```
 
@@ -137,11 +130,7 @@ require('pckr').add({
     'gisketch/triforce.nvim',
     requires = { 'nvzone/volt' },
     config = function()
-      require('triforce').setup({
-        keymap = {
-          show_profile = '<leader>tp',
-        },
-      })
+      require('triforce').setup()
     end
   }
 })
@@ -154,12 +143,6 @@ require('paq')({
   'nvzone/volt',
   'gisketch/triforce.nvim',
 })
-
-require('triforce').setup({
-  keymap = {
-    show_profile = '<leader>tp',
-  },
-})
 ```
 
 
@@ -168,14 +151,6 @@ require('triforce').setup({
 ```vim
 Plug 'nvzone/volt'
 Plug 'gisketch/triforce.nvim'
-
-lua << EOF
-require('triforce').setup({
-  keymap = {
-    show_profile = '<leader>tp',
-  },
-})
-EOF
 ```
 
 ---
@@ -184,10 +159,19 @@ EOF
 
 Triforce comes with sensible defaults, but you can customize everything:
 
+<details>
+<summary><b>Defaults</b></summary>
+
 ```lua
 require('triforce').setup({
   enabled = true,              -- Enable/disable the entire plugin
   gamification_enabled = true, -- Enable XP, levels, achievements
+
+  -- Custom levels
+  levels = {},
+
+  -- Custom achievements
+  achievements = {},
 
   -- Notification settings
   notifications = {
@@ -243,24 +227,26 @@ require('triforce').setup({
 })
 ```
 
+</details>
+
 ### Configuration Options
 
-| Option                       | Type          | Default                           | Description                           |
-|------------------------------|---------------|-----------------------------------|---------------------------------------|
-| `enabled`                    | `boolean`     | `true`                            | Enable/disable the plugin             |
-| `gamification_enabled`       | `boolean`     | `true`                            | Enable gamification features          |
-| `notifications.enabled`      | `boolean`     | `true`                            | Master toggle for notifications       |
-| `notifications.level_up`     | `boolean`     | `true`                            | Show level up notifications           |
-| `notifications.achievements` | `boolean`     | `true`                            | Show achievement notifications        |
-| `debug`                      | `boolean`     | `true`                            | Enable some debugging messages        |
-| `auto_save_interval`         | `number`      | `300`                             | Auto-save interval in seconds         |
-| `keymap.show_profile`        | `string\|nil` | `nil`                             | Keymap for opening profile            |
-| `custom_languages`           | `table\|nil`  | `nil`                             | Custom language definitions           |
-| `ignore_ft`                  | `table\|nil`  | `{}`                              | List of excluded filetypes            |
-| `levels`                     | `table\|nil`  | [See below](#custom-levels)       | List of custom levels                 |
-| `level_progression`          | `table\|nil`  | [See below](#level-progression)   | Custom XP requirements per level tier |
-| `xp_rewards`                 | `table\|nil`  | [See below](#xp-rewards)          | Custom XP rewards for actions         |
-| `achievements`               | `table`       | [See below](#custom-achievements) | Custom achievements                   |
+| Option                       | Type          | Default                           | Description                                |
+|------------------------------|---------------|-----------------------------------|--------------------------------------------|
+| `enabled`                    | `boolean`     | `true`                            | Enable/disable the plugin                  |
+| `gamification_enabled`       | `boolean`     | `true`                            | Enable gamification features               |
+| `notifications.enabled`      | `boolean`     | `true`                            | Master toggle for notifications            |
+| `notifications.level_up`     | `boolean`     | `true`                            | Show level up notifications                |
+| `notifications.achievements` | `boolean`     | `true`                            | Show achievement notifications             |
+| `debug`                      | `boolean`     | `true`                            | Enable some debugging messages             |
+| `auto_save_interval`         | `number`      | `300`                             | Auto-save interval in seconds              |
+| `keymap.show_profile`        | `string\|nil` | `nil`                             | Keymap for opening profile                 |
+| `custom_languages`           | `table\|nil`  | `nil`                             | Custom language definitions                |
+| `ignore_ft`                  | `table\|nil`  | `{}`                              | List of excluded filetypes                 |
+| `levels`                     | `table\|nil`  | [See below](#custom-levels)       | List of custom levels                      |
+| `level_progression`          | `table\|nil`  | [See below](#level-progression)   | Custom XP requirements per level tier      |
+| `xp_rewards`                 | `table\|nil`  | [See below](#xp-rewards)          | Custom XP rewards for actions              |
+| `achievements`               | `table\|nil`  | [See below](#custom-achievements) | Custom achievements                        |
 | `heat_highlights`            | `table\|nil`  | Defaults shown above              | Override heatmap highlights (hex or links) |
 
 ### Custom Levels
@@ -463,21 +449,20 @@ Triforce now allows you to create new achievements with the `achievements` setup
 
 **By default it's just an empty table.**
 
-> [!TIP]
-> The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
->
-> ```lua
-> {
->   id = 'template_achievement', ---@type string
->   name = '...', ---@type string
->   ---@type fun(stats?: Stats): boolean
->   check = function(stats)
->     return stats.foo > stats.bar -- NOTE: This is just an example
->   end,
->   icon = '...' or nil, ---@type string|nil
->   desc = '...' or nil, ---@type string|nil
-> }
-> ```
+The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
+
+```lua
+{
+  id = 'template_achievement', ---@type string
+  name = '...', ---@type string
+  ---@type fun(stats?: Stats): boolean
+  check = function(stats)
+    return stats.foo > stats.bar -- NOTE: This is just an example
+  end,
+  icon = '...' or nil, ---@type string|nil
+  desc = '...' or nil, ---@type string|nil
+}
+```
 
 **For example:**
 
@@ -696,13 +681,13 @@ end
 **Options:**
 - `prefix` (string): Text prefix before level number (default: `'Lv.'`)
 - `show` (table): Toggles for showing different components:
-    - `level` (boolean): Show level number (default: `true`)
-    - `bar` (boolean): Show progress bar (default: `true`)
-    - `percent` (boolean): Show percentage (default: `false`)
-    - `xp` (boolean): Show XP numbers like `450/500` (default: `false`)
+  - `level` (boolean): Show level number (default: `true`)
+  - `bar` (boolean): Show progress bar (default: `true`)
+  - `percent` (boolean): Show percentage (default: `false`)
+  - `xp` (boolean): Show XP numbers like `450/500` (default: `false`)
 - `bar` (table): Bar properties:
-    - `length` (number): Progress bar length (default: `6`)
-    - `chars` (table): `{ filled = '█', empty = '░' }` (default)
+  - `length` (number): Progress bar length (default: `6`)
+  - `chars` (table): `{ filled = '█', empty = '░' }` (default)
 
 #### Achievements Component
 
@@ -869,6 +854,17 @@ Stats are saved to `~/.local/share/nvim/triforce_stats.json`.
 
 The file is automatically backed up before each save to `~/.local/share/nvim/triforce_stats.json.bak`.
 
+### Exporting
+
+You can export your stats with the `:Triforce stats export` command. Currently only these formats
+are supported:
+
+| Format                           | Command                                         | Description                                                    |
+|----------------------------------|-------------------------------------------------|----------------------------------------------------------------|
+| None (export to another window)  | `:Triforce stats export`                        | Raw export of your stats in another Neovim buffer.             |
+| `JSON`                           | `:Triforce stats export json <PATH> [INDENT]`   | Export your stats to a given JSON file (with optional indent). |
+| `Markdown`                       | `:Triforce stats export markdown <PATH>`        | Export your to a given Markdown file, with custom formatting.  |
+
 ### Data Format
 
 ```json
@@ -916,12 +912,6 @@ The file is automatically backed up before each save to `~/.local/share/nvim/tri
 
 ---
 
-## License
-
-MIT License - see [LICENSE](./LICENSE) for details.
-
----
-
 ## Acknowledgments
 
 - [**nvzone/volt**](https://github.com/nvzone/volt): Beautiful UI framework
@@ -930,10 +920,9 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-## Support
+## License
 
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/gisketch/triforce.nvim/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/gisketch/triforce.nvim/discussions)
+MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
