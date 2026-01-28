@@ -100,9 +100,9 @@ local defaults = {
 
 ---@class Triforce.Config
 ---@field float? { bufnr: integer, win: integer }|nil
-local Config = {
-  config = {}, ---@type TriforceConfig
-}
+local Config = {}
+
+Config.config = {} ---@type TriforceConfig
 
 ---@param silent boolean
 ---@return boolean gamified
