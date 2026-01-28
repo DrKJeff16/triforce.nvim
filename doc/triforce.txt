@@ -1,4 +1,4 @@
-*triforce.txt*          For NVIM >=v0.9.0         Last change: 2026 January 11
+*triforce.txt*          For NVIM >=v0.9.0         Last change: 2026 January 28
 
 ==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
@@ -973,7 +973,9 @@ DATA FORMAT ~
 
 ROADMAP                                                     *triforce-roadmap*
 
-- **Sounds for Achievements and Level up**: Add sfx feedback for leveling up or completing achievements for dopamine!
+- **VCS Support**: Allow individual tracking per Git branch/tag.
+- **Sounds for Achievements and Level up**: Add SFX feedback for leveling up
+    or completing achievements for dopamine!
 - **Cloud Sync**: Sync stats across multiple devices (Firebase, GitHub Gist, or custom server)
 - **Leaderboards**: Compete with friends or the community
 - **Exclude by Filetype**: Add filetypes you don’t want to track
