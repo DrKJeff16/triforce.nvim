@@ -7,9 +7,37 @@ and achievements while you work.
 
 ![Showcase](https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac)
 
+---
+
+## Why I Made This
+
+I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent
+or even get started some days.
+That’s part of why I fell in love with Neovim: it’s customizable, expressive,
+and makes the act of writing code feel _fun_ again.
+
+**Triforce** is actually my **first-ever Neovim plugin** (and the first plugin I’ve ever built in general).
+I’d always wanted to make something of my own, but I never really knew where to start.
+Once I got into Neovim’s Lua ecosystem I got completely hooked.
+I started experimenting, tinkering, breaking things, and slowly, Triforce came to life.
+
+I made it to **gamify my coding workflow** — to turn those long,
+sometimes frustrating coding sessions into something that feels rewarding.
+Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time
+gives me that little _dopamine boost_ that helps me stay focused and motivated.
+
+I named it **Triforce** just because I love **The Legend of Zelda** — _no deep reason beyond that_.
+
+The UI is **heavily inspired by [@siduck](https://github.com/siduck)’s gorgeous designs**
+and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas
+played a huge role in how this turned out.
+Building it with **volt.nvim** made the process so much smoother and helped me focus on
+bringing those ideas to life.
+
+---
+
 ## Table of Contents
 
-- [Why I Made This](#why-i-made-this)
 - [Features](#features)
 - [Installation](#installation)
   - [`lazy.nvim`](#lazynvim)
@@ -60,33 +88,6 @@ and achievements while you work.
 - [Roadmap](#roadmap)
   - [Acknowledgments](#acknowledgments)
 - [License](#license)
-
----
-
-## Why I Made This
-
-I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay consistent
-or even get started some days.
-That’s part of why I fell in love with Neovim: it’s customizable, expressive,
-and makes the act of writing code feel _fun_ again.
-
-**Triforce** is actually my **first-ever Neovim plugin** (and the first plugin I’ve ever built in general).
-I’d always wanted to make something of my own, but I never really knew where to start.
-Once I got into Neovim’s Lua ecosystem I got completely hooked.
-I started experimenting, tinkering, breaking things, and slowly, Triforce came to life.
-
-I made it to **gamify my coding workflow** — to turn those long,
-sometimes frustrating coding sessions into something that feels rewarding.
-Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time
-gives me that little _dopamine boost_ that helps me stay focused and motivated.
-
-I named it **Triforce** just because I love **The Legend of Zelda** — _no deep reason beyond that_.
-
-The UI is **heavily inspired by [@siduck](https://github.com/siduck)’s gorgeous designs**
-and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas
-played a huge role in how this turned out.
-Building it with **volt.nvim** made the process so much smoother and helped me focus on
-bringing those ideas to life.
 
 ---
 
