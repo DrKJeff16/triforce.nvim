@@ -57,11 +57,11 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
         - |triforce-full-stats-dashboard|
         - |triforce-custom-style|
 - |triforce-data-storage|
+    - |triforce-exporting|
     - |triforce-data-format|
 - |triforce-roadmap|
+    - |triforce-acknowledgments|
 - |triforce-license|
-- |triforce-acknowledgments|
-- |triforce-support|
 
 ------------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ FEATURES                                                   *triforce-features*
 
 INSTALLATION                                           *triforce-installation*
 
-**Requirements**:
+Triforce has the following requirements:
 
 - **Neovim** >= 0.9.0
 - `nvzone/volt` <https://github.com/nvzone/volt> (UI framework dependency)
@@ -122,14 +122,7 @@ LAZY.NVIM ~
     {
       'gisketch/triforce.nvim',
       dependencies = { 'nvzone/volt' },
-      config = function()
-        require('triforce').setup({
-          -- Optional: Add your configuration here
-          keymap = {
-            show_profile = '<leader>tp', -- Open profile with <leader>tp
-          },
-        })
-      end,
+      opts = {},
     }
 <
 
@@ -142,11 +135,7 @@ PCKR.NVIM ~
         'gisketch/triforce.nvim',
         requires = { 'nvzone/volt' },
         config = function()
-          require('triforce').setup({
-            keymap = {
-              show_profile = '<leader>tp',
-            },
-          })
+          require('triforce').setup()
         end
       }
     })
@@ -160,12 +149,6 @@ PAQ-NVIM ~
       'nvzone/volt',
       'gisketch/triforce.nvim',
     })
-    
-    require('triforce').setup({
-      keymap = {
-        show_profile = '<leader>tp',
-      },
-    })
 <
 
 
@@ -174,14 +157,6 @@ VIM-PLUG ~
 >vim
     Plug 'nvzone/volt'
     Plug 'gisketch/triforce.nvim'
-    
-    lua << EOF
-    require('triforce').setup({
-      keymap = {
-        show_profile = '<leader>tp',
-      },
-    })
-    EOF
 <
 
 ------------------------------------------------------------------------------
@@ -190,10 +165,18 @@ CONFIGURATION                                         *triforce-configuration*
 
 Triforce comes with sensible defaults, but you can customize everything:
 
+Defaults ~
+
 >lua
     require('triforce').setup({
       enabled = true,              -- Enable/disable the entire plugin
       gamification_enabled = true, -- Enable XP, levels, achievements
+    
+      -- Custom levels
+      levels = {},
+    
+      -- Custom achievements
+      achievements = {},
     
       -- Notification settings
       notifications = {
@@ -252,11 +235,10 @@ Triforce comes with sensible defaults, but you can customize everything:
 
 CONFIGURATION OPTIONS ~
 
-  ---------------------------------------------------------------------------------------
+  -----------------------------------------------------------------------------------------
   Option                       Type          Default              Description
-  ---------------------------- ------------- -------------------- -----------------------
-  enabled                      boolean       true                 Enable/disable the
-                                                                  plugin
+  ---------------------------- ------------- -------------------- -------------------------
+  enabled                      boolean       true                 Enable/disable the plugin
 
   gamification_enabled         boolean       true                 Enable gamification
                                                                   features
@@ -293,12 +275,11 @@ CONFIGURATION OPTIONS ~
   xp_rewards                   table\|nil    See below            Custom XP rewards for
                                                                   actions
 
-  achievements                 table         See below            Custom achievements
+  achievements                 table\|nil    See below            Custom achievements
 
   heat_highlights              table\|nil    Defaults shown above Override heatmap
-                                                                  highlights (hex or
-                                                                  links)
-  ---------------------------------------------------------------------------------------
+                                                                  highlights (hex or links)
+  -----------------------------------------------------------------------------------------
 
 CUSTOM LEVELS ~
 
@@ -517,21 +498,21 @@ setup option.
 
 **By default it’s just an empty table.**
 
+The `Achievement` type spec is as follows. **DON’T COPY-PASTE DIRECTLY**:
 
-  [!TIP] The `Achievement` type spec is as follows. **DON’T COPY-PASTE
-  DIRECTLY**:
-  >lua
-      {
-        id = 'template_achievement', ---@type string
-        name = '...', ---@type string
-        ---@type fun(stats?: Stats): boolean
-        check = function(stats)
-          return stats.foo > stats.bar -- NOTE: This is just an example
-        end,
-        icon = '...' or nil, ---@type string|nil
-        desc = '...' or nil, ---@type string|nil
-      }
-  <
+>lua
+    {
+      id = 'template_achievement', ---@type string
+      name = '...', ---@type string
+      ---@type fun(stats?: Stats): boolean
+      check = function(stats)
+        return stats.foo > stats.bar -- NOTE: This is just an example
+      end,
+      icon = '...' or nil, ---@type string|nil
+      desc = '...' or nil, ---@type string|nil
+    }
+<
+
 **For example:**
 
 >lua
@@ -942,6 +923,26 @@ The file is automatically backed up before each save to
 `~/.local/share/nvim/triforce_stats.json.bak`.
 
 
+EXPORTING ~
+
+You can export your stats with the `:Triforce stats export` command. Currently
+only these formats are supported:
+
+  ---------------------------------------------------------------------------------------------
+  Format           Command                                       Description
+  ---------------- --------------------------------------------- ------------------------------
+  None (export to  :Triforce stats export                        Raw export of your stats in
+  another window)                                                another Neovim buffer.
+
+  JSON             :Triforce stats export json <PATH> [INDENT]   Export your stats to a given
+                                                                 JSON file (with optional
+                                                                 indent).
+
+  Markdown         :Triforce stats export markdown <PATH>        Export your to a given
+                                                                 Markdown file, with custom
+                                                                 formatting.
+  ---------------------------------------------------------------------------------------------
+
 DATA FORMAT ~
 
 >json
@@ -989,12 +990,6 @@ ROADMAP                                                     *triforce-roadmap*
 
 ------------------------------------------------------------------------------
 
-LICENSE                                                     *triforce-license*
-
-MIT License - see LICENSE <./LICENSE> for details.
-
-------------------------------------------------------------------------------
-
 ACKNOWLEDGMENTS                                     *triforce-acknowledgments*
 
 - **nvzone/volt** <https://github.com/nvzone/volt>: Beautiful UI framework
@@ -1003,10 +998,9 @@ ACKNOWLEDGMENTS                                     *triforce-acknowledgments*
 
 ------------------------------------------------------------------------------
 
-SUPPORT                                                     *triforce-support*
+LICENSE                                                     *triforce-license*
 
-- **Bug Reports**: GitHub Issues <https://github.com/gisketch/triforce.nvim/issues>
-- **Feature Requests**: GitHub Discussions <https://github.com/gisketch/triforce.nvim/discussions>
+MIT License - see LICENSE <./LICENSE> for details.
 
 ------------------------------------------------------------------------------
 
