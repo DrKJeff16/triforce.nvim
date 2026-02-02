@@ -447,12 +447,25 @@ Triforce includes **18 built-in achievements** across 5 categories:
 ### Custom Achievements
 
 Triforce now allows you to create new achievements with the `achievements` setup option.
-
 **By default it's just an empty table.**
 
-The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
+The `Achievement` type spec is shown below:
 
 ```lua
+---@class Stats
+---@field xp number
+---@field level integer
+---@field chars_typed integer
+---@field lines_typed integer
+---@field sessions integer
+---@field time_coding integer
+---@field achievements table<string, boolean>
+---@field chars_by_language table<string, integer>
+---@field daily_activity table<string, integer>
+---@field current_streak integer
+---@field longest_streak integer
+
+-- DO NOT COPY DIRECTLY
 {
   id = 'template_achievement', ---@type string
   name = '...', ---@type string
@@ -465,7 +478,7 @@ The `Achievement` type spec is as follows. **DON'T COPY-PASTE DIRECTLY**:
 }
 ```
 
-**For example:**
+Example:
 
 ```lua
 require('triforce').setup({
@@ -732,8 +745,7 @@ end
 - `icon` (string): Icon to display (default: `''` - flame)
 - `show_days` (boolean): Show day count (default: `true`)
 
-> [!NOTE]
-> The streak component returns an empty string when streak is 0, so it won't clutter your statusline.
+**NOTE**: The streak component returns an empty string when streak is 0, so it won't clutter your statusline.
 
 #### Session Time Component
 
@@ -923,7 +935,7 @@ are supported:
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) for details.
+MIT License - see [LICENSE](https://github.com/gisketch/triforce.nvim/blob/main/LICENSE) for details.
 
 ---
 
