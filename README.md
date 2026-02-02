@@ -5,7 +5,7 @@
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels,
 and achievements while you work.
 
-![Showcase](https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac)
+![Showcase](./assets/triforce.png)
 
 ---
 
@@ -370,7 +370,7 @@ The profile includes 4 tabs:
 
 ### Stats Tab
 
-![Stats Tab](https://github.com/user-attachments/assets/87557fc0-0ac2-455b-a79d-8df0e99490d5)
+![Stats Tab](./assets/triforce_stats.png)
 
 - Level progress bar
 - Session/time milestone progress
@@ -379,21 +379,21 @@ The profile includes 4 tabs:
 
 ### Achievements Tab
 
-![Achievements Tab](https://github.com/user-attachments/assets/d127c685-14b9-4201-8533-994c501535c9)
+![Achievements Tab](./assets/triforce_achievements.png)
 
 - View all unlocked achievements and locked achievements with unlock requirements
 - Paginate through achievements (`H` / `L` or arrow keys)
 
 ### Languages Tab
 
-![Languages Tab](https://github.com/user-attachments/assets/fc773690-6119-47cd-9400-ee277b7c4777)
+![Languages Tab](./assets/triforce_languages.png)
 
 - Bar graph showing your most-used languages
 - See character count breakdown by language
 
 ### Levels Tab
 
-![Levels Tab](https://github.com/user-attachments/assets/404aedbd-e213-4919-a083-0f8fd4283b14)
+![Levels Tab](./assets/triforce_levels.png)
 
 - View unlocked levels first, then locked ones
 - Paginate through achievements (`H` / `L` or arrow keys)
@@ -579,7 +579,7 @@ omit a key, the default color for that level is used.
 Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim),
 letting you display your coding stats right in your statusline.
 
-![Lualine Integration](https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f)
+![Lualine Integration](./assets/triforce_lualine.png)
 
 ### Available Components
 
@@ -933,6 +933,21 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ⭐ Star this repo if you find it useful!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left)](https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left)
+<a href="https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left">
+  <picture>
+    <source
+    media="(prefers-color-scheme: dark)"
+    srcset="https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&theme=dark&legend=top-left"
+    />
+    <source
+    media="(prefers-color-scheme: light)"
+    srcset="https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left"
+    />
+    <img
+    alt="Star History Chart"
+    src="https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left"
+    />
+  </picture>
+</a>
 
 <!-- vim: set ts=2 sts=2 sw=2 et ai si sta: -->
