@@ -59,9 +59,8 @@ function Stats.get_stats_path()
 end
 
 ---Load stats from disk
----@param debug boolean
+---@param debug? boolean
 ---@return Stats merged
----@overload fun(): merged: Stats
 function Stats.load(debug)
   util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
   debug = debug ~= nil and debug or false
@@ -140,11 +139,9 @@ function Stats.load(debug)
 end
 
 ---Save stats to disk
----@param stats Stats
----@param path string
+---@param stats? Stats
+---@param path? string
 ---@return boolean success
----@overload fun(): success: boolean
----@overload fun(stats: Stats): success: boolean
 function Stats.save(stats, path)
   util.validate({
     stats = { stats, { 'table', 'nil' }, true },
@@ -425,8 +422,7 @@ end
 ---Export data to a specified JSON file
 ---@param stats Stats
 ---@param target string
----@param indent string
----@overload fun(stats: Stats, target: string)
+---@param indent? string
 function Stats.export_to_json(stats, target, indent)
   util.validate({
     stats = { stats, { 'table' } },

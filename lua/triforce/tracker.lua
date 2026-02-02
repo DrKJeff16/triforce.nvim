@@ -27,8 +27,7 @@ Tracker.last_save_time = 0 ---@type integer
 Tracker.debug = false ---@type boolean
 
 ---Initialize the tracker
----@param debug boolean
----@overload fun()
+---@param debug? boolean
 function Tracker.setup(debug)
   util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
 
@@ -220,10 +219,8 @@ end
 
 ---Notify user of achievement unlock
 ---@param name string
----@param desc string
----@param icon string
----@overload fun(name: string)
----@overload fun(name: string, desc: string)
+---@param desc? string
+---@param icon? string
 function Tracker.notify_achievement(name, desc, icon)
   util.validate({
     name = { name, { 'string' } },

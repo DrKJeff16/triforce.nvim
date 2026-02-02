@@ -145,9 +145,8 @@ function Util.days_in_month(month, year)
 end
 
 ---Get current date in YYYY-MM-DD format
----@param timestamp integer Optional timestamp, defaults to current time
+---@param timestamp? integer Optional timestamp, defaults to current time
 ---@return string date_str
----@overload fun(): date_str: string
 function Util.get_date_string(timestamp)
   Util.validate({ timestamp = { timestamp, { 'number', 'nil' }, true } })
 
@@ -186,8 +185,6 @@ end
 
 ---@param x number[]|number
 ---@return boolean int
----@overload fun(x: number): int: boolean
----@overload fun(x: number[]): int: boolean
 function Util.is_int(x)
   Util.validate({ x = { x, { 'table', 'number' } } })
 
@@ -292,9 +289,8 @@ end
 ---@param curr integer
 ---@param first integer
 ---@param last integer
----@param back boolean
+---@param back? boolean
 ---@return integer cycled
----@overload fun(curr: integer, first: integer, last: integer): cycled: integer
 function Util.cycle_range(curr, first, last, back)
   Util.validate({
     curr = { curr, { 'number' } },
