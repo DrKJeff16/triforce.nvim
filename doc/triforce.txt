@@ -1,27 +1,32 @@
-*triforce.txt*          For NVIM >=v0.9.0         Last change: 2026 January 28
+*triforce.txt*         For NVIM >=v0.9.0         Last change: 2026 February 02
 
 ==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
 
 <https://github.com/rockerBOO/awesome-neovim>
 
+Share Your Stats <https://github.com/gisketch/triforce.nvim/discussions/30>
+
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP,
-levels, and achievements while you work.
+levels and achievements while you work.
 
 ------------------------------------------------------------------------------
 
-WHY I MADE THIS                                     *triforce-why-i-made-this*
+ABOUT                                                         *triforce-about*
 
-I have ADHD, and coding can sometimes feel like a grind — it’s hard to stay
-consistent or even get started some days. That’s part of why I fell in love
-with Neovim: it’s customizable, expressive, and makes the act of writing code
-feel _fun_ again.
+I have ADHD, which sometimes causes coding to feel like a grind — it’s hard
+to stay consistent or even get started some days. That’s part of why I fell
+in love with Neovim: it’s customizable, expressive, and makes the act of
+writing code feel _fun_ again.
 
 **Triforce** is actually my **first-ever Neovim plugin** (and the first plugin
 I’ve ever built in general). I’d always wanted to make something of my own,
 but I never really knew where to start. Once I got into Neovim’s Lua
 ecosystem I got completely hooked. I started experimenting, tinkering, breaking
 things, and slowly, Triforce came to life.
+
+Triforce is co-maintained by @DrKJeff16 <https://github.com/DrKJeff16>, who has
+ADHD, too.
 
 I made it to **gamify my coding workflow** — to turn those long, sometimes
 frustrating coding sessions into something that feels rewarding. Watching the
@@ -33,14 +38,32 @@ deep reason beyond that_.
 
 The UI is **heavily inspired by @siduck’s gorgeous designs** and
 **nvzone/typr** — their aesthetic sense and clean interface ideas played a
-huge role in how this turned out. Building it with **volt.nvim** made the
-process so much smoother and helped me focus on bringing those ideas to life.
+huge role in how this turned out. Building it with `nvzone/volt`
+<https://github.com/nvzone/volt> made the process so much smoother and helped
+me focus on bringing those ideas to life.
+
+------------------------------------------------------------------------------
+
+FEATURES                                                   *triforce-features*
+
+- **Active Support** - Triforce is actively maintained, and reported bugs are quickly addressed
+- **Detailed Statistics** - Track lines typed, characters, sessions, coding time, and more
+- **Gamification** - Earn XP and level up based on your coding activity
+- **Achievements** - Unlock achievements for milestones (first 1000 chars, 10 sessions, etc.)
+- **Activity Heatmap** - GitHub-style contribution graph showing your coding consistency
+- **Language Tracking** - See which programming languages you use most
+- **Beautiful UI** - Clean, themed interface powered by nvzone/volt <https://github.com/nvzone/volt>
+- **Lualine Integration** - Optional modular statusline components
+    (see |triforce-lualine-integration|)
+- **Highly Configurable** - Customize notifications and keymaps, add custom languages, levels
+    and achievements
+- **Auto-Save** - Your progress is automatically saved every 5 minutes
+- **Documented Code** - The code is thoroughly documented and annotated with LuaLS annotations.
 
 ------------------------------------------------------------------------------
 
 TABLE OF CONTENTS                                 *triforce-table-of-contents*
 
-- |triforce-features|
 - |triforce-installation|
     - |triforce-`lazy.nvim`|
     - |triforce-`pckr.nvim`|
@@ -57,7 +80,6 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
     - |triforce-achievements-tab|
     - |triforce-stats-tab|
     - |triforce-levels-tab|
-    - |triforce-keybindings|
 - |triforce-achievements|
     - |triforce-typing-milestones|
     - |triforce-level-achievements|
@@ -71,7 +93,6 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
     - |triforce-disabling-auto-keymap|
     - |triforce-customizing-heatmap-colors|
 - |triforce-lualine-integration|
-    - |triforce-available-components|
     - |triforce-basic-setup|
     - |triforce-quick-setup|
     - |triforce-component-configuration|
@@ -93,27 +114,13 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
 
 ------------------------------------------------------------------------------
 
-FEATURES                                                   *triforce-features*
-
-- **Detailed Statistics**: Track lines typed, characters, sessions, coding time, and more
-- **Gamification**: Earn XP and level up based on your coding activity
-- **Achievements**: Unlock achievements for milestones (first 1000 chars, 10 sessions, polyglot badges, etc.)
-- **Activity Heatmap**: GitHub-style contribution graph showing your coding consistency
-- **Language Tracking**: See which programming languages you use most
-- **Beautiful UI**: Clean, themed interface powered by volt.nvim <https://github.com/NvChad/volt.nvim>
-- **Lualine Integration**: Optional modular statusline components (level, achievements, streak, session time)
-- **Highly Configurable**: Customize notifications, keymaps, and add custom languages
-- **Auto-Save**: Your progress is automatically saved every 5 minutes
-
-------------------------------------------------------------------------------
-
 INSTALLATION                                           *triforce-installation*
 
 Triforce has the following requirements:
 
-- **Neovim** >= 0.9.0
-- `nvzone/volt` <https://github.com/nvzone/volt> (UI framework dependency)
-- A Nerd Font <https://www.nerdfonts.com/> (for icons)
+- Neovim <https://github.com/neovim/neovim> >=v0.9.0
+- `nvzone/volt` <https://github.com/nvzone/volt> - UI framework dependency
+- A patched font <https://www.nerdfonts.com/> - For icons
 
 
 LAZY.NVIM ~
@@ -307,13 +314,13 @@ icons:
     }
 <
 
-You can add custom levels in your config aswell!
+You can add custom levels in your config aswell:
 
 >lua
     require('triforce').setup({
       levels = {
         { level = 5, title = 'Newbie', icon = '🌱' },
-        { level = 25, title = 'Charmful Coder' } -- NOTE: You can omit your icon for an empty one if you wished
+        { level = 25, title = 'Charmful Coder' } -- You can omit your icon (will be left empty)
       },
     })
 <
@@ -321,16 +328,20 @@ You can add custom levels in your config aswell!
 
 LEVEL PROGRESSION ~
 
-By default, Triforce uses a **simple, easy-to-reach** leveling system:
+By default Triforce uses a **simple, easy-to-reach** leveling system. The
+default leveling system is:
 
 - **Levels 1-10**: 300 XP per level
 - **Levels 11-20**: 500 XP per level
 - **Levels 21+**: 1,000 XP per level
 
-**Example progression:** - **Level 5**: 1,500 XP (`5 × 300`) - **Level 10**:
-3,000 XP (`10 × 300`) - **Level 15**: 5,500 XP (`3,000 + 5 × 500`) - **Level
-20**: 8,000 XP (`3,000 + 10 × 500`) - **Level 30**: 18,000 XP (`8,000 + 10 ×
-1,000`)
+Example progression:
+
+- **Level 5**: 1,500 XP (`5 × 300`)
+- **Level 10**: 3,000 XP (`10 × 300`)
+- **Level 15**: 5,500 XP (`3,000 + 5 × 500`)
+- **Level 20**: 8,000 XP (`3,000 + 10 × 500`)
+- **Level 30**: 18,000 XP (`8,000 + 10 × 1,000`)
 
 You can customize this by overriding `level_progression` in your setup. For
 example, to make it even easier:
@@ -338,7 +349,7 @@ example, to make it even easier:
 >lua
     require('triforce').setup({
       level_progression = {
-        tier_1 = { min_level = 1, max_level = 15, xp_per_level = 200 },   -- Super easy early levels
+        tier_1 = { min_level = 1, max_level = 15, xp_per_level = 200 },
         tier_2 = { min_level = 16, max_level = 30, xp_per_level = 400 },
         tier_3 = { min_level = 31, max_level = math.huge, xp_per_level = 800 },
       },
@@ -383,34 +394,44 @@ Or if you prefer to focus on typing volume:
 
 USAGE                                                         *triforce-usage*
 
-  -----------------------------------------------------------------------------------------
-  Command                                                  Description
-  -------------------------------------------------------- --------------------------------
-  :Triforce config                                         Open floating window showing
-                                                           your setup config
+Triforce creates the `:Triforce` user command for your comfort. Here are the
+available arguments:
 
-  :Triforce debug languages                                Debug language tracking
+  ----------------------------------------------------------------------------------------------------------
+  Command                                                    Description
+  ---------------------------------------------------------- -----------------------------------------------
+  :Triforce config                                           Open floating window showing your setup config
 
-  :Triforce profile                                        Open the Triforce profile UI
+  :Triforce debug languages                                  Debug language tracking
 
-  :Triforce reset                                          Reset all stats (useful for
-                                                           testing)
+  :Triforce profile                                          Toggles the Profile UI.
 
-  :Triforce stats                                          Display current stats in a
-                                                           notification
+  :Triforce profile stats\|achievements\|languages\|levels   Toggles/cycles the Profile UI. If the UI is
+                                                             open and the passed tab is not the same as the
+                                                             current, it will cycle to it.
 
-  :Triforce stats export                                   Export stats to a new Neovim
-                                                           buffer
+  :Triforce reset                                            Reset all stats (useful for testing)
 
-  :Triforce stats export <json\|markdown> <path/to/file>   Export stats to JSON or Markdown
+  :Triforce stats                                            Display current stats in a notification
 
-  :Triforce stats save                                     Force save stats immediately
-  -----------------------------------------------------------------------------------------
+  :Triforce stats export                                     Export stats to a new Neovim buffer
+
+  :Triforce stats export <json\|markdown> </path/to/file>    Export stats to JSON or Markdown
+
+  :Triforce stats save                                       Force save stats immediately
+  ----------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 
 PROFILE UI                                               *triforce-profile-ui*
 
-The profile includes 4 tabs:
+Keybindings:
+
+- `<Tab>`: Cycle forward
+- `<S-Tab>`: Cycle backward
+- `H` / `L` or `←` / `→`: Navigate achievement/levels pages
+- `q` / `Esc`: Close profile
+
+The profile includes the following tabs:
 
 
 STATS TAB ~
@@ -419,32 +440,28 @@ STATS TAB ~
 - Session/time milestone progress
 - Activity heatmap (7 months)
 - Quick stats overview
+- Directly accessible through `:Triforce profile stats`
 
 
 ACHIEVEMENTS TAB ~
 
 - View all unlocked achievements and locked achievements with unlock requirements
 - Paginate through achievements (`H` / `L` or arrow keys)
+- Directly accessible through `:Triforce profile achievements`
 
 
 LANGUAGES TAB ~
 
 - Bar graph showing your most-used languages
 - See character count breakdown by language
+- Directly accessible through `:Triforce profile languages`
 
 
 LEVELS TAB ~
 
 - View unlocked levels first, then locked ones
 - Paginate through achievements (`H` / `L` or arrow keys)
-
-
-KEYBINDINGS ~
-
-- `<Tab>`: Cycle forward
-- `<S-Tab>`: Cycle backward
-- `H` / `L` or `←` / `→`: Navigate achievement/levels pages
-- `q` / `Esc`: Close profile
+- Directly accessible through `:Triforce profile levels`
 
 ------------------------------------------------------------------------------
 
@@ -455,52 +472,64 @@ Triforce includes **18 built-in achievements** across 5 categories:
 
 TYPING MILESTONES ~
 
-1. **First Steps**: Type 100 characters
-2. **Getting Started**: Type 1,000 characters
-3. **Dedicated Coder**: Type 10,000 characters
-4. **Master Scribe**: Type 100,000 characters
+- **First Steps**: Type 100 characters
+- **Getting Started**: Type 1,000 characters
+- **Dedicated Coder**: Type 10,000 characters
+- **Master Scribe**: Type 100,000 characters
 
 
 LEVEL ACHIEVEMENTS ~
 
-1. **Rising Star**: Reach level 5
-2. **Expert Coder**: Reach level 10
-3. **Champion**: Reach level 25
-4. **Legend**: Reach level 50
+- **Rising Star**: Reach level 5
+- **Expert Coder**: Reach level 10
+- **Champion**: Reach level 25
+- **Legend**: Reach level 50
 
 
 SESSION ACHIEVEMENTS ~
 
-1. **Regular Visitor**: Complete 10 sessions
-2. **Creature of Habit**: Complete 50 sessions
-3. **Dedicated Hero**: Complete 100 sessions
+- **Regular Visitor**: Complete 10 sessions
+- **Creature of Habit**: Complete 50 sessions
+- **Dedicated Hero**: Complete 100 sessions
 
 
 TIME ACHIEVEMENTS ~
 
-1. **First Hour**: Code for 1 hour total
-2. **Committed**: Code for 10 hours total
-3. **Veteran**: Code for 100 hours total
+- **First Hour**: Code for 1 hour total
+- **Committed**: Code for 10 hours total
+- **Veteran**: Code for 100 hours total
 
 
 POLYGLOT ACHIEVEMENTS ~
 
-1. **Polyglot Beginner**: Code in 3 languages
-2. **Polyglot**: Code in 5 languages
-3. **Master Polyglot**: Code in 10 languages
-4. **Language Virtuoso**: Code in 15 languages
+- **Polyglot Beginner**: Code in 3 languages
+- **Polyglot**: Code in 5 languages
+- **Master Polyglot**: Code in 10 languages
+- **Language Virtuoso**: Code in 15 languages
 
 
 CUSTOM ACHIEVEMENTS ~
 
 Triforce now allows you to create new achievements with the `achievements`
-setup option.
+setup option. **By default it’s just an empty table.**
 
-**By default it’s just an empty table.**
-
-The `Achievement` type spec is as follows. **DON’T COPY-PASTE DIRECTLY**:
+The `Achievement` type spec is shown below:
 
 >lua
+    ---@class Stats
+    ---@field xp number
+    ---@field level integer
+    ---@field chars_typed integer
+    ---@field lines_typed integer
+    ---@field sessions integer
+    ---@field time_coding integer
+    ---@field achievements table<string, boolean>
+    ---@field chars_by_language table<string, integer>
+    ---@field daily_activity table<string, integer>
+    ---@field current_streak integer
+    ---@field longest_streak integer
+    
+    -- DO NOT COPY DIRECTLY
     {
       id = 'template_achievement', ---@type string
       name = '...', ---@type string
@@ -513,7 +542,7 @@ The `Achievement` type spec is as follows. **DON’T COPY-PASTE DIRECTLY**:
     }
 <
 
-**For example:**
+Example:
 
 >lua
     require('triforce').setup({
@@ -633,23 +662,15 @@ Triforce provides **modular statusline components** for lualine.nvim
 <https://github.com/nvim-lualine/lualine.nvim>, letting you display your coding
 stats right in your statusline.
 
+Currently, Triforce provides the following `lualine` components (**needs a
+patched font**):
 
-AVAILABLE COMPONENTS ~
-
-  -----------------------------------------------------------------------
-  Component        Default Display (uses        Description
-                   NerdFont)                    
-  ---------------- ---------------------------- -------------------------
-  level            Lv.27 ████░░                 Level + XP progress bar
-
-  achievements     🏆 12/18                     Unlocked/total
-                                                achievements
-
-  streak           🔥 5                         Current coding streak
-                                                (days)
-
-  session_time     ⏰ 2h 34m                    Current session duration
-  -----------------------------------------------------------------------
+  Component      Default Display   Description
+  -------------- ----------------- ------------------------------
+  level          Lv.27 ████░░      Level + XP progress bar
+  achievements   🏆 12/18          Unlocked/total achievements
+  streak         🔥 5              Current coding streak (days)
+  session_time   ⏰ 2h 34m         Current session duration
 
 BASIC SETUP ~
 
@@ -694,10 +715,22 @@ Use the `components()` helper to get all components at once:
 
 COMPONENT CONFIGURATION ~
 
-Each component can be customized independently:
+Each component can be customized independently.
 
 
 LEVEL COMPONENT
+
+Options:
+
+- `prefix` (string): Text prefix before level number (default: `'Lv.'`)
+- `show` (table): Toggles for showing different components:
+    - `level` (boolean): Show level number (default: `true`)
+    - `bar` (boolean): Show progress bar (default: `true`)
+    - `percent` (boolean): Show percentage (default: `false`)
+    - `xp` (boolean): Show XP numbers like `450/500` (default: `false`)
+- `bar` (table): Bar properties:
+    - `length` (number): Progress bar length (default: `6`)
+    - `chars` (table): `{ filled = '█', empty = '░' }` (default)
 
 >lua
     -- Default: prefix + level + bar
@@ -743,16 +776,13 @@ LEVEL COMPONENT
     -- Result: Level 27 ████░░
 <
 
-**Options:** - `prefix` (string): Text prefix before level number (default:
-`'Lv.'`) - `show` (table): Toggles for showing different components: - `level`
-(boolean): Show level number (default: `true`) - `bar` (boolean): Show progress
-bar (default: `true`) - `percent` (boolean): Show percentage (default: `false`)
-- `xp` (boolean): Show XP numbers like `450/500` (default: `false`) - `bar`
-(table): Bar properties: - `length` (number): Progress bar length (default:
-`6`) - `chars` (table): `{ filled = '█', empty = '░' }` (default)
-
 
 ACHIEVEMENTS COMPONENT
+
+Options:
+
+- `icon` (string): Icon to display (default: `''` - trophy)
+- `show_count` (boolean): Show unlocked/total count (default: `true`)
 
 >lua
     -- Default
@@ -770,11 +800,16 @@ ACHIEVEMENTS COMPONENT
     -- Result:  12/18
 <
 
-**Options:** - `icon` (string): Icon to display (default: `''` - trophy) -
-`show_count` (boolean): Show unlocked/total count (default: `true`)
-
 
 STREAK COMPONENT
+
+Options:
+
+- `icon` (string): Icon to display (default: `''` - flame)
+- `show_days` (boolean): Show day count (default: `true`)
+
+The streak component returns an empty string when streak is 0, so it won’t
+clutter your statusline.
 
 >lua
     -- Default
@@ -790,14 +825,14 @@ STREAK COMPONENT
     -- Result:  5
 <
 
-**Options:** - `icon` (string): Icon to display (default: `''` - flame) -
-`show_days` (boolean): Show day count (default: `true`)
-
-
-  [!NOTE] The streak component returns an empty string when streak is 0, so it
-  won’t clutter your statusline.
 
 SESSION TIME COMPONENT
+
+Options:
+
+- `icon` (string): Icon to display (default: `''` - clock)
+- `show_duration` (boolean): Show time duration (default: `true`)
+- `format` (string): `'short'` (2h 34m) or `'long'` (2:34:12) (default: `'short'`)
 
 >lua
     -- Default (short format)
@@ -822,10 +857,6 @@ SESSION TIME COMPONENT
     end
     -- Result:  2h 34m
 <
-
-**Options:** - `icon` (string): Icon to display (default: `''` - clock) -
-`show_duration` (boolean): Show time duration (default: `true`) - `format`
-(string): `'short'` (2h 34m) or `'long'` (2:34:12) (default: `'short'`)
 
 
 GLOBAL COMPONENT CONFIGURATION ~
@@ -917,21 +948,21 @@ CUSTOM STYLE
 
 DATA STORAGE                                           *triforce-data-storage*
 
-Stats are saved to `~/.local/share/nvim/triforce_stats.json`.
-
-The file is automatically backed up before each save to
+By default, stats are saved to `~/.local/share/nvim/triforce_stats.json`. The
+file is automatically backed up before each save to
 `~/.local/share/nvim/triforce_stats.json.bak`.
 
 
 EXPORTING ~
 
-You can export your stats with the `:Triforce stats export` command. Currently
-only these formats are supported:
+You can export your stats with the `:Triforce stats export` command.
+
+Currently only these formats are supported:
 
   ---------------------------------------------------------------------------------------------
   Format           Command                                       Description
   ---------------- --------------------------------------------- ------------------------------
-  None (export to  :Triforce stats export                        Raw export of your stats in
+  N/A (export to   :Triforce stats export                        Raw export of your stats in
   another window)                                                another Neovim buffer.
 
   JSON             :Triforce stats export json <PATH> [INDENT]   Export your stats to a given
@@ -992,15 +1023,17 @@ ROADMAP                                                     *triforce-roadmap*
 
 ACKNOWLEDGMENTS                                     *triforce-acknowledgments*
 
-- **nvzone/volt** <https://github.com/nvzone/volt>: Beautiful UI framework
-- **Typr** <https://github.com/nvzone/typr>: Beautiful Grid Design Component Inspiration
-- **Gamify** <https://github.com/GrzegorzSzczepanek/gamify.nvim>: Another cool gamify plugin, good inspiration for achievements
+- `nvzone/volt` <https://github.com/nvzone/volt>: Beautiful UI framework.
+- `nvzone/typr` <https://github.com/nvzone/typr>: Beautiful grid design component inspiration.
+- `GrzegorzSzczepanek/gamify.nvim` <https://github.com/GrzegorzSzczepanek/gamify.nvim>: Another cool gamification plugin.
+    Inspired the inclusion of achievements.
 
 ------------------------------------------------------------------------------
 
 LICENSE                                                     *triforce-license*
 
-MIT License - see LICENSE <./LICENSE> for details.
+MIT License - see LICENSE
+<https://github.com/gisketch/triforce.nvim/blob/main/LICENSE> for details.
 
 ------------------------------------------------------------------------------
 
@@ -1011,19 +1044,18 @@ STAR HISTORY                                           *triforce-star-history*
 Star this repo if you find it useful!
 
 
-<https://www.star-history.com/#gisketch/triforce.nvim&type=date&legend=top-left>
 
 ==============================================================================
 2. Links                                                      *triforce-links*
 
 1. *Mentioned in Awesome Neovim*: https://awesome.re/mentioned-badge.svg
-2. *Showcase*: https://github.com/user-attachments/assets/8e3258bf-b052-449f-9ddb-37c9729c12ac
-3. *Stats Tab*: https://github.com/user-attachments/assets/87557fc0-0ac2-455b-a79d-8df0e99490d5
-4. *Achievements Tab*: https://github.com/user-attachments/assets/d127c685-14b9-4201-8533-994c501535c9
-5. *Languages Tab*: https://github.com/user-attachments/assets/fc773690-6119-47cd-9400-ee277b7c4777
-6. *Levels Tab*: https://github.com/user-attachments/assets/404aedbd-e213-4919-a083-0f8fd4283b14
-7. *Lualine Integration*: https://github.com/user-attachments/assets/7b81a71b-2f66-414b-abed-4c42e09c463f
-8. *Star History Chart*: https://api.star-history.com/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left
+2. *Showcase*: ./assets/triforce.png
+3. *@DrKJeff16*: 
+4. *Stats Tab*: ./assets/triforce_stats.png
+5. *Achievements Tab*: ./assets/triforce_achievements.png
+6. *Languages Tab*: ./assets/triforce_languages.png
+7. *Levels Tab*: ./assets/triforce_levels.png
+8. *Lualine Integration*: ./assets/triforce_lualine.png
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
