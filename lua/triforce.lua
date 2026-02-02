@@ -67,14 +67,15 @@ function Triforce.setup(opts)
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = vim.api.nvim_create_augroup('TriforceProfile', { clear = true }),
     callback = function()
-      local Profile = require('triforce.ui.profile')
-      Profile.setup_highlights()
+      require('triforce.ui.profile').setup_highlights()
     end,
   })
 end
 
 ---Show profile UI
-function Triforce.show_profile()
+---@param tab? string
+function Triforce.show_profile(tab)
+  util.validate({ tab = { tab, { 'string', 'nil' }, true } })
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -84,7 +85,16 @@ function Triforce.show_profile()
     tracker.setup()
   end
 
-  require('triforce.ui.profile').toggle()
+  local profile = require('triforce.ui.profile')
+  local tab_n = (tab and profile.tabs_map[tab]) and profile.tabs_map[tab] or profile.current_tab
+
+  if profile.current_tab ~= tab_n then
+    if profile.dimensions.float and profile.dimensions.dim_float then
+      profile.cycle_tab(nil, tab_n)
+      return
+    end
+  end
+  profile.toggle(tab_n)
 end
 
 ---Reset all stats (useful for testing)

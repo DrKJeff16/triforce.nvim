@@ -22,6 +22,14 @@ local random_stats = require('triforce.random_stats')
 local levels_module = require('triforce.levels')
 local util = require('triforce.util')
 
+---@class Triforce.Ui.Profile.TabsMap
+---@field stats 1
+---@field achievements 2
+---@field languages 3
+---@field levels 4
+
+---@alias Triforce.Ui.Profile.TabsEnum 1|2|3|4
+
 ---@class Triforce.Ui.Profile
 local Profile = {}
 
@@ -31,13 +39,9 @@ Profile.levels_page = 1 ---@type integer
 Profile.achievements_per_page = 5 ---@type integer
 Profile.levels_per_page = 5 ---@type integer
 Profile.max_language_entries = 13 ---@type integer
-Profile.current_tab = 1 ---@type integer
-Profile.all_tabs = { ---@type string[]
-  '1   Stats',
-  '2  󰌌 Achievements',
-  '3   Languages',
-  '4  󱡁 Levels',
-}
+Profile.current_tab = 1 ---@type Triforce.Ui.Profile.TabsEnum
+Profile.all_tabs = { '1   Stats', '2  󰌌 Achievements', '3   Languages', '4  󱡁 Levels' } ---@type string[]
+Profile.tabs_map = { stats = 1, achievements = 2, languages = 3, levels = 4 } ---@type Triforce.Ui.Profile.TabsMap
 Profile.dimensions = { ---@type Triforce.UIDimensions
   width = math.floor(vim.o.columns * 0.66),
   height = math.floor(vim.o.lines * 0.85),
@@ -46,6 +50,9 @@ Profile.dimensions = { ---@type Triforce.UIDimensions
 
 ---Close up profile window
 function Profile.close()
+  if not (Profile.dimensions.float and Profile.dimensions.dim_float) then
+    return
+  end
   pcall(vim.api.nvim_win_close, Profile.dimensions.float.win, true)
   pcall(vim.api.nvim_win_close, Profile.dimensions.dim_float.win, true)
   pcall(vim.api.nvim_buf_delete, Profile.dimensions.float.buf, { force = true })
@@ -56,9 +63,13 @@ function Profile.close()
 end
 
 ---Toggle profile window
-function Profile.toggle()
+---@param tab? integer
+function Profile.toggle(tab)
+  util.validate({ tab = { tab, { 'number', 'nil' }, true } })
+  tab = tab or nil
+
   if not (Profile.dimensions.float or Profile.dimensions.dim_float) then
-    Profile.open()
+    Profile.open(tab)
     return
   end
 
@@ -769,18 +780,18 @@ function Profile.get_layout()
 end
 
 ---@param back? boolean
----@param num? integer
+---@param num? Triforce.Ui.Profile.TabsEnum
 function Profile.cycle_tab(back, num)
   util.validate({
     back = { back, { 'boolean', 'nil' }, true },
     num = { num, { 'number', 'nil' }, true },
   })
   back = back ~= nil and back or false
-  num = num or 0
+  num = (num and util.is_int(num)) and num or 0
 
   local old_tab = Profile.current_tab
   local positions = vim.tbl_keys(Profile.all_tabs) ---@type integer[]
-  local pos = 1
+  local pos = 1 ---@type Triforce.Ui.Profile.TabsEnum
   if not vim.list_contains(positions, num) then
     for i, _ in ipairs(Profile.all_tabs) do
       if i == Profile.current_tab then
@@ -842,10 +853,16 @@ function Profile.cycle_tab(back, num)
 end
 
 ---Open profile window
-function Profile.open()
+---@param tab? Triforce.Ui.Profile.TabsEnum
+function Profile.open(tab)
+  util.validate({ tab = { tab, { 'number', 'nil' }, true } })
+  tab = (tab and vim.tbl_contains(Profile.tabs_map, tab)) and tab or Profile.current_tab
+
   if Profile.dimensions.float and vim.api.nvim_buf_is_valid(Profile.dimensions.float.buf) then
     return
   end
+
+  Profile.current_tab = tab
 
   Profile.dimensions.float = {}
   Profile.dimensions.dim_float = {}

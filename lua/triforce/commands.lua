@@ -5,7 +5,7 @@ local Commands = {}
 function Commands.setup()
   vim.api.nvim_create_user_command('Triforce', function(opts)
     local subcommand = opts.fargs[1]
-    local subcommand2 = opts.fargs[2] or ''
+    local subcommand2 = opts.fargs[2] or '' ---@type string|nil
     local subcommand3 = opts.fargs[3] or ''
     local subcommand4 = opts.fargs[4] or ''
     local triforce = require('triforce')
@@ -16,7 +16,18 @@ function Commands.setup()
     end
 
     if subcommand == 'profile' then
-      triforce.show_profile()
+      local options = vim.tbl_keys(require('triforce.ui.profile').tabs_map) ---@type string[]
+      if subcommand2 == '' then
+        subcommand2 = nil
+      elseif not vim.list_contains(options, subcommand2) then
+        local msg = 'Usage:\n    :Triforce profile'
+        for _, option in ipairs(options) do
+          msg = ('%s\n    :Triforce profile %s'):format(msg, option)
+        end
+        vim.notify(msg, vim.log.levels.INFO)
+        return
+      end
+      triforce.show_profile(subcommand2)
       return
     end
     if subcommand == 'reset' then
@@ -129,6 +140,9 @@ Usage: :Triforce config
         end
         if args[2] == 'stats' then
           return { 'export', 'save' }
+        end
+        if args[2] == 'profile' then
+          return vim.tbl_keys(require('triforce.ui.profile').tabs_map)
         end
       end
       if #args >= 3 and args[2] == 'stats' and args[3] == 'export' then
