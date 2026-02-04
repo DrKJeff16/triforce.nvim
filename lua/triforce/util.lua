@@ -119,8 +119,8 @@ function Util.range(x, y, step)
 end
 
 ---@param year integer
----@return boolean leap
-function Util.is_leap_year(year)
+---@return boolean leap_year
+function Util.is_leap(year)
   return (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0)
 end
 
@@ -133,7 +133,7 @@ function Util.days_in_month(month, year)
     year = { year, { 'number' } },
   })
 
-  if not vim.list_contains(Util.range(12), month) then
+  if not (Util.is_int(month) and vim.list_contains(Util.range(12), month)) then
     error('Cannot calculate days in month!', ERROR)
   end
 
@@ -141,7 +141,7 @@ function Util.days_in_month(month, year)
   if month ~= 2 then
     return days_in_months[month]
   end
-  return Util.is_leap_year(year) and 29 or 28
+  return Util.is_leap(year) and 29 or 28
 end
 
 ---Get current date in YYYY-MM-DD format
@@ -167,19 +167,9 @@ function Util.prepare_for_save(stats)
 
   local copy = vim.deepcopy(stats)
 
-  -- Use `vim.empty_dict()` to ensure empty tables encode as `{}` not `[]`
-  if vim.tbl_isempty(copy.achievements) then
-    copy.achievements = vim.empty_dict()
-  end
-
-  if vim.tbl_isempty(copy.chars_by_language) then
-    copy.chars_by_language = vim.empty_dict()
-  end
-
-  if vim.tbl_isempty(copy.daily_activity) then
-    copy.daily_activity = vim.empty_dict()
-  end
-
+  copy.achievements = vim.tbl_isempty(copy.achievements) and vim.empty_dict() or copy.achievements
+  copy.chars_by_language = vim.tbl_isempty(copy.chars_by_language) and vim.empty_dict() or copy.chars_by_language
+  copy.daily_activity = vim.tbl_isempty(copy.daily_activity) and vim.empty_dict() or copy.daily_activity
   return copy
 end
 
@@ -194,37 +184,28 @@ function Util.is_int(x)
       return false
     end
 
-    local int = true
     for _, val in ipairs(x) do
       if not Util.is_int(val) then
-        int = false
-        break
+        return false
       end
     end
-
-    return int
+    return true
   end
 
   ---@cast x number
-  return (math.ceil(x) == x or math.floor(x) == x)
+  return math.ceil(x) == x and math.floor(x) == x
 end
 
----@param T table
+---@param T table<string|integer, any>
 ---@return boolean dict
 function Util.is_dict(T)
   Util.validate({ T = { T, { 'table' } } })
 
-  if vim.tbl_isempty(T) then
+  if vim.tbl_isempty(T) or vim.islist(T) then
     return false
   end
 
-  for k, _ in pairs(T) do
-    if Util.is_type('string', k) or not Util.is_int(k) then
-      return true
-    end
-  end
-
-  return false
+  return true
 end
 
 ---Calculate total XP needed to reach a specific level
@@ -235,20 +216,28 @@ function Util.get_total_xp_for_level(level, level_config)
   Util.validate({
     level = { level, { 'number' } },
     level_config = { level_config, { 'table' } },
+    tier_1 = { level_config.tier_1, { 'table' } },
+    tier_2 = { level_config.tier_2, { 'table' } },
+    tier_3 = { level_config.tier_3, { 'table' } },
   })
 
+  for name, tier in pairs(level_config) do
+    ---@cast tier LevelTier|LevelTier3
+    Util.validate({
+      [('%s_max_level'):format(name)] = { tier.max_level, { 'number' } },
+      [('%s_min_level'):format(name)] = { tier.min_level, { 'number' } },
+      [('%s_xp_per_level'):format(name)] = { tier.xp_per_level, { 'number' } },
+    })
+  end
   if level <= 1 then
     return 0
   end
 
   local total_xp = 0
-
-  -- Calculate XP for tier 1 (levels 1-10)
   if level > level_config.tier_1.min_level then
     total_xp = total_xp + (math.min(level - 1, level_config.tier_1.max_level) * level_config.tier_1.xp_per_level)
   end
 
-  -- Calculate XP for tier 2 (levels 11-20)
   if level > level_config.tier_2.min_level then
     local tier_2_levels = math.min(level - 1, level_config.tier_2.max_level) - level_config.tier_2.min_level + 1
     if tier_2_levels > 0 then
@@ -256,7 +245,6 @@ function Util.get_total_xp_for_level(level, level_config)
     end
   end
 
-  -- Calculate XP for tier 3 (levels 21+)
   if level > level_config.tier_3.min_level then
     total_xp = total_xp + ((level - level_config.tier_3.min_level) * level_config.tier_3.xp_per_level)
   end
@@ -278,12 +266,6 @@ end
 ---@return number day_i
 function Util.getday_i(day, month, year)
   return tonumber(os.date('%w', os.time({ year = tostring(year), month = month, day = day }))) + 1
-end
-
----@param day integer
----@return string formatted_str
-function Util.double_digits(day)
-  return (day >= 10 and '%s' or '0%s'):format(day)
 end
 
 ---@param curr integer
@@ -321,10 +303,18 @@ function Util.cycle_range(curr, first, last, back)
 end
 
 ---@param path string
+---@param writable? boolean
 ---@return boolean file
-function Util.is_file(path)
-  Util.validate({ path = { path, { 'string' } } })
+function Util.is_file(path, writable)
+  Util.validate({
+    path = { path, { 'string' } },
+    writable = { writable, { 'boolean', 'nil' }, true },
+  })
+  writable = writable ~= nil and writable or false
 
+  if writable then
+    return vim.fn.filereadable(path) == 1 and vim.fn.filewritable(path) == 1
+  end
   return vim.fn.filereadable(path) == 1
 end
 
