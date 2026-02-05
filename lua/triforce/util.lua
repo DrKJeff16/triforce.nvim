@@ -13,6 +13,12 @@ local ERROR = vim.log.levels.ERROR
 ---@class Triforce.Util
 local Util = {}
 
+---@param day integer
+---@return string formatted_str
+function Util.double_digits(day)
+  return ('%02d'):format(day)
+end
+
 ---Checks whether `data` is of type `t` or not.
 ---
 ---If `data` is `nil`, the function will always return `false`.

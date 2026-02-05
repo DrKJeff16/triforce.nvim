@@ -100,6 +100,22 @@ local util = require('triforce.util')
 ---Default highlight groups for the heats
 --- ---
 ---@field heat_highlights? Triforce.Config.Heat
+
+---@class TriforceConfigDefaults: TriforceConfig
+---@field enabled boolean
+---@field gamification_enabled boolean
+---@field db_path string
+---@field debug boolean
+---@field achievements Achievement[]
+---@field notifications TriforceConfig.Notifications
+---@field auto_save_interval integer
+---@field keymap TriforceConfig.Keymap
+---@field custom_languages table<string, TriforceLanguage>
+---@field levels LevelParams[]
+---@field level_progression LevelProgression
+---@field ignore_ft string[]
+---@field xp_rewards XPRewards
+---@field heat_highlights Triforce.Config.Heat
 local defaults = {
   enabled = true,
   gamification_enabled = true,
@@ -149,7 +165,7 @@ function Config.has_gamification(silent)
   return false
 end
 
----@return TriforceConfig defaults
+---@return TriforceConfigDefaults defaults
 function Config.defaults()
   return defaults
 end
