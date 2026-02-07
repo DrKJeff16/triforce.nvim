@@ -38,23 +38,23 @@ end
 ---Dynamic `vim.validate()` wrapper. Covers both legacy and newer implementations
 ---@param T table<string, vim.validate.Spec|ValidateSpec>
 function Util.validate(T)
-  local max = vim.fn.has('nvim-0.11') == 1 and 3 or 4
+  local max = Util.vim_has('nvim-0.11') and 3 or 4
   for name, spec in pairs(T) do
     while #spec > max do
       table.remove(spec, #spec)
     end
-
     T[name] = spec
   end
 
-  for name, spec in pairs(T) do
-    if vim.fn.has('nvim-0.11') == 1 then
+  if Util.vim_has('nvim-0.11') then
+    for name, spec in pairs(T) do
       table.insert(spec, 1, name)
       vim.validate(unpack(spec))
-    else
-      vim.validate(spec)
     end
+    return
   end
+
+  vim.validate(T)
 end
 
 ---Emulates the behaviour of Python's builtin `range()` function.
