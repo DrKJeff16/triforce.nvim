@@ -17,7 +17,7 @@
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
 local uv = vim.uv or vim.loop
-local util = require('triforce.util')
+local Util = require('triforce.util')
 
 ---@class Triforce.Stats
 ---Configurable level progression
@@ -58,32 +58,43 @@ function Stats.get_stats_path()
   return Stats.db_path or Stats.default_stats().db_path
 end
 
+---@param stats Stats
+---@return boolean valid
+function Stats.validate_stats(stats)
+  Util.validate({ stats = { stats, { 'table' } } })
+  if vim.tbl_isempty(stats) or vim.islist(stats) then
+    return false
+  end
+
+  local keys = vim.tbl_keys(stats) ---@type string[]
+  for _, key in ipairs(vim.tbl_keys(Stats.default_stats())) do
+    if not vim.list_contains(keys, key) then
+      return false
+    end
+  end
+  return true
+end
+
 ---Load stats from disk
 ---@param debug? boolean
 ---@return Stats merged
 function Stats.load(debug)
-  util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
+  Util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
   debug = debug ~= nil and debug or false
 
   local path = Stats.get_stats_path()
-
-  -- Check if file exists
   if vim.fn.filereadable(path) == 0 then
     return Stats.default_stats()
   end
 
-  ---Read file using vim.fn for cross-platform compatibility
   local lines = vim.fn.readfile(path) ---@type string[]
   if not lines or vim.tbl_isempty(lines) then
     return Stats.default_stats()
   end
 
   local content = table.concat(lines, '\n')
-
-  ---Parse JSON
-  ---@type boolean, Stats
-  local ok, stats = pcall(vim.json.decode, content)
-  if not (ok and util.is_type('table', stats)) then
+  local ok, stats = pcall(vim.json.decode, content) ---@type boolean, Stats
+  if not (ok and Util.is_type('table', stats)) then
     -- Backup corrupted file
     local backup = ('%s.backup.%s'):format(path, os.time())
     vim.fn.writefile(lines, backup)
@@ -103,7 +114,7 @@ function Stats.load(debug)
   -- Migrate daily_activity from boolean to number (old format compatibility)
   if stats.daily_activity then
     for date, value in pairs(stats.daily_activity) do
-      if util.is_type('boolean', value) then
+      if Util.is_type('boolean', value) then
         -- Old format: true → 0 (can't recover historical line counts)
         stats.daily_activity[date] = value and 0 or 0
       end
@@ -143,28 +154,28 @@ end
 ---@param path? string
 ---@return boolean success
 function Stats.save(stats, path)
-  util.validate({
+  Util.validate({
     stats = { stats, { 'table', 'nil' }, true },
     path = { path, { 'string', 'nil' }, true },
   })
-  if not stats or vim.tbl_isempty(stats) then
+  if not (stats and Stats.validate_stats(stats)) then
+    vim.notify('Unable to save stats!', ERROR)
     return false
   end
-  path = (path and util.is_file(path)) and path or Stats.get_stats_path()
+  path = (path and Util.is_file(path)) and path or Stats.get_stats_path()
 
-  local data_to_save = util.prepare_for_save(stats)
+  local data_to_save = Util.prepare_for_save(stats)
   local ok, json = pcall(vim.json.encode, data_to_save)
   if not ok then
     vim.notify('Failed to encode stats to JSON', ERROR)
     return false
   end
 
-  local backup_path = path .. '.bak'
-  local file_stat = uv.fs_stat(path)
   local fd
-  if file_stat then -- Create backup of existing file
-    local bak_fd = uv.fs_open(backup_path, 'w', tonumber('644', 8))
+  local file_stat = uv.fs_stat(path)
+  if file_stat then
     fd = uv.fs_open(path, 'r', tonumber('644', 8))
+    local bak_fd = uv.fs_open(path .. '.bak', 'w', tonumber('644', 8))
     if fd and bak_fd then
       uv.fs_write(bak_fd, uv.fs_read(fd, file_stat.size))
       uv.fs_close(bak_fd)
@@ -174,19 +185,16 @@ function Stats.save(stats, path)
 
   fd = uv.fs_open(path, 'w', tonumber('644', 8))
   if not fd then
-    vim.notify('Failed to write stats file to: ' .. path, ERROR)
+    vim.notify(('Failed to write stats file to: %s'):format(vim.fn.fnamemodify(path, ':~')), ERROR)
     return false
   end
 
-  -- Write to file using vim.fn.writefile (more reliable on Windows)
   local write_ok = uv.fs_write(fd, json)
   uv.fs_close(fd)
-
   if not write_ok then
     vim.notify('Failed to write stats file to: ' .. path, ERROR)
     return false
   end
-
   return true
 end
 
@@ -198,7 +206,7 @@ end
 ---@param xp number
 ---@return integer level
 function Stats.calculate_level(xp)
-  util.validate({ xp = { xp, { 'number' } } })
+  Util.validate({ xp = { xp, { 'number' } } })
   if xp <= 0 then
     return 1
   end
@@ -231,7 +239,7 @@ end
 ---@param current_level integer
 ---@return integer xp_needed
 function Stats.xp_for_next_level(current_level)
-  return util.get_total_xp_for_level(current_level + 1, Stats.level_config)
+  return Util.get_total_xp_for_level(current_level + 1, Stats.level_config)
 end
 
 ---Add XP and update level
@@ -239,7 +247,7 @@ end
 ---@param amount number
 ---@return boolean leveled_up
 function Stats.add_xp(stats, amount)
-  util.validate({
+  Util.validate({
     stats = { stats, { 'table' } },
     amount = { amount, { 'number' } },
   })
@@ -261,7 +269,7 @@ end
 ---Start a new session
 ---@param stats Stats
 function Stats.start_session(stats)
-  util.validate({ stats = { stats, { 'table' } } })
+  Util.validate({ stats = { stats, { 'table' } } })
 
   stats.sessions = stats.sessions + 1
   stats.last_session_start = os.time()
@@ -270,7 +278,7 @@ end
 ---End the current session
 ---@param stats Stats
 function Stats.end_session(stats)
-  util.validate({ stats = { stats, { 'table' } } })
+  Util.validate({ stats = { stats, { 'table' } } })
 
   if stats.last_session_start <= 0 then
     return
@@ -283,7 +291,7 @@ end
 ---Get timestamp for start of day
 ---@param date_str string Date in YYYY-MM-DD format
 local function get_day_start(date_str)
-  util.validate({ date_str = { date_str, { 'string' } } })
+  Util.validate({ date_str = { date_str, { 'string' } } })
 
   local year, month, day = date_str:match('(%d+)-(%d+)-(%d+)')
   return os.time({ year = year, month = month, day = day, hour = 0, min = 0, sec = 0 })
@@ -294,7 +302,7 @@ end
 ---@return integer current_streak
 ---@return integer longest_streak
 function Stats.calculate_streaks(stats)
-  util.validate({ stats = { stats, { 'table' } } })
+  Util.validate({ stats = { stats, { 'table' } } })
 
   if not stats.daily_activity then
     stats.daily_activity = {}
@@ -317,8 +325,8 @@ function Stats.calculate_streaks(stats)
   local current_streak = 0
   local longest_streak = 0
   local streak = 0
-  local today = util.get_date_string()
-  local yesterday = util.get_date_string(os.time() - 86400)
+  local today = Util.get_date_string()
+  local yesterday = Util.get_date_string(os.time() - 86400)
 
   -- Calculate streaks by iterating through sorted dates
   for i = #dates, 1, -1 do
@@ -368,7 +376,7 @@ end
 ---@param stats Stats
 ---@param lines_today integer Number of lines typed today
 function Stats.record_daily_activity(stats, lines_today)
-  util.validate({
+  Util.validate({
     stats = { stats, { 'table' } },
     lines_today = { lines_today, { 'number' } },
   })
@@ -377,7 +385,7 @@ function Stats.record_daily_activity(stats, lines_today)
     stats.daily_activity = {}
   end
 
-  local today = util.get_date_string()
+  local today = Util.get_date_string()
   stats.daily_activity[today] = (stats.daily_activity[today] or 0) + lines_today
 
   -- Update streaks
@@ -389,7 +397,7 @@ end
 ---Export data to a new empty buffer
 ---@param stats Stats
 function Stats.export_stats(stats)
-  util.validate({ stats = { stats, { 'table' } } })
+  Util.validate({ stats = { stats, { 'table' } } })
 
   local data = vim.split(vim.inspect(stats), '\n', { plain = true, trimempty = true })
   local bufnr = vim.api.nvim_create_buf(true, true)
@@ -424,19 +432,18 @@ end
 ---@param target string
 ---@param indent? string
 function Stats.export_to_json(stats, target, indent)
-  util.validate({
+  Util.validate({
     stats = { stats, { 'table' } },
     target = { target, { 'string' } },
     indent = { indent, { 'string', 'nil' }, true },
   })
-
   target = vim.fn.fnamemodify(target, ':p')
+  indent = (indent and indent ~= '') and indent or nil
 
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
   if not parent_stat or parent_stat.type ~= 'directory' then
     error(('Target not in a valid directory: `%s`'):format(target), ERROR)
   end
-
   if vim.fn.isdirectory(target) == 1 then
     error(('Target is a directory: `%s`'):format(target), ERROR)
   end
@@ -460,11 +467,10 @@ end
 ---@param stats Stats
 ---@param target string
 function Stats.export_to_md(stats, target)
-  util.validate({
+  Util.validate({
     stats = { stats, { 'table' } },
     target = { target, { 'string' } },
   })
-
   target = vim.fn.fnamemodify(target, ':p')
 
   local parent_stat = uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
@@ -484,7 +490,7 @@ function Stats.export_to_md(stats, target)
   local data = '# Triforce Stats\n'
   for k, v in pairs(stats) do
     data = ('%s\n## %s\n\n**Value**:'):format(data, k:sub(1, 1):upper() .. k:sub(2))
-    if util.is_type('table', v) then
+    if Util.is_type('table', v) then
       data = ('%s\n'):format(data)
       for key, val in pairs(v) do
         data = ('%s- **%s**: `%s`\n'):format(data, key, vim.inspect(val))
