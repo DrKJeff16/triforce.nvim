@@ -130,29 +130,71 @@ Usage: :Triforce config
     nargs = '*',
     desc = 'Triforce gamification commands',
     complete = function(_, line)
-      local args = vim.split(line, '%s+', { trimempty = true })
-      if #args == 1 then
-        return { 'profile', 'stats', 'reset', 'debug', 'config' }
+      local args = vim.split(line, '%s+', { trimempty = false })
+      if args[1]:sub(-1) == '!' and #args == 1 then
+        return {}
       end
+
       if #args == 2 then
+        if args[2] == '' then
+          return { 'profile', 'stats', 'reset', 'debug', 'config' }
+        end
+        local res = {} ---@type string[]
+        for _, comp in ipairs({ 'profile', 'stats', 'reset', 'debug', 'config' }) do
+          if vim.startswith(comp, args[2]) then
+            table.insert(res, comp)
+          end
+        end
+      end
+      if #args == 3 then
         if args[2] == 'debug' then
-          return { 'xp', 'achievement', 'languages', 'fix' }
+          if args[3] == '' then
+            return { 'xp', 'achievement', 'languages', 'fix' }
+          end
+          local res = {} ---@type string[]
+          for _, comp in ipairs({ 'xp', 'achievement', 'languages', 'fix' }) do
+            if vim.startswith(comp, args[3]) then
+              table.insert(res, comp)
+            end
+          end
         end
         if args[2] == 'stats' then
-          return { 'export', 'save' }
+          if args[3] == '' then
+            return { 'export', 'save' }
+          end
+          local res = {} ---@type string[]
+          for _, comp in ipairs({ 'export', 'save' }) do
+            if vim.startswith(comp, args[3]) then
+              table.insert(res, comp)
+            end
+          end
         end
         if args[2] == 'profile' then
-          return vim.tbl_keys(require('triforce.ui.profile').tabs_map)
+          if args[3] == '' then
+            return vim.tbl_keys(require('triforce.ui.profile').tabs_map)
+          end
+          local res = {} ---@type string[]
+          for _, comp in ipairs(require('triforce.ui.profile').tabs_map) do
+            if vim.startswith(comp, args[3]) then
+              table.insert(res, comp)
+            end
+          end
         end
       end
-      if #args >= 3 and args[2] == 'stats' and args[3] == 'export' then
-        if #args == 3 then
-          return { 'json', 'markdown' }
-        end
-        if vim.list_contains({ 'json', 'markdown' }, args[4]) then
-          if #args == 4 then
-            return vim.fn.getcompletion('', 'file')
+      if #args >= 4 and args[2] == 'stats' and args[3] == 'export' then
+        if #args == 4 then
+          if args[4] == '' then
+            return { 'json', 'markdown' }
           end
+          local res = {} ---@type string[]
+          for _, comp in ipairs({ 'json', 'markdown' }) do
+            if vim.startswith(comp, args[4]) then
+              table.insert(res, comp)
+            end
+          end
+        end
+        if #args == 5 and vim.list_contains({ 'json', 'markdown' }, args[4]) then
+          return vim.fn.getcompletion(args[5], 'file', true)
         end
       end
       return {}
