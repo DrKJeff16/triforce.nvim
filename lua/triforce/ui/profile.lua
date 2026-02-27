@@ -901,7 +901,7 @@ function Profile.open(tab)
     relative = 'editor',
     style = 'minimal',
     border = 'none',
-    zindex = 100,
+    zindex = 50,
   })
 
   Profile.setup_highlights()
