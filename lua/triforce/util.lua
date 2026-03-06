@@ -255,7 +255,7 @@ function Util.get_total_xp_for_level(level, level_config)
       total_xp = total_xp + (tier_2_levels * level_config.tier_2.xp_per_level)
     end
   end
-  
+
   if level > level_config.tier_3.min_level then
     local tier_3_levels = math.min(level - 1, level_config.tier_3.max_level) - level_config.tier_3.min_level + 1
     if tier_3_levels > 0 then
@@ -269,14 +269,14 @@ function Util.get_total_xp_for_level(level, level_config)
       total_xp = total_xp + (tier_4_levels * level_config.tier_4.xp_per_level)
     end
   end
-  
+
   if level > level_config.tier_5.min_level then
     local tier_5_levels = math.min(level - 1, level_config.tier_5.max_level) - level_config.tier_5.min_level + 1
     if tier_5_levels > 0 then
       total_xp = total_xp + (tier_5_levels * level_config.tier_5.xp_per_level)
     end
   end
-  
+
   if level > level_config.tier_6.min_level then
     local tier_6_levels = math.min(level - 1, level_config.tier_6.max_level) - level_config.tier_6.min_level + 1
     if tier_6_levels > 0 then

@@ -203,6 +203,65 @@ function Stats.save(stats, path)
   return true
 end
 
+function Stats.calibrate_tiers()
+  local last_level = Stats.level_config.tier_1.max_level ---@type integer
+
+  if Stats.level_config.tier_2.min_level >= last_level then
+    Stats.level_config.tier_2.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_2.max_level == math.huge then
+    Stats.level_config.tier_2.max_level = Stats.level_config.tier_3.min_level - 1
+  end
+  last_level = Stats.level_config.tier_2.max_level
+
+  if Stats.level_config.tier_3.min_level >= last_level then
+    Stats.level_config.tier_3.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_3.max_level == math.huge then
+    Stats.level_config.tier_3.max_level = Stats.level_config.tier_4.min_level - 1
+  end
+  last_level = Stats.level_config.tier_3.max_level
+
+  if Stats.level_config.tier_4.min_level >= last_level then
+    Stats.level_config.tier_4.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_4.max_level == math.huge then
+    Stats.level_config.tier_4.max_level = Stats.level_config.tier_5.min_level - 1
+  end
+  last_level = Stats.level_config.tier_4.max_level
+
+  if Stats.level_config.tier_5.min_level >= last_level then
+    Stats.level_config.tier_5.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_5.max_level == math.huge then
+    Stats.level_config.tier_5.max_level = Stats.level_config.tier_6.min_level - 1
+  end
+  last_level = Stats.level_config.tier_5.max_level
+
+  if Stats.level_config.tier_6.min_level >= last_level then
+    Stats.level_config.tier_6.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_6.max_level == math.huge then
+    Stats.level_config.tier_6.max_level = Stats.level_config.tier_7.min_level - 1
+  end
+  last_level = Stats.level_config.tier_6.max_level
+
+  if Stats.level_config.tier_7.min_level >= last_level then
+    Stats.level_config.tier_7.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_7.max_level == math.huge then
+    Stats.level_config.tier_7.max_level = Stats.level_config.tier_8.min_level - 1
+  end
+  last_level = Stats.level_config.tier_7.max_level
+
+  if Stats.level_config.tier_8.min_level >= last_level then
+    Stats.level_config.tier_8.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_8.max_level ~= math.huge then
+    Stats.level_config.tier_8.max_level = math.huge
+  end
+end
+
 ---Calculate level from XP
 ---Simple tier-based progression:
 ---  Levels 1-10: 300 XP each
@@ -215,6 +274,8 @@ function Stats.calculate_level(xp)
   if xp <= 0 then
     return 1
   end
+
+  Stats.calibrate_tiers()
 
   local level = 1
   local accumulated_xp = 0
@@ -244,7 +305,7 @@ function Stats.calculate_level(xp)
   end
   accumulated_xp = accumulated_xp + tier_3_total
   level = Stats.level_config.tier_3.max_level
-  
+
   -- Tier 4: Levels 31-40 (2000 XP each)
   local tier_4_range = Stats.level_config.tier_4.max_level - Stats.level_config.tier_4.min_level + 1
   local tier_4_total = tier_4_range * Stats.level_config.tier_4.xp_per_level
@@ -462,11 +523,11 @@ function Stats.export_stats(stats)
   vim.api.nvim_set_option_value('modified', false, buf_opts)
   vim.api.nvim_set_option_value('modifiable', false, buf_opts)
 
-  vim.api.nvi_set_option_value('number', false, win_opts)
-  vim.api.nvi_set_option_value('signcolumn', 'no', win_opts)
-  vim.api.nvi_set_option_value('colorcolumn', '', win_opts)
-  vim.api.nvi_set_option_value('wrap', true, win_opts)
-  vim.api.nvi_set_option_value('list', false, win_opts)
+  vim.api.nvim_set_option_value('number', false, win_opts)
+  vim.api.nvim_set_option_value('signcolumn', 'no', win_opts)
+  vim.api.nvim_set_option_value('colorcolumn', '', win_opts)
+  vim.api.nvim_set_option_value('wrap', true, win_opts)
+  vim.api.nvim_set_option_value('list', false, win_opts)
 
   vim.keymap.set('n', 'q', function()
     pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
