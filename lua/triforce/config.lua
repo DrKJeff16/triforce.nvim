@@ -216,6 +216,7 @@ function Config.setup(opts)
   -- Apply custom level progression to stats module
   if Config.config.level_progression then
     stats_module.level_config = Config.config.level_progression
+    stats_module.calibrate_tiers()
   end
 
   -- Register custom languages if provided

@@ -23,6 +23,7 @@ local Util = require('triforce.util')
 ---Configurable level progression
 ---@field level_config LevelProgression
 ---@field db_path? string
+---@field calibrated? true
 local Stats = {}
 
 Stats.level_config = {
@@ -204,6 +205,9 @@ function Stats.save(stats, path)
 end
 
 function Stats.calibrate_tiers()
+  if Stats.calibrated then
+    return
+  end
   local last_level = Stats.level_config.tier_1.max_level ---@type integer
 
   if Stats.level_config.tier_2.min_level >= last_level then
@@ -260,6 +264,8 @@ function Stats.calibrate_tiers()
   if Stats.level_config.tier_8.max_level ~= math.huge then
     Stats.level_config.tier_8.max_level = math.huge
   end
+
+  Stats.calibrated = true
 end
 
 ---Calculate level from XP
@@ -274,8 +280,6 @@ function Stats.calculate_level(xp)
   if xp <= 0 then
     return 1
   end
-
-  Stats.calibrate_tiers()
 
   local level = 1
   local accumulated_xp = 0
