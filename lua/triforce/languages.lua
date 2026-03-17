@@ -17,6 +17,7 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
   typescriptreact = { icon = '', name = 'TypeScript' }, -- nf-dev-react
   javascriptreact = { name = 'JavaScript', icon = '' }, -- nf-dev-react
   html = { name = 'HTML', icon = '' }, -- nf-dev-html5
+  xhtml = { name = 'XHTML', icon = '' }, -- nf-dev-html5
   css = { name = 'CSS', icon = '' }, -- nf-dev-css3
   scss = { name = 'SCSS', icon = '' }, -- nf-dev-sass
   sass = { name = 'Sass', icon = '' }, -- nf-dev-sass
