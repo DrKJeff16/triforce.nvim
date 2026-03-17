@@ -2,7 +2,7 @@
 ---@field name string
 ---@field icon string
 
-local util = require('triforce.util')
+local Util = require('triforce.util')
 
 ---Language configuration and icons
 ---@class Triforce.Languages
@@ -103,7 +103,7 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
 ---@param ft string
 ---@return string|nil icon
 function Languages.get_icon(ft)
-  util.validate({ ft = { ft, { 'string' } } })
+  Util.validate({ ft = { ft, { 'string' } } })
 
   if vim.list_contains(Languages.ignored_langs, ft) then
     return
@@ -124,7 +124,7 @@ end
 
 ---@param langs string[]
 function Languages.exclude_langs(langs)
-  util.validate({ langs = { langs, { 'table' } } })
+  Util.validate({ langs = { langs, { 'table' } } })
 
   Languages.ignored_langs = vim.tbl_deep_extend('keep', langs, Languages.ignored_langs)
 end
@@ -133,7 +133,7 @@ end
 ---@param ft string
 ---@return boolean tracked
 function Languages.should_track(ft)
-  util.validate({ ft = { ft, { 'string' } } })
+  Util.validate({ ft = { ft, { 'string' } } })
 
   if ft == '' then
     return false
@@ -147,7 +147,7 @@ end
 ---@param ft string
 ---@return string|nil name
 function Languages.get_display_name(ft)
-  util.validate({ ft = { ft, { 'string' } } })
+  Util.validate({ ft = { ft, { 'string' } } })
 
   if Languages.is_excluded(ft) then
     return
@@ -164,7 +164,7 @@ end
 ---@param ft string
 ---@return string|nil full_display
 function Languages.get_full_display(ft)
-  util.validate({ ft = { ft, { 'string' } } })
+  Util.validate({ ft = { ft, { 'string' } } })
 
   if Languages.is_excluded(ft) then
     return
@@ -179,8 +179,7 @@ end
 ---Register custom languages
 ---@param custom_langs table<string, TriforceLanguage>
 function Languages.register_custom_languages(custom_langs)
-  util.validate({ custom_langs = { custom_langs, { 'table' } } })
-
+  Util.validate({ custom_langs = { custom_langs, { 'table' } } })
   if not custom_langs or vim.tbl_isempty(custom_langs) then
     return
   end
@@ -188,13 +187,7 @@ function Languages.register_custom_languages(custom_langs)
   for ft, config in pairs(custom_langs) do
     if not Languages.is_excluded(ft) then
       if not Languages.langs[ft] then
-        Languages.langs[ft] = { icon = '', name = '' }
-      end
-      if config.icon then
-        Languages.langs[ft].icon = config.icon
-      end
-      if config.name then
-        Languages.langs[ft].name = config.name
+        Languages.langs[ft] = { icon = config.icon or '', name = config.name or '' }
       end
     end
   end

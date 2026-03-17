@@ -16,7 +16,7 @@ function Health.check()
   vim.health.start('triforce.nvim')
   local ok, triforce = pcall(require, 'triforce')
   if not ok then
-    vim.health.error('Failed to load triforce module: ' .. vim.inspect(triforce))
+    vim.health.error(('Failed to load triforce module: %s'):format(vim.inspect(triforce)))
     return
   end
   vim.health.ok('triforce module loaded successfully')

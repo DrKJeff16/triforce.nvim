@@ -1,131 +1,8 @@
----@class LevelTier
----Starting level for this tier
----@field min_level integer
----Ending level for this tier (use math.huge for infinite)
----@field max_level integer
----XP required per level in this tier
----@field xp_per_level integer
+---@module 'triforce.types'
 
----@class LevelTier8: LevelTier
----@field max_level number
+local Util = require('triforce.util')
 
----@class LevelProgression
----Default: Levels 1-10, 300 XP each
----@field tier_1 LevelTier
----Default: Levels 11-20, 500 XP each
----@field tier_2 LevelTier
----Default: Levels 21-30, 1000 XP each
----@field tier_3 LevelTier
----Default: Levels 31-40, 2000 XP each
----@field tier_4 LevelTier
----Default: Levels 41-50, 3000 XP each
----@field tier_5 LevelTier
----Default: Levels 51-75, 5000 XP each
----@field tier_6 LevelTier
----Default: Levels 76-100, 7500 XP each
----@field tier_7 LevelTier
----Default: Levels 101+, 10000 XP each
----@field tier_8 LevelTier8
-
----@class XPRewards
----XP gained per character typed (default: `1`)
----@field char? number
----XP gained per new line (default: `1`)
----@field line? number
----XP gained per file save (default: `50`)
----@field save? number
-
----@class TriforceConfig.Keymap
----Keymap for showing profile. A `nil` value sets no keymap
----
----Set to a keymap like `"<leader>tp"` to enable
----@field show_profile? string
-
----Notification configuration
----@class TriforceConfig.Notifications
----Show level up and achievement notifications
----@field enabled? boolean
----Show level up notifications
----@field level_up? boolean
----Show achievement unlock notifications
----@field achievements? boolean
-
----Default highlight groups for the heats
----@class Triforce.Config.Heat
----@field TriforceHeat0? string
----@field TriforceHeat1? string
----@field TriforceHeat2? string
----@field TriforceHeat3? string
----@field TriforceHeat4? string
-
-local util = require('triforce.util')
-
----Triforce setup configuration
---- ---
----@class TriforceConfig
----Enable the plugin
---- ---
----@field enabled? boolean
----Enable gamification features (stats, XP, achievements)
---- ---
----@field gamification_enabled? boolean
----Custom path for data file
---- ---
----@field db_path? string
----Enable debugging messages
---- ---
----@field debug? boolean
----List of user-defined achievements
---- ---
----@field achievements? Achievement[]
----Notification configuration
---- ---
----@field notifications? TriforceConfig.Notifications
----Auto-save stats interval in seconds (default: `300`)
---- ---
----@field auto_save_interval? integer
----Keymap configuration
---- ---
----@field keymap? TriforceConfig.Keymap
----Custom language definitions:
----
----```lua
------ Example
----{ rust = { icon = "", name = "Rust" } }
----```
---- ---
----@field custom_languages? table<string, TriforceLanguage>
----List of custom level titles
---- ---
----@field levels? LevelParams[]
----Custom level progression tiers
---- ---
----@field level_progression? LevelProgression
----List of ignored filetypes
---- ---
----@field ignore_ft? string[]
----Custom XP reward amounts for different actions
---- ---
----@field xp_rewards? XPRewards
----Default highlight groups for the heats
---- ---
----@field heat_highlights? Triforce.Config.Heat
-
----@class TriforceConfigDefaults: TriforceConfig
----@field enabled boolean
----@field gamification_enabled boolean
----@field db_path string
----@field debug boolean
----@field achievements Achievement[]
----@field notifications TriforceConfig.Notifications
----@field auto_save_interval integer
----@field keymap TriforceConfig.Keymap
----@field custom_languages table<string, TriforceLanguage>
----@field levels LevelParams[]
----@field level_progression LevelProgression
----@field ignore_ft string[]
----@field xp_rewards XPRewards
----@field heat_highlights Triforce.Config.Heat
+---@type TriforceConfigDefaults
 local defaults = {
   enabled = true,
   gamification_enabled = true,
@@ -144,7 +21,9 @@ local defaults = {
     tier_5 = { min_level = 41, max_level = 50, xp_per_level = 3000 },
     tier_6 = { min_level = 51, max_level = 75, xp_per_level = 5000 },
     tier_7 = { min_level = 76, max_level = 100, xp_per_level = 7500 },
-    tier_8 = { min_level = 101, max_level = math.huge, xp_per_level = 10000 },
+    tier_8 = { min_level = 101, max_level = 150, xp_per_level = 10000 },
+    tier_9 = { min_level = 151, max_level = 225, xp_per_level = 15000 },
+    tier_10 = { min_level = 226, max_level = 300, xp_per_level = 20000 },
   },
   ignore_ft = {},
   xp_rewards = { char = 1, line = 1, save = 50 },
@@ -162,12 +41,13 @@ local defaults = {
 ---@field float? { bufnr: integer, win: integer }|nil
 local Config = {}
 
-Config.config = {} ---@type TriforceConfig
+---@type TriforceConfig
+Config.config = {}
 
 ---@param silent? boolean
 ---@return boolean gamified
 function Config.has_gamification(silent)
-  util.validate({ silent = { silent, { 'boolean', 'nil' }, true } })
+  Util.validate({ silent = { silent, { 'boolean', 'nil' }, true } })
   silent = silent ~= nil and silent or false
 
   if Config.config.gamification_enabled ~= nil and Config.config.gamification_enabled then
@@ -187,7 +67,7 @@ end
 
 ---@param opts? TriforceConfig
 function Config.new_config(opts)
-  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+  Util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   Config.config = setmetatable(vim.tbl_deep_extend('keep', opts or {}, Config.defaults()), { __index = defaults })
 
@@ -200,9 +80,10 @@ function Config.new_config(opts)
 end
 
 ---Setup the plugin with user configuration
----@param opts? TriforceConfig User configuration options
+--- ---
+---@param opts? TriforceConfig User configuration options.
 function Config.setup(opts)
-  util.validate({ opts = { opts, { 'table', 'nil' }, true } })
+  Util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   Config.new_config(opts or {})
 
@@ -273,16 +154,16 @@ function Config.open_window()
     zindex = 50,
   })
 
-  vim.wo[win].signcolumn = 'no'
-  vim.wo[win].list = false
-  vim.wo[win].number = false
-  vim.wo[win].wrap = false
-  vim.wo[win].colorcolumn = ''
+  vim.api.nvim_set_option_value('signcolumn', 'no', { win = win })
+  vim.api.nvim_set_option_value('list', false, { win = win })
+  vim.api.nvim_set_option_value('number', false, { win = win })
+  vim.api.nvim_set_option_value('wrap', false, { win = win })
+  vim.api.nvim_set_option_value('colorcolumn', '', { win = win })
 
-  vim.bo[bufnr].filetype = ''
-  vim.bo[bufnr].fileencoding = 'utf-8'
-  vim.bo[bufnr].buftype = 'nowrite'
-  vim.bo[bufnr].modifiable = false
+  vim.api.nvim_set_option_value('filetype', '', { buf = bufnr })
+  vim.api.nvim_set_option_value('fileencoding', 'utf-8', { buf = bufnr })
+  vim.api.nvim_set_option_value('buftype', 'nowrite', { buf = bufnr })
+  vim.api.nvim_set_option_value('modifiable', false, { buf = bufnr })
 
   vim.keymap.set('n', 'q', Config.close_window, { buffer = bufnr })
 

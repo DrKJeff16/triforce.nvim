@@ -27,14 +27,16 @@ local Util = require('triforce.util')
 local Stats = {}
 
 Stats.level_config = {
-  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 }, -- Levels 1-10: 300 XP each
-  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 }, -- Levels 11-20: 500 XP each
-  tier_3 = { min_level = 21, max_level = 30, xp_per_level = 1000 }, -- Levels 21-30: 1000 XP each
-  tier_4 = { min_level = 31, max_level = 40, xp_per_level = 2000 }, -- Levels 31-40: 2000 XP each
-  tier_5 = { min_level = 41, max_level = 50, xp_per_level = 3000 }, -- Levels 41-50: 3000 XP each
-  tier_6 = { min_level = 51, max_level = 75, xp_per_level = 5000 }, -- Levels 51-75: 5000 XP each
-  tier_7 = { min_level = 76, max_level = 100, xp_per_level = 7500 }, -- Levels 76-100: 7500 XP each
-  tier_8 = { min_level = 101, max_level = math.huge, xp_per_level = 10000 }, -- Levels 101+: 10000 XP each
+  tier_1 = { min_level = 1, max_level = 10, xp_per_level = 300 },
+  tier_2 = { min_level = 11, max_level = 20, xp_per_level = 500 },
+  tier_3 = { min_level = 21, max_level = 30, xp_per_level = 1000 },
+  tier_4 = { min_level = 31, max_level = 40, xp_per_level = 2000 },
+  tier_5 = { min_level = 41, max_level = 50, xp_per_level = 3000 },
+  tier_6 = { min_level = 51, max_level = 75, xp_per_level = 5000 },
+  tier_7 = { min_level = 76, max_level = 100, xp_per_level = 7500 },
+  tier_8 = { min_level = 101, max_level = 150, xp_per_level = 10000 },
+  tier_9 = { min_level = 151, max_level = 225, xp_per_level = 15000 },
+  tier_10 = { min_level = 226, max_level = 300, xp_per_level = 20000 },
 }
 
 ---@return Stats stats
@@ -261,8 +263,24 @@ function Stats.calibrate_tiers()
   if Stats.level_config.tier_8.min_level >= last_level then
     Stats.level_config.tier_8.min_level = last_level + 1
   end
-  if Stats.level_config.tier_8.max_level ~= math.huge then
-    Stats.level_config.tier_8.max_level = math.huge
+  if Stats.level_config.tier_8.max_level == math.huge then
+    Stats.level_config.tier_8.max_level = Stats.level_config.tier_9.min_level - 1
+  end
+  last_level = Stats.level_config.tier_8.max_level
+
+  if Stats.level_config.tier_9.min_level >= last_level then
+    Stats.level_config.tier_9.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_9.max_level == math.huge then
+    Stats.level_config.tier_9.max_level = Stats.level_config.tier_10.min_level - 1
+  end
+  last_level = Stats.level_config.tier_9.max_level
+
+  if Stats.level_config.tier_10.min_level >= last_level then
+    Stats.level_config.tier_10.min_level = last_level + 1
+  end
+  if Stats.level_config.tier_10.max_level ~= math.huge then
+    Stats.level_config.tier_10.max_level = math.huge
   end
 
   Stats.calibrated = true
@@ -346,8 +364,26 @@ function Stats.calculate_level(xp)
   accumulated_xp = accumulated_xp + tier_7_total
   level = Stats.level_config.tier_7.max_level
 
-  -- Tier 8: Levels 101+ (10000 XP each)
-  return level + math.floor((xp - accumulated_xp) / Stats.level_config.tier_8.xp_per_level) + 1
+  -- Tier 8: Levels 101-150 (10000 XP each)
+  local tier_8_range = Stats.level_config.tier_8.max_level - Stats.level_config.tier_8.min_level + 1
+  local tier_8_total = tier_8_range * Stats.level_config.tier_8.xp_per_level
+  if xp <= accumulated_xp + tier_8_total then
+    return (level + 1) + math.floor((xp - accumulated_xp) / Stats.level_config.tier_8.xp_per_level)
+  end
+  accumulated_xp = accumulated_xp + tier_8_total
+  level = Stats.level_config.tier_8.max_level
+
+  -- Tier 9: Levels 151-225 (15000 XP each)
+  local tier_9_range = Stats.level_config.tier_9.max_level - Stats.level_config.tier_9.min_level + 1
+  local tier_9_total = tier_9_range * Stats.level_config.tier_9.xp_per_level
+  if xp <= accumulated_xp + tier_9_total then
+    return (level + 1) + math.floor((xp - accumulated_xp) / Stats.level_config.tier_9.xp_per_level)
+  end
+  accumulated_xp = accumulated_xp + tier_9_total
+  level = Stats.level_config.tier_9.max_level
+
+  -- Tier 10: Levels 226+ (15000 XP each)
+  return level + math.floor((xp - accumulated_xp) / Stats.level_config.tier_10.xp_per_level) + 1
 end
 
 ---Calculate XP needed for next level

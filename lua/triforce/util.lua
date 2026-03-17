@@ -180,26 +180,32 @@ function Util.prepare_for_save(stats)
 end
 
 ---@param x number[]|number
+---@param cond? boolean
 ---@return boolean int
-function Util.is_int(x)
-  Util.validate({ x = { x, { 'table', 'number' } } })
+function Util.is_int(x, cond)
+  Util.validate({
+    x = { x, { 'table', 'number' } },
+    cond = { cond, { 'boolean', 'nil' }, true },
+  })
+  cond = cond ~= nil and cond or true
 
-  ---@cast x number[]
-  if Util.is_type('table', x) then
-    if vim.tbl_isempty(x) then
-      return false
-    end
-
-    for _, val in ipairs(x) do
-      if not Util.is_int(val) then
-        return false
-      end
-    end
-    return true
+  if Util.is_type('number', x) then
+    ---@cast x number
+    return x == math.floor(x) and x == math.ceil(x) and cond
   end
 
-  ---@cast x number
-  return math.ceil(x) == x and math.floor(x) == x
+  ---@cast x number[]
+  if vim.tbl_isempty(x) then
+    return false
+  end
+
+  for _, val in ipairs(x) do
+    if not Util.is_int(val) then
+      return false
+    end
+  end
+
+  return cond
 end
 
 ---@param T table<string|integer, any>
@@ -230,10 +236,12 @@ function Util.get_total_xp_for_level(level, level_config)
     tier_6 = { level_config.tier_6, { 'table' } },
     tier_7 = { level_config.tier_7, { 'table' } },
     tier_8 = { level_config.tier_8, { 'table' } },
+    tier_9 = { level_config.tier_9, { 'table' } },
+    tier_10 = { level_config.tier_10, { 'table' } },
   })
 
   for name, tier in pairs(level_config) do
-    ---@cast tier LevelTier|LevelTier8
+    ---@cast tier LevelTier|LevelTier10
     Util.validate({
       [('%s_max_level'):format(name)] = { tier.max_level, { 'number' } },
       [('%s_min_level'):format(name)] = { tier.min_level, { 'number' } },
@@ -292,7 +300,21 @@ function Util.get_total_xp_for_level(level, level_config)
   end
 
   if level > level_config.tier_8.min_level then
-    total_xp = total_xp + ((level - level_config.tier_8.min_level) * level_config.tier_8.xp_per_level)
+    local tier_8_levels = math.min(level - 1, level_config.tier_8.max_level) - level_config.tier_8.min_level + 1
+    if tier_8_levels > 0 then
+      total_xp = total_xp + (tier_8_levels * level_config.tier_8.xp_per_level)
+    end
+  end
+
+  if level > level_config.tier_9.min_level then
+    local tier_9_levels = math.min(level - 1, level_config.tier_9.max_level) - level_config.tier_9.min_level + 1
+    if tier_9_levels > 0 then
+      total_xp = total_xp + (tier_9_levels * level_config.tier_9.xp_per_level)
+    end
+  end
+
+  if level > level_config.tier_10.min_level then
+    total_xp = total_xp + ((level - level_config.tier_10.min_level) * level_config.tier_10.xp_per_level)
   end
 
   return total_xp

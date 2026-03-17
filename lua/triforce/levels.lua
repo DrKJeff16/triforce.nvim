@@ -15,7 +15,7 @@
 ---@field title string
 
 local ERROR = vim.log.levels.ERROR
-local util = require('triforce.util')
+local Util = require('triforce.util')
 
 ---@return LevelTitles titles
 local function get_default_titles()
@@ -52,7 +52,7 @@ end
 
 ---@param levels LevelParams[]|LevelParams
 function Levels.add_levels(levels)
-  util.validate({ levels = { levels, { 'table' } } })
+  Util.validate({ levels = { levels, { 'table' } } })
   if vim.tbl_isempty(levels) then
     return
   end
@@ -66,7 +66,7 @@ function Levels.add_levels(levels)
   end
 
   ---@cast levels LevelParams
-  util.validate({
+  Util.validate({
     levels_level = { levels.level, { 'number' } },
     levels_title = { levels.title, { 'string' } },
     levels_icon = { levels.icon, { 'string', 'nil' }, true },
@@ -78,7 +78,7 @@ end
 ---@param stats Stats
 ---@return LevelSpec[] all_levels
 function Levels.get_all_levels(stats)
-  util.validate({ stats = { stats, { 'table' } } })
+  Util.validate({ stats = { stats, { 'table' } } })
 
   local keys = vim.tbl_keys(Levels.levels) ---@type integer[]
   local res = {} ---@type LevelSpec[]
@@ -96,9 +96,9 @@ end
 ---@param level integer
 ---@return string title
 function Levels.get_level_title(level)
-  util.validate({ level = { level, { 'number' } } })
-  if not util.is_int(level) then
-    error('Parameter level is not an integer!', ERROR)
+  Util.validate({ level = { level, { 'number' } } })
+  if not Util.is_int(level, level > 0) then
+    error(('Level `%s` is not valid!'):format(vim.inspect(level)), ERROR)
   end
 
   local res_title = ''
