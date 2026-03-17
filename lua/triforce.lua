@@ -5,16 +5,15 @@ local util = require('triforce.util')
 local config_mod = require('triforce.config')
 
 ---@class Triforce
-local Triforce = {
-  get_stats = require('triforce.tracker').get_stats,
-  open_config = config_mod.open_window,
-  close_config = config_mod.close_window,
-  toggle_config = config_mod.toggle_window,
-}
+local M = {}
 
----@param opts TriforceConfig
----@overload fun()
-function Triforce.setup(opts)
+M.get_stats = require('triforce.tracker').get_stats
+M.open_config = config_mod.open_window
+M.close_config = config_mod.close_window
+M.toggle_config = config_mod.toggle_window
+
+---@param opts? TriforceConfig
+function M.setup(opts)
   util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
   -- Check Neovim version compatibility
@@ -31,7 +30,7 @@ function Triforce.setup(opts)
   config_module.setup(opts or {})
 
   -- Create <Plug> mappings for users to map to their own keys
-  vim.keymap.set('n', '<Plug>(TriforceProfile)', Triforce.show_profile, {
+  vim.keymap.set('n', '<Plug>(TriforceProfile)', M.show_profile, {
     noremap = true,
     silent = true,
     desc = 'Triforce: Show profile',
@@ -43,7 +42,7 @@ function Triforce.setup(opts)
   local config = config_module.config
   -- Set up keymap if provided
   if config.keymap and config.keymap.show_profile and config.keymap.show_profile ~= '' then
-    vim.keymap.set('n', config.keymap.show_profile, Triforce.show_profile, {
+    vim.keymap.set('n', config.keymap.show_profile, M.show_profile, {
       desc = 'Show Triforce Profile',
       silent = true,
       noremap = true,
@@ -57,7 +56,7 @@ function Triforce.setup(opts)
   require('triforce.tracker').setup()
 
   if config.achievements then
-    Triforce.new_achievements(config.achievements)
+    M.new_achievements(config.achievements)
   end
 
   if config.levels and not vim.tbl_isempty(config.levels) then
@@ -74,7 +73,7 @@ end
 
 ---Show profile UI
 ---@param tab? string
-function Triforce.show_profile(tab)
+function M.show_profile(tab)
   util.validate({ tab = { tab, { 'string', 'nil' }, true } })
   if not require('triforce.config').has_gamification() then
     return
@@ -98,7 +97,7 @@ function Triforce.show_profile(tab)
 end
 
 ---Reset all stats (useful for testing)
-function Triforce.reset_stats()
+function M.reset_stats()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -107,7 +106,7 @@ function Triforce.reset_stats()
 end
 
 ---Debug language tracking
-function Triforce.debug_languages()
+function M.debug_languages()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -116,7 +115,7 @@ function Triforce.debug_languages()
 end
 
 ---Force save stats
-function Triforce.save_stats()
+function M.save_stats()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -136,7 +135,7 @@ function Triforce.save_stats()
 end
 
 ---Debug: Show current XP progress
-function Triforce.debug_xp()
+function M.debug_xp()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -145,7 +144,7 @@ function Triforce.debug_xp()
 end
 
 ---Debug: Test achievement notification
-function Triforce.debug_achievement()
+function M.debug_achievement()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -154,7 +153,7 @@ function Triforce.debug_achievement()
 end
 
 ---Debug: Fix level/XP mismatch
-function Triforce.debug_fix_level()
+function M.debug_fix_level()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -162,7 +161,7 @@ function Triforce.debug_fix_level()
   require('triforce.tracker').debug_fix_level()
 end
 
-function Triforce.export_stats()
+function M.export_stats()
   if not require('triforce.config').has_gamification() then
     return
   end
@@ -172,9 +171,8 @@ end
 
 ---Export stats to JSON
 ---@param file string
----@param indent string
----@overload fun(file: string)
-function Triforce.export_stats_to_json(file, indent)
+---@param indent? string
+function M.export_stats_to_json(file, indent)
   util.validate({
     file = { file, { 'string' } },
     indent = { indent, { 'string', 'nil' }, true },
@@ -188,7 +186,7 @@ end
 
 ---Export stats to Markdown
 ---@param file string
-function Triforce.export_stats_to_md(file)
+function M.export_stats_to_md(file)
   util.validate({ file = { file, { 'string' } } })
   if not require('triforce.config').has_gamification() then
     return
@@ -198,9 +196,7 @@ function Triforce.export_stats_to_md(file)
 end
 
 ---@param achievements Achievement[]|Achievement
----@overload fun(achievements: Achievement)
----@overload fun(achievements: Achievement[])
-function Triforce.new_achievements(achievements)
+function M.new_achievements(achievements)
   util.validate({ achievements = { achievements, { 'table' } } })
   if not require('triforce.config').has_gamification() then
     return
@@ -209,5 +205,5 @@ function Triforce.new_achievements(achievements)
   require('triforce.achievement').new_achievements(achievements, require('triforce.tracker').get_stats())
 end
 
-return Triforce
+return M
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:

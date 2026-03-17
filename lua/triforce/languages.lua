@@ -1,6 +1,4 @@
----@class TriforceLanguage
----@field name string
----@field icon string
+---@module 'triforce.types'
 
 local Util = require('triforce.util')
 
@@ -176,7 +174,8 @@ function Languages.get_full_display(ft)
   return icon == '' and name or ('%s %s'):format(icon, name)
 end
 
----Register custom languages
+---Register custom languages.
+--- ---
 ---@param custom_langs table<string, TriforceLanguage>
 function Languages.register_custom_languages(custom_langs)
   Util.validate({ custom_langs = { custom_langs, { 'table' } } })
@@ -185,10 +184,8 @@ function Languages.register_custom_languages(custom_langs)
   end
 
   for ft, config in pairs(custom_langs) do
-    if not Languages.is_excluded(ft) then
-      if not Languages.langs[ft] then
-        Languages.langs[ft] = { icon = config.icon or '', name = config.name or '' }
-      end
+    if not (Languages.is_excluded(ft) or Languages.langs[ft]) then
+      Languages.langs[ft] = { icon = config.icon or '', name = config.name or '' }
     end
   end
 end

@@ -1,9 +1,4 @@
----@class Achievement
----@field id string
----@field name string
----@field check fun(stats?: Stats): boolean
----@field desc? string
----@field icon? string
+---@module 'triforce.types'
 
 local ERROR = vim.log.levels.ERROR
 local util = require('triforce.util')

@@ -1,18 +1,4 @@
----@class LevelTitle
----@field title string
----@field icon string
-
----@alias LevelTitles table<integer, LevelTitle>
-
----@class LevelParams
----@field level integer
----@field title string
----@field icon? string
-
----@class LevelSpec
----@field level integer
----@field unlocked boolean
----@field title string
+---@module 'triforce.types'
 
 local ERROR = vim.log.levels.ERROR
 local Util = require('triforce.util')

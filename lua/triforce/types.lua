@@ -1,4 +1,5 @@
 ---@meta
+---@diagnostic disable:unused-local
 
 ---@class LevelTier
 ---Starting level for this tier.
@@ -152,5 +153,59 @@
 ---@field levels LevelParams[]
 ---@field notifications TriforceConfig.Notifications
 ---@field xp_rewards XPRewards
+
+---@class Achievement
+---@field desc? string
+---@field icon? string
+---@field id string
+---@field name string
+local A = {}
+
+---@param stats? Stats
+---@return boolean
+function A.check(stats) end
+
+---@class TriforceLanguage
+---@field icon string
+---@field name string
+
+---@class LevelTitle
+---@field icon string
+---@field title string
+
+---@alias LevelTitles table<integer, LevelTitle>
+
+---@class LevelParams
+---@field icon? string
+---@field level integer
+---@field title string
+
+---@class LevelSpec
+---@field level integer
+---@field title string
+---@field unlocked boolean
+
+---Non-legacy validation spec (>=v0.11)
+---@class ValidateSpec
+---@field [1] any
+---@field [2] vim.validate.Validator
+---@field [3]? boolean
+---@field [4]? string
+
+---@enum (key) Months
+local months = {
+  [1] = 1,
+  [2] = 1,
+  [3] = 1,
+  [4] = 1,
+  [5] = 1,
+  [6] = 1,
+  [7] = 1,
+  [8] = 1,
+  [9] = 1,
+  [10] = 1,
+  [11] = 1,
+  [12] = 1,
+}
 
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:

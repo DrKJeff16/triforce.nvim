@@ -1,7 +1,7 @@
 local INFO = vim.log.levels.INFO
 local ERROR = vim.log.levels.ERROR
 local WARN = vim.log.levels.WARN
-local util = require('triforce.util')
+local Util = require('triforce.util')
 local uv = vim.uv or vim.loop
 
 ---@class Triforce.Tracker
@@ -35,7 +35,7 @@ Tracker.debug = false ---@type boolean
 ---Initialize the tracker
 ---@param debug? boolean
 function Tracker.setup(debug)
-  util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
+  Util.validate({ debug = { debug, { 'boolean', 'nil' }, true } })
 
   local stats_module = require('triforce.stats')
 
@@ -147,7 +147,7 @@ function Tracker.on_text_changed(bufnr)
     local new_lines = current_line_count - previous_line_count
     Tracker.current_stats.lines_typed = Tracker.current_stats.lines_typed + new_lines
     Tracker.lines_today = Tracker.lines_today + new_lines
-    stats_module.add_xp(Tracker.current_stats, util.get_xp_rewards().line * new_lines)
+    stats_module.add_xp(Tracker.current_stats, Util.get_xp_rewards().line * new_lines)
   end
 
   -- Update the tracked line count
@@ -168,7 +168,7 @@ function Tracker.on_text_changed(bufnr)
     Tracker.current_stats.chars_by_language[filetype] = (Tracker.current_stats.chars_by_language[filetype] or 0) + 1
   end
 
-  if stats_module.add_xp(Tracker.current_stats, util.get_xp_rewards().char) then
+  if stats_module.add_xp(Tracker.current_stats, Util.get_xp_rewards().char) then
     Tracker.notify_level_up()
   end
 
@@ -184,7 +184,7 @@ function Tracker.on_new_line()
   end
 
   Tracker.current_stats.lines_typed = Tracker.current_stats.lines_typed + 1
-  require('triforce.stats').add_xp(Tracker.current_stats, util.get_xp_rewards().line)
+  require('triforce.stats').add_xp(Tracker.current_stats, Util.get_xp_rewards().line)
 end
 
 ---Track file saves
@@ -193,7 +193,7 @@ function Tracker.on_save()
     return
   end
 
-  local leveled_up = require('triforce.stats').add_xp(Tracker.current_stats, util.get_xp_rewards().save)
+  local leveled_up = require('triforce.stats').add_xp(Tracker.current_stats, Util.get_xp_rewards().save)
   Tracker.dirty = true
 
   if leveled_up then
@@ -239,7 +239,7 @@ end
 ---@param desc? string
 ---@param icon? string
 function Tracker.notify_achievement(name, desc, icon)
-  util.validate({
+  Util.validate({
     name = { name, { 'string' } },
     desc = { desc, { 'string', 'nil' }, true },
     icon = { icon, { 'string', 'nil' }, true },

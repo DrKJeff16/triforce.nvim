@@ -16,7 +16,7 @@ function Commands.setup()
     end
 
     if subcommand == 'profile' then
-      local options = vim.tbl_keys(require('triforce.ui.profile').tabs_map) ---@type string[]
+      local options = vim.tbl_keys(require('triforce.ui.profile').tabs_map) --[[@as string[]\]]
       if subcommand2 == '' then
         subcommand2 = nil
       elseif not vim.list_contains(options, subcommand2) then

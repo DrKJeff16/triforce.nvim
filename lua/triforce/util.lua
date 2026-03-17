@@ -1,11 +1,4 @@
----Non-legacy validation spec (>=v0.11)
----@class ValidateSpec
----@field [1] any
----@field [2] vim.validate.Validator
----@field [3]? boolean
----@field [4]? string
-
----@alias Months 1|2|3|4|5|6|7|8|9|10|11|12
+---@module 'triforce.types'
 
 local ERROR = vim.log.levels.ERROR
 
