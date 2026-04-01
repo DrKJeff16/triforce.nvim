@@ -28,6 +28,7 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
   -- Systems
   c = { name = 'C', icon = '' }, -- nf-seti-c
   cpp = { name = 'C++', icon = '' }, -- nf-seti-cpp
+  cuda = { name = 'Cuda', icon = '' }, -- nf-seti-cu
   rust = { name = 'Rust', icon = '' }, -- nf-dev-rust
   go = { name = 'Go', icon = '' }, -- nf-seti-go
   zig = { name = 'Zig', icon = '' }, -- nf-seti-zig
@@ -35,6 +36,7 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
   asm = { name = 'Assembly', icon = '' }, -- nf-seti-asm
   makefile = { name = 'Makefile', icon = '' }, -- nf-seti-makefile
   cmake = { name = 'CMake', icon = '' }, -- nf-dev-cmake
+  fortran = { name = 'Fortran', icon = '' }, -- nf-dev-fortran
 
   -- Scripting
   python = { name = 'Python', icon = '' }, -- nf-dev-python
@@ -75,6 +77,7 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
   zsh = { name = 'Zsh', icon = '' }, -- nf-dev-terminal
   fish = { name = 'Fish', icon = '' }, -- nf-dev-terminal
   csh = { name = 'C Shell', icon = '' }, -- nf-dev-terminal
+  powershell = { name = 'Power Shell', icon = '' }, -- nf-dev-terminal
 
   -- Data
   sql = { name = 'SQL', icon = '' }, -- nf-dev-database
@@ -82,6 +85,7 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
   yaml = { name = 'YAML', icon = '' }, -- nf-seti-yaml
   toml = { name = 'TOML', icon = '' }, -- nf-seti-toml
   xml = { name = 'XML', icon = '󰗀' }, -- nf-md-xml
+  csv = { name = 'CSV', icon = '' }, -- nf-seti-csv
   dosini = { name = 'INI', icon = '' }, -- nf-seti-config
 
   -- Markup/Doc
@@ -92,10 +96,13 @@ Languages.langs = { ---@type table<string, TriforceLanguage>
   -- Other
   vim = { name = 'Vimscript', icon = '' }, -- nf-seti-vim
   r = { name = 'R', icon = '' }, -- nf-dev-r
+  matplotlib = { name = 'matplotlib', icon = '' }, --nf-dev-matplotlib
   julia = { name = 'Julia', icon = '' }, -- nf-seti-julia
   nim = { name = 'Nim', icon = '' }, -- nf-seti-nim
   crystal = { name = 'Crystal', icon = '' }, -- nf-seti-crystal
-  PKGBUILD = { name = 'PKGBUILD', icon = '' }, -- nf-dev-terminal
+  PKGBUILD = { name = 'PKGBUILD', icon = '' }, -- nf-dev-terminal,
+  prolog = { name = 'prolog', icon = '' }, -- nf-dev-prolog
+  cobol = { name = 'cobol', icon = '' }, -- nf-code-array
 }
 
 ---Get icon for a filetype
