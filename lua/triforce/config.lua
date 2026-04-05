@@ -154,16 +154,16 @@ function Config.open_window()
     zindex = 50,
   })
 
-  vim.api.nvim_set_option_value('signcolumn', 'no', { win = win })
-  vim.api.nvim_set_option_value('list', false, { win = win })
-  vim.api.nvim_set_option_value('number', false, { win = win })
-  vim.api.nvim_set_option_value('wrap', false, { win = win })
-  vim.api.nvim_set_option_value('colorcolumn', '', { win = win })
+  Util.optset('signcolumn', 'no', 'win', win)
+  Util.optset('list', false, 'win', win)
+  Util.optset('number', false, 'win', win)
+  Util.optset('wrap', false, 'win', win)
+  Util.optset('colorcolumn', '', 'win', win)
 
-  vim.api.nvim_set_option_value('filetype', '', { buf = bufnr })
-  vim.api.nvim_set_option_value('fileencoding', 'utf-8', { buf = bufnr })
-  vim.api.nvim_set_option_value('buftype', 'nowrite', { buf = bufnr })
-  vim.api.nvim_set_option_value('modifiable', false, { buf = bufnr })
+  Util.optset('filetype', '', 'buf', bufnr)
+  Util.optset('fileencoding', 'utf-8', 'buf', bufnr)
+  Util.optset('buftype', 'nowrite', 'buf', bufnr)
+  Util.optset('modifiable', false, 'buf', bufnr)
 
   vim.keymap.set('n', 'q', Config.close_window, { buffer = bufnr })
 

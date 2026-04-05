@@ -54,9 +54,8 @@ function Tracker.setup(debug)
   vim.api.nvim_create_autocmd('BufWritePre', {
     group = Tracker.augroup,
     callback = function(ev)
-      local opts = { buf = ev.buf } ---@type vim.api.keyset.option
-      local ft = vim.api.nvim_get_option_value('filetype', opts)
-      local modified = vim.api.nvim_get_option_value('modified', opts)
+      local ft = Util.optget('filetype', 'buf', ev.buf)
+      local modified = Util.optget('modified', 'buf', ev.buf)
       if modified and not vim.list_contains(require('triforce.languages').ignored_langs, ft) then
         Tracker.on_save()
       end
@@ -123,7 +122,7 @@ function Tracker.on_text_changed(bufnr)
   -- Check for day rollover
   Tracker.check_date_rollover()
 
-  local buftype = vim.api.nvim_get_option_value('buftype', { buf = bufnr })
+  local buftype = Util.optget('buftype', 'buf', bufnr)
   if vim.list_contains({ 'terminal', 'help', 'nowrite', 'nofile' }, buftype) then
     return
   end
@@ -158,7 +157,7 @@ function Tracker.on_text_changed(bufnr)
   Tracker.dirty = true
 
   -- Track character by language
-  local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr }) ---@type string
+  local filetype = Util.optget('filetype', 'buf', bufnr) ---@type string
   if filetype ~= '' and require('triforce.languages').should_track(filetype) then
     -- Initialize if needed
     if not Tracker.current_stats.chars_by_language then

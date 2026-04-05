@@ -403,7 +403,7 @@ function Stats.add_xp(stats, amount)
     amount = { amount, { 'number' } },
   })
 
-  local ft = vim.api.nvim_get_option_value('filetype', { buf = vim.api.nvim_get_current_buf() })
+  local ft = Util.optget('filetype', 'buf', vim.api.nvim_get_current_buf())
   local langs_module = require('triforce.languages')
   local keys = vim.tbl_keys(langs_module.langs) ---@type string[]
   if vim.list_contains(langs_module.ignored_langs, ft) or not vim.list_contains(keys, ft) then
@@ -557,17 +557,15 @@ function Stats.export_stats(stats)
     style = 'minimal',
   })
 
-  ---@type vim.api.keyset.option, vim.api.keyset.option
-  local buf_opts, win_opts = { buf = bufnr }, { win = win }
-  vim.api.nvim_set_option_value('filetype', 'lua', buf_opts)
-  vim.api.nvim_set_option_value('modified', false, buf_opts)
-  vim.api.nvim_set_option_value('modifiable', false, buf_opts)
+  Util.optset('filetype', 'lua', 'buf', bufnr)
+  Util.optset('modified', false, 'buf', bufnr)
+  Util.optset('modifiable', false, 'buf', bufnr)
 
-  vim.api.nvim_set_option_value('number', false, win_opts)
-  vim.api.nvim_set_option_value('signcolumn', 'no', win_opts)
-  vim.api.nvim_set_option_value('colorcolumn', '', win_opts)
-  vim.api.nvim_set_option_value('wrap', true, win_opts)
-  vim.api.nvim_set_option_value('list', false, win_opts)
+  Util.optset('number', false, 'win', win)
+  Util.optset('signcolumn', 'no', 'win', win)
+  Util.optset('colorcolumn', '', 'win', win)
+  Util.optset('wrap', true, 'win', win)
+  Util.optset('list', false, 'win', win)
 
   vim.keymap.set('n', 'q', function()
     pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
