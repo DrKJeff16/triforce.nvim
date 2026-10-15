@@ -1,12 +1,10 @@
 *triforce.txt*
-                              For NVIM >=v0.9.0    Last change: 2026 August 17
+                            For NVIM >=v0.10.0    Last change: 2026 October 15
 
 ==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
 
 <https://github.com/rockerBOO/awesome-neovim>
-
-Share Your Stats <https://github.com/gisketch/triforce.nvim/discussions/30>
 
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP,
 levels and achievements while you work.
@@ -50,45 +48,45 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
 - |triforce-features|
 - |triforce-installation|
 - |triforce-configuration|
-    - |triforce-configuration-options|
-    - |triforce-custom-levels|
-    - |triforce-level-progression|
-    - |triforce-xp-rewards|
+    - Configuration Options
+    - Custom Levels
+    - Level Progression
+    - XP Rewards
 - |triforce-usage|
 - |triforce-profile-ui|
-    - |triforce-stats-tab|
-    - |triforce-achievements-tab|
-    - |triforce-stats-tab|
-    - |triforce-levels-tab|
+    - Stats Tab
+    - Achievements Tab
+    - Stats Tab
+    - Levels Tab
 - |triforce-achievements|
-    - |triforce-typing-milestones|
-    - |triforce-level-achievements|
-    - |triforce-session-achievements|
-    - |triforce-time-achievements|
-    - |triforce-polyglot-achievements|
-    - |triforce-custom-achievements|
+    - Typing Milestones
+    - Level Achievements
+    - Session Achievements
+    - Time Achievements
+    - Polyglot Achievements
+    - Custom Achievements
 - |triforce-customization|
-    - |triforce-adding-custom-languages|
-    - |triforce-disabling-notifications|
-    - |triforce-disabling-auto-keymap|
-    - |triforce-customizing-heatmap-colors|
+    - Adding Custom Languages
+    - Disabling Notifications
+    - Disabling Auto-Keymap
+    - Customizing Heatmap Colors
 - |triforce-lualine-integration|
-    - |triforce-basic-setup|
-    - |triforce-quick-setup|
-    - |triforce-component-configuration|
-        - |triforce-currency-component|
-        - |triforce-level-component|
-        - |triforce-achievements-component|
-        - |triforce-streak-component|
-        - |triforce-session-time-component|
-    - |triforce-global-component-configuration|
-    - |triforce-example-configurations|
-        - |triforce-minimalist-setup|
-        - |triforce-full-stats-dashboard|
-        - |triforce-custom-style|
+    - Basic Setup
+    - Quick Setup
+    - Component Configuration
+        - Currency Component
+        - Level Component
+        - Achievements Component
+        - Streak Component
+        - Session Time Component
+    - Global Component Configuration
+    - Example Configurations
+        - Minimalist Setup
+        - Full Stats Dashboard
+        - Custom Style
 - |triforce-data-storage|
-    - |triforce-exporting|
-    - |triforce-data-format|
+    - Exporting
+    - Data Format
 - |triforce-roadmap|
 - |triforce-acknowledgments|
 - |triforce-license|
@@ -128,7 +126,7 @@ lazy.nvim ~
 
 >lua
     {
-      'gisketch/triforce.nvim',
+      'DrKJeff16/triforce.nvim',
       dependencies = { 'nvzone/volt' },
       keys = {
         {
@@ -147,7 +145,7 @@ pckr.nvim ~
 >lua
     require('pckr').add({
       {
-        'gisketch/triforce.nvim',
+        'DrKJeff16/triforce.nvim',
         requires = { 'nvzone/volt' },
         config = function()
           require('triforce').setup()
@@ -161,7 +159,7 @@ paq-nvim ~
 >lua
     require('paq')({
       'nvzone/volt',
-      'gisketch/triforce.nvim',
+      'DrKJeff16/triforce.nvim',
     })
 <
 
@@ -169,7 +167,7 @@ vim-plug ~
 
 >vim
     Plug 'nvzone/volt'
-    Plug 'gisketch/triforce.nvim'
+    Plug 'DrKJeff16/triforce.nvim'
 <
 
 ------------------------------------------------------------------------------
@@ -184,60 +182,60 @@ Defaults ~
     require('triforce').setup({
       -- Enable/disable the entire plugin
       enabled = true,
-    
+
       -- Select what icon engine to use to provide with filetype icons:
       --
       -- - `'builtin'` - Use the built-in icons (default)
       -- - `'mini'` - Use `mini.icons`
       icon_engine = 'builtin', ---@type 'builtin'|'mini'
-    
+
       -- Enable XP, levels, achievements
       gamification_enabled = true,
-    
+
       -- Items configuration
       items = { enabled = true },
-    
+
       -- Backdrop control
       backdrop = {
         -- Whether to enable the backdrop (i.e. enable background dimming).
         -- CREDITS: https://github.com/gisketch/triforce.nvim/issues/50
         enabled = true,
-    
+
         -- See `:h 'winblend'`
         winblend = 20,
       },
-    
+
       -- Custom levels
       levels = {},
-    
+
       -- Don't include the default levels (needs custom levels).
       override_levels = false,
-    
+
       -- Custom achievements
       achievements = {},
-    
+
       -- Notification settings
       notifications = {
         -- Master toggle for all notifications
         enabled = true,
-    
+
         -- Show level up notifications
         level_up = true,
-    
+
         -- Show achievement unlock notifications
         achievements = true,
       },
-    
+
       -- Auto-save interval (in seconds)
       auto_save_interval = 300, -- Save stats every 5 minutes
-    
+
       -- Add custom language support
       custom_languages = {
         gleam = { icon = '✨', name = 'Gleam' },
         odin = { icon = '🔷', name = 'Odin' },
         -- Add more languages...
       },
-    
+
       -- Customize level progression (optional)
       level_progression = {
         tier_1 = { min_level = 1, max_level = 10, xp_per_level = 500 },
@@ -251,17 +249,17 @@ Defaults ~
         tier_9 = { min_level = 151, max_level = 225, xp_per_level = 15000 },
         tier_10 = { min_level = 226, max_level = math.huge, xp_per_level = 25000 },
       },
-    
+
       -- Customize XP rewards (optional)
       xp_rewards = {
         char = 1,   -- XP per character typed
         line = 1,   -- XP per new line
         save = 50,  -- XP per file save
       },
-    
+
       -- Add filetypes to be excluded
       ignore_ft = {},
-    
+
       -- Override heatmap highlight groups (hex colors or existing hl groups)
       heat_highlights = {
         TriforceHeat1 = '#f0f0a0',
@@ -271,7 +269,7 @@ Defaults ~
         -- Or link to your colorscheme's groups:
         -- TriforceHeat1 = 'DiffText',
       },
-    
+
       -- Enable some debugging messages
       debug = false,
     })
@@ -587,7 +585,7 @@ The `Achievement` type spec is shown below:
     ---@field daily_activity table<string, integer>
     ---@field current_streak integer
     ---@field longest_streak integer
-    
+
     -- DO NOT COPY DIRECTLY
     {
       id = 'template_achievement', ---@type string
@@ -687,7 +685,7 @@ If you prefer to set your own keymap:
         show_profile = nil, -- Don't create default keymap
       },
     })
-    
+
     -- Set your own keymap
     vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Triforce Stats' })
 <
@@ -1000,7 +998,7 @@ ACKNOWLEDGMENTS                                     *triforce-acknowledgments*
 LICENSE                                                     *triforce-license*
 
 MIT License - see LICENSE
-<https://github.com/gisketch/triforce.nvim/blob/main/LICENSE> for details.
+<https://github.com/DrKJeff16/triforce.nvim/blob/main/LICENSE> for details.
 
 ------------------------------------------------------------------------------
 
@@ -1016,13 +1014,13 @@ Star this repo if you find it useful!
 2. Links                                                      *triforce-links*
 
 1. *Mentioned in Awesome Neovim*: https://awesome.re/mentioned-badge.svg
-2. *Showcase*: https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce.png
+2. *Showcase*: https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce.png
 3. *@DrKJeff16*: 
-4. *Stats Tab*: https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_stats.png
-5. *Achievements Tab*: https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_achievements.png
-6. *Languages Tab*: https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_languages.png
-7. *Levels Tab*: https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_levels.png
-8. *Lualine Integration*: https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_lualine.png
+4. *Stats Tab*: https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_stats.png
+5. *Achievements Tab*: https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_achievements.png
+6. *Languages Tab*: https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_languages.png
+7. *Levels Tab*: https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_levels.png
+8. *Lualine Integration*: https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_lualine.png
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
