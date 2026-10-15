@@ -61,8 +61,8 @@ TABLE OF CONTENTS                                 *triforce-table-of-contents*
 - |triforce-usage|
 - |triforce-profile-ui|
     - Achievements Tab
+    - Languages Tab
     - Levels Tab
-    - Stats Tab
     - Stats Tab
 - |triforce-achievements|
     - Level Achievements
@@ -512,18 +512,26 @@ available arguments:
 
 PROFILE UI                                               *triforce-profile-ui*
 
-Keybindings:
+The profile UI includes the following tabs:
 
-- `<Tab>`: Cycle forward
-- `<S-Tab>`: Cycle backward
-- `H` / `L` or `←` / `→`: Navigate achievement/levels pages
-- `q` / `Esc`: Close profile
-
-The profile includes the following tabs:
-
-- Stats
 - Achievements
+- Languages
+- Levels
+- Stats
 
+The following keybindings can be used in the profile UI:
+
+  -----------------------------------------------------------------------
+  Key(s)                      Description
+  --------------------------- -------------------------------------------
+  <Tab> / <S-Tab>             Cycle tab (forward or backward,
+                              respectively)
+
+  H / L or <Left> / <Right>   Navigate between items for the
+                              achievements/levels tab
+
+  q / <Esc>                   Close profile UI
+  -----------------------------------------------------------------------
 
 ACHIEVEMENTS TAB ~
 
