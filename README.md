@@ -16,30 +16,27 @@
 
 ## About
 
-I have ADHD, which sometimes causes coding to feel like a grind — it’s hard to stay consistent
-or even get started some days.
-That’s part of why I fell in love with Neovim: it’s customizable, expressive,
-and makes the act of writing code feel _fun_ again.
+I named this plugin **Triforce** just because I love **The Legend of Zelda**.
 
-**Triforce** is actually my **first-ever Neovim plugin** (and the first plugin I’ve ever built in general).
-I’d always wanted to make something of my own, but I never really knew where to start.
-Once I got into Neovim’s Lua ecosystem I got completely hooked.
-I started experimenting, tinkering, breaking things, and slowly, Triforce came to life.
+I have ADHD (Attention Deficit Hyperactivity Disorder), which can make coding feel like
+a grind — it’s hard to stay consistent or even get started some days. That’s part of why I fell
+in love with Neovim: it’s customizable, expressive, and makes the act of writing code feel fun again.
 
 Triforce is co-maintained by [@DrKJeff16](https://github.com/DrKJeff16), who has ADHD, too.
 
-I made it to **gamify my coding workflow** — to turn those long,
-sometimes frustrating coding sessions into something that feels rewarding.
-Watching the XP bar fill up, unlocking achievements, and seeing my progress in real time
-gives me that little _dopamine boost_ that helps me stay focused and motivated.
+This is my first Neovim plugin (and the first plugin I’ve ever built in general). I’d always wanted
+to make something of my own, but I never really knew where to start. Once I got into Neovim’s
+Lua ecosystem I got completely hooked. I started experimenting, tinkering, breaking things,
+and slowly, Triforce came to life.
 
-I named it **Triforce** just because I love **The Legend of Zelda** — _no deep reason beyond that_.
+This exists to **gamify my coding workflow**; to turn those long, sometimes frustrating coding
+sessions into something that actually feels rewarding. Watching the XP bar fill up, unlocking
+achievements, and seeing my progress in real time gives me that little dopamine boost that helps me
+stay focused and motivated.
 
-The UI is **heavily inspired by [@siduck](https://github.com/siduck)’s gorgeous designs**
-and **[nvzone/typr](https://github.com/nvzone/typr)** — their aesthetic sense and clean interface ideas
-played a huge role in how this turned out.
-Building it with [`nvzone/volt`](https://github.com/nvzone/volt) made the process
-so much smoother and helped me focus on bringing those ideas to life.
+The UI is **heavily inspired by [@siduck](https://github.com/siduck)’s gorgeous designs** and **[nvzone/typr](https://github.com/nvzone/typr)**; their aesthetic sense
+and clean interface ideas played a huge role in how this turned out. Building it with [`nvzone/volt`](https://github.com/nvzone/volt)
+made the process so much smoother and helped me focus on bringing those ideas to life.
 
 ---
 
@@ -68,7 +65,7 @@ so much smoother and helped me focus on bringing those ideas to life.
 - [Customization](#customization)
   - [Adding Custom Languages](#adding-custom-languages)
   - [Disabling Notifications](#disabling-notifications)
-  - [Disabling Auto-Keymap](#disabling-auto-keymap)
+  - [Custom Keymap](#custom-keymap)
   - [Customizing Heatmap Colors](#customizing-heatmap-colors)
 - [Lualine Integration](#lualine-integration)
   - [Basic Setup](#basic-setup)
@@ -191,10 +188,16 @@ Plug 'DrKJeff16/triforce.nvim'
 
 ## Configuration
 
-Triforce comes with sensible defaults, but you can customize everything:
+You can simply call `setup()` and the defaults will be loaded:
+
+```lua
+require('triforce').setup()
+```
 
 <details>
-<summary><b>Defaults</b></summary>
+<summary><b><ins>Defaults</ins></b></summary>
+
+You can find the defaults in [`lua/triforce/config.lua`](https://github.com/DrKJeff16/triforce.nvim/blob/main/lua/triforce/config.lua).
 
 ```lua
 require('triforce').setup({
@@ -268,7 +271,7 @@ require('triforce').setup({
     tier_7 = { min_level = 76, max_level = 100, xp_per_level = 10000 },
     tier_8 = { min_level = 101, max_level = 150, xp_per_level = 12500 },
     tier_9 = { min_level = 151, max_level = 225, xp_per_level = 15000 },
-    tier_10 = { min_level = 226, max_level = math.huge, xp_per_level = 25000 },
+    tier_10 = { min_level = 226, max_level = math.huge, xp_per_level = 25000 }, -- `max_level` here MUST be `math.huge`!
   },
 
   -- Customize XP rewards (optional)
@@ -288,6 +291,7 @@ require('triforce').setup({
 
   -- Override heatmap highlight groups (hex colors or existing hl groups)
   heat_highlights = {
+    TriforceHeat0 = '#f0f0f0',
     TriforceHeat1 = '#f0f0a0',
     TriforceHeat2 = '#f0a0a0',
     TriforceHeat3 = '#a0a0a0',
@@ -305,25 +309,23 @@ require('triforce').setup({
 
 ### Configuration Options
 
-| Option                       | Type          | Default                             | Description                                |
-|------------------------------|---------------|-------------------------------------|--------------------------------------------|
-| `achievements`               | `table\|nil`  | [See below](#custom-achievements)   | Custom achievements                        |
-| `auto_save_interval`         | `number`      | `300`                               | Auto-save interval in seconds              |
-| `backdrop`                   | `table\|nil`  | `{ enabled = true, winblend = 20 }` | List of excluded filetypes                 |
-| `custom_languages`           | `table\|nil`  | `nil`                               | Custom language definitions                |
-| `debug`                      | `boolean`     | `true`                              | Enable some debugging messages             |
-| `enabled`                    | `boolean`     | `true`                              | Enable/disable the plugin                  |
-| `gamification_enabled`       | `boolean`     | `true`                              | Enable gamification features               |
-| `heat_highlights`            | `table\|nil`  | Defaults shown above                | Override heatmap highlights (hex or links) |
-| `ignore_ft`                  | `table\|nil`  | `{}`                                | Backdrop customization.                    |
-| `keymap.show_profile`        | `string\|nil` | `nil`                               | Keymap for opening profile                 |
-| `level_progression`          | `table\|nil`  | [See below](#level-progression)     | Custom XP requirements per level tier      |
-| `levels`                     | `table\|nil`  | [See below](#custom-levels)         | List of custom levels                      |
-| `notifications.achievements` | `boolean`     | `true`                              | Show achievement notifications             |
-| `notifications.enabled`      | `boolean`     | `true`                              | Master toggle for notifications            |
-| `notifications.level_up`     | `boolean`     | `true`                              | Show level up notifications                |
-| `override_levels`            | `boolean`     | `false`                             | Don't include the built-in levels          |
-| `xp_rewards`                 | `table\|nil`  | [See below](#xp-rewards)            | Custom XP rewards for actions              |
+| Option                 | Type          | Default                             | Description                                |
+|------------------------|---------------|-------------------------------------|--------------------------------------------|
+| `achievements`         | `table\|nil`  | [See below](#custom-achievements)   | Custom achievements                        |
+| `auto_save_interval`   | `number`      | `300`                               | Auto-save interval in seconds              |
+| `backdrop`             | `table\|nil`  | `{ enabled = true, winblend = 20 }` | List of excluded filetypes                 |
+| `custom_languages`     | `table\|nil`  | `nil`                               | Custom language definitions                |
+| `debug`                | `boolean`     | `true`                              | Enable some debugging messages             |
+| `enabled`              | `boolean`     | `true`                              | Enable/disable the plugin                  |
+| `gamification_enabled` | `boolean`     | `true`                              | Enable gamification features               |
+| `heat_highlights`      | `table\|nil`  | Defaults shown above                | Override heatmap highlights (hex or links) |
+| `ignore_ft`            | `table\|nil`  | `{}`                                | Backdrop customization                     |
+| `items`                | `table\|nil`  | `{ enabled = false }`               | Items configuration                        |
+| `level_progression`    | `table\|nil`  | [See below](#level-progression)     | Custom XP requirements per level tier      |
+| `levels`               | `table\|nil`  | [See below](#custom-levels)         | List of custom levels                      |
+| `notifications`        | `table\|nil`  | `{ achievements = true, enabled = true, level_up = true }` | Notifications for different events |
+| `override_levels`      | `boolean`     | `false`                                                    | Don't include the built-in levels          |
+| `xp_rewards`           | `table\|nil`  | [See below](#xp-rewards)                                   | Custom XP rewards for actions              |
 
 ### Custom Levels
 
@@ -363,8 +365,9 @@ require('triforce').setup({
 
 ### Level Progression
 
-By default Triforce uses a **simple, easy-to-reach** leveling system.
-The default leveling system is:
+Triforce by default uses a **simple, easy-to-reach** leveling system.
+
+The default leveling system is as follows:
 
 - **Levels 1-10**: 500 XP per level
 - **Levels 11-20**: 750 XP per level
@@ -648,30 +651,25 @@ require('triforce').setup({
 })
 ```
 
-### Disabling Auto-Keymap
+### Custom Keymap
 
 If you prefer to set your own keymap:
 
 ```lua
-require('triforce').setup({
-  keymap = {
-    show_profile = nil, -- Don't create default keymap
-  },
-})
-
--- Set your own keymap
+-- THIS IS AN EXAMPLE, SET YOUR OWN KEYMAP
 vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Triforce Stats' })
 ```
 
 ### Customizing Heatmap Colors
 
-If your colorscheme uses unconventional highlight groups, point the heatmap to
-colors that fit your palette. You can mix hex colors and links to existing
-highlight groups:
+If your colorscheme uses unconventional highlight groups, point the heatmap to colors that fit your palette.
+
+You can mix hex colors and links to existing highlight groups:
 
 ```lua
 require('triforce').setup({
   heat_highlights = {
+    TriforceHeat0 = nil,
     TriforceHeat1 = 'Error',
     TriforceHeat2 = 'DiagnosticVirtualTextWarn',
     TriforceHeat3 = 'CursorLine',
@@ -680,8 +678,8 @@ require('triforce').setup({
 })
 ```
 
-Each key corresponds to a heat level used in the profile activity graph. If you
-omit a key, the default color for that level is used.
+Each key corresponds to a heat level used in the profile activity graph. If you omit a key,
+the default color for that level is used.
 
 ---
 
@@ -894,28 +892,75 @@ Currently only these formats are supported:
 
 ### Data Format
 
+The following is an example JSON file from an export operation:
+
 ```json
 {
-  "xp": 15420,
-  "level": 12,
-  "chars_typed": 45230,
-  "lines_typed": 1240,
-  "sessions": 42,
-  "time_coding": 14580,
   "achievements": {
     "first_100": true,
-    "level_10": true
+    "first_1000": true,
+    "first_10000": true,
+    "first_100000": true,
+    "first_300": true,
+    "first_session": true,
+    "level_10": true,
+    "level_25": true,
+    "level_5": true,
+    "level_50": true,
+    "polyglot_3": true,
+    "polyglot_5": true,
+    "sessions_10": true,
+    "sessions_100": true,
+    "sessions_50": true,
+    "time_10h": true,
+    "time_1h": true
   },
   "chars_by_language": {
-    "lua": 12000,
-    "python": 8500
+    "bash": 3068,
+    "c": 3389,
+    "lua": 119157,
+    "org": 14,
+    "python": 3189,
+    "sh": 580
   },
+  "chars_typed": 158384,
+  "currency": 26066,
+  "current_streak": 2,
   "daily_activity": {
-    "2025-11-07": 145,
-    "2025-11-08": 203
+    "2026-09-19": 55,
+    "2026-09-20": 342,
+    "2026-09-21": 162,
+    "2026-09-22": 864,
+    "2026-09-23": 326,
+    "2026-09-24": 381,
+    "2026-09-25": 807,
+    "2026-09-26": 642,
+    "2026-09-27": 548,
+    "2026-09-28": 208,
+    "2026-09-29": 506,
+    "2026-09-30": 325,
+    "2026-10-01": 379,
+    "2026-10-02": 826,
+    "2026-10-03": 224,
+    "2026-10-04": 308,
+    "2026-10-05": 188,
+    "2026-10-06": 216,
+    "2026-10-07": 77,
+    "2026-10-08": 104,
+    "2026-10-09": 321,
+    "2026-10-10": 245,
+    "2026-10-11": 4,
+    "2026-10-13": 592,
+    "2026-10-14": 104
   },
-  "current_streak": 5,
-  "longest_streak": 12
+  "db_path": "/home/<YOUR_USERNAME>/.local/share/nvim/triforce_stats.json",
+  "last_session_start": 1792037375,
+  "level": 71,
+  "lines_typed": 8833,
+  "longest_streak": 23,
+  "sessions": 1974,
+  "time_coding": 167848,
+  "xp": 190536
 }
 ```
 
@@ -944,14 +989,13 @@ Currently only these formats are supported:
 
 - [`nvzone/volt`](https://github.com/nvzone/volt): Beautiful UI framework.
 - [`nvzone/typr`](https://github.com/nvzone/typr): Beautiful grid design component inspiration.
-- [`GrzegorzSzczepanek/gamify.nvim`](https://github.com/GrzegorzSzczepanek/gamify.nvim): Another cool gamification plugin.
-  Inspired the inclusion of achievements.
+- [`GrzegorzSzczepanek/gamify.nvim`](https://github.com/GrzegorzSzczepanek/gamify.nvim): Another cool gamification plugin. Inspired the inclusion of achievements.
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](https://github.com/DrKJeff16/triforce.nvim/blob/main/LICENSE) for details.
+[MIT](https://github.com/DrKJeff16/triforce.nvim/blob/main/LICENSE)
 
 ---
 
