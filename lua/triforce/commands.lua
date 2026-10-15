@@ -18,9 +18,9 @@ function M.setup()
       elseif vim.list_contains(options, subcommand2) then
         triforce.show_profile(subcommand2)
       else
-        local msg = 'Usage:\n    :Triforce profile'
+        local msg = 'Usage:\n  :Triforce profile'
         for _, option in ipairs(options) do
-          msg = ('%s\n    :Triforce profile %s'):format(msg, option)
+          msg = ('%s\n  :Triforce profile %s'):format(msg, option)
         end
         vim.notify(msg, vim.log.levels.INFO)
       end
@@ -29,9 +29,10 @@ function M.setup()
     elseif opts.fargs[1] == 'items' then
       if subcommand2 == '' then
         vim.notify(
-          [[Usage: :Triforce items buy <item>
-       :Triforce items currency
-       :Triforce items list]],
+          [[Usage:
+  :Triforce items buy <item>
+  :Triforce items currency
+  :Triforce items list]],
           vim.log.levels.INFO
         )
       elseif subcommand2 == 'currency' then
@@ -44,7 +45,7 @@ function M.setup()
         vim.notify(msg, vim.log.levels.INFO)
       elseif subcommand2 == 'buy' then
         if not vim.list_contains(triforce.items.get_items_by_name(), subcommand3) then
-          vim.notify('Usage: :Triforce items buy <item>', vim.log.levels.INFO)
+          vim.notify('Usage:\n  :Triforce items buy <item>', vim.log.levels.INFO)
         else
           triforce.items.buy_item(subcommand3)
         end
@@ -54,33 +55,35 @@ function M.setup()
         vim.notify(vim.inspect(triforce.get_stats()), vim.log.levels.INFO)
       elseif subcommand2 == 'save' then
         triforce.save_stats()
-      elseif subcommand2 ~= 'export' then
-        vim.notify(
-          [[Usage: :Triforce stats
-       :Triforce stats export
-       :Triforce stats export json </path/to/file>
-       :Triforce stats export markdown </path/to/file>
-       :Triforce stats save]],
-          vim.log.levels.INFO
-        )
-      elseif subcommand3 == '' then
-        triforce.export_stats()
-      elseif not vim.list_contains({ 'json', 'markdown' }, subcommand3) then
-        vim.notify(
-          [[Usage: :Triforce stats export json <path/to/file>
-       :Triforce stats export markdown </path/to/file>]],
-          vim.log.levels.INFO
-        )
-      elseif subcommand3 == 'markdown' then
-        if subcommand4 == '' then
-          vim.notify('Usage: :Triforce stats export markdown </path/to/file>', vim.log.levels.INFO)
-        else
+      elseif subcommand2 == 'export' then
+        if subcommand3 == '' then
+          triforce.export_stats()
+        elseif subcommand3 == 'markdown' and subcommand4 == '' then
+          triforce.export_stats('markdown')
+        elseif subcommand3 == 'markdown' and subcommand4 ~= '' then
           triforce.export_stats_to_md(subcommand4)
+        elseif subcommand3 == 'json' and subcommand4 == '' then
+          triforce.export_stats('json')
+        elseif subcommand3 == 'json' and subcommand4 ~= '' then
+          triforce.export_stats_to_json(subcommand4)
+        else
+          vim.notify(
+            [[Usage:
+  :Triforce stats export json [<path/to/file>]
+  :Triforce stats export markdown [</path/to/file>]\]],
+            vim.log.levels.INFO
+          )
         end
-      elseif subcommand4 == '' then
-        vim.notify('Usage: :Triforce stats export json </path/to/file>', vim.log.levels.INFO)
       else
-        triforce.export_stats_to_json(subcommand4)
+        vim.notify(
+          [[Usage:
+  :Triforce stats
+  :Triforce stats export
+  :Triforce stats export json [</path/to/file>]
+  :Triforce stats export markdown [</path/to/file>]
+  :Triforce stats save]],
+          vim.log.levels.INFO
+        )
       end
     elseif opts.fargs[1] == 'debug' then
       local debug_ops = {
@@ -89,27 +92,36 @@ function M.setup()
         languages = triforce.debug_languages,
         xp = triforce.debug_xp,
       }
-
-      -- Plan B: If subcommand2 value is not valid then abort and print usage
-      if not vim.list_contains(vim.tbl_keys(debug_ops), subcommand2) then
-        vim.notify('Usage: :Triforce debug xp | achievement | languages | fix', vim.log.levels.INFO)
-      else
-        local operation = debug_ops[subcommand2]
-        operation()
+      if debug_ops[subcommand2] then
+        pcall(debug_ops[subcommand2])
+      else -- Plan B: If subcommand2 value is not valid then abort and print usage
+        vim.notify(
+          [[Usage:
+  :Triforce debug achievement
+  :Triforce debug fix
+  :Triforce debug languages
+  :Triforce debug xp]],
+          vim.log.levels.INFO
+        )
       end
     else
       vim.notify(
-        [[Usage: :Triforce config
-       :Triforce debug <xp|achievement|languages|fix>
-       :Triforce items buy <item>
-       :Triforce items <currency|list>
-       :Triforce profile
-       :Triforce reset
-       :Triforce stats
-       :Triforce stats export
-       :Triforce stats export json <path/to/file>
-       :Triforce stats export markdown </path/to/file>
-       :Triforce stats save]],
+        [[Usage:
+  :Triforce config
+  :Triforce debug achievement
+  :Triforce debug fix
+  :Triforce debug languages
+  :Triforce debug xp
+  :Triforce items buy <item>
+  :Triforce items currency
+  :Triforce items list
+  :Triforce profile
+  :Triforce reset
+  :Triforce stats
+  :Triforce stats export
+  :Triforce stats export json [<path/to/file>]
+  :Triforce stats export markdown [</path/to/file>]
+  :Triforce stats save]],
         vim.log.levels.INFO
       )
     end

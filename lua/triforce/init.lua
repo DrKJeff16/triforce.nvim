@@ -44,7 +44,6 @@ function M.setup(opts)
   local config = require('triforce.config').get()
 
   require('triforce.levels').setup(config.override_levels)
-  require('triforce.commands').setup()
 
   ---@diagnostic disable:undefined-field
   if config.keymap and config.keymap.show_profile and config.keymap.show_profile ~= '' then
@@ -149,9 +148,14 @@ function M.debug_fix_level()
   end
 end
 
-function M.export_stats()
+---@param format? 'json'|'markdown'|'lua'
+function M.export_stats(format)
+  Util.validate({ format = { format, { 'string', 'nil' }, true } })
+  format = format or 'lua'
+  format = vim.list_contains({ 'json', 'lua', 'markdown' }, format) and format or 'lua'
+
   if require('triforce.config').has_gamification() then
-    require('triforce.stats').export_stats(require('triforce.tracker').get_stats())
+    require('triforce.stats').export_stats(require('triforce.tracker').get_stats(), format)
   end
 end
 

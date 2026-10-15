@@ -620,15 +620,30 @@ end
 
 ---Export data to a new empty buffer
 ---@param stats Stats
-function M.export_stats(stats)
-  Util.validate({ stats = { stats, { 'table' } } })
+---@param format? 'json'|'markdown'|'lua'
+function M.export_stats(stats, format)
+  Util.validate({
+    stats = { stats, { 'table' } },
+    format = { format, { 'string', 'nil' }, true },
+  })
+  format = format or 'lua'
+  format = vim.list_contains({ 'json', 'lua', 'markdown' }, format) and format or 'lua'
 
-  local data, bufnr = vim.split(vim.inspect(stats), '\n', { trimempty = true }), vim.api.nvim_create_buf(true, true)
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, data)
+  local pre_data ---@type string
+  if format == 'lua' then
+    pre_data = vim.inspect(stats)
+  elseif format == 'json' then
+    pre_data = vim.json.encode(stats, { indent = (' '):rep(vim.o.tabstop) })
+  else
+    local target = os.tmpname()
+    pre_data = M.export_to_md(stats, target)
+  end
+  local bufnr = vim.api.nvim_create_buf(true, true)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, vim.split(pre_data, '\n', { trimempty = true }))
 
   local win = vim.api.nvim_open_win(bufnr, true, { noautocmd = true, split = 'below', style = 'minimal' })
 
-  Util.optset('filetype', 'lua', 'buf', bufnr)
+  Util.optset('filetype', format, 'buf', bufnr)
   Util.optset('modified', false, 'buf', bufnr)
   Util.optset('modifiable', false, 'buf', bufnr)
 
@@ -648,6 +663,7 @@ end
 ---@param stats Stats
 ---@param target string
 ---@param indent? string
+---@return string data
 function M.export_to_json(stats, target, indent)
   Util.validate({
     stats = { stats, { 'table' } },
@@ -677,11 +693,15 @@ function M.export_to_json(stats, target, indent)
 
   vim.uv.fs_write(fd, data)
   vim.uv.fs_close(fd)
+
+  return data
 end
 
----Export data to a specified Markdown file
+---Export data to a specified Markdown file.
+--- ---
 ---@param stats Stats
 ---@param target string
+---@return string data
 function M.export_to_md(stats, target)
   Util.validate({
     stats = { stats, { 'table' } },
@@ -718,6 +738,8 @@ function M.export_to_md(stats, target)
 
   vim.uv.fs_write(fd, data)
   vim.uv.fs_close(fd)
+
+  return data
 end
 
 ---Get streak with proper calculation
