@@ -207,11 +207,14 @@ require('triforce').setup({
   -- - `'mini'` - Use `mini.icons`
   icon_engine = 'builtin', ---@type 'builtin'|'mini'
 
-  -- Enable XP, levels, achievements
+  -- Enable XP, levels, achievements and optionally items
   gamification_enabled = true,
 
-  -- Items configuration
-  items = { enabled = true },
+  -- Items configuration (EXPERIMENTAL)
+  items = {
+    -- Enable items (requires `gamification_enabled`)
+    enabled = false,
+  },
 
   -- Backdrop control
   backdrop = {
@@ -223,10 +226,10 @@ require('triforce').setup({
     winblend = 20,
   },
 
-  -- Custom levels
+  -- Custom levels (requires `override_levels`)
   levels = {},
 
-  -- Don't include the default levels (needs custom levels).
+  -- Don't include the default levels
   override_levels = false,
 
   -- Custom achievements
@@ -234,14 +237,14 @@ require('triforce').setup({
 
   -- Notification settings
   notifications = {
+    -- Show achievement unlock notifications
+    achievements = true,
+
     -- Master toggle for all notifications
     enabled = true,
 
     -- Show level up notifications
     level_up = true,
-
-    -- Show achievement unlock notifications
-    achievements = true,
   },
 
   -- Auto-save interval (in seconds)
@@ -249,7 +252,7 @@ require('triforce').setup({
 
   -- Add custom language support
   custom_languages = {
-    gleam = { icon = '✨', name = 'Gleam' },
+    gleam = { icon = '✨', name = 'Gleam' }, -- `icon` is optional!
     odin = { icon = '🔷', name = 'Odin' },
     -- Add more languages...
   },
@@ -270,9 +273,14 @@ require('triforce').setup({
 
   -- Customize XP rewards (optional)
   xp_rewards = {
-    char = 1,   -- XP per character typed
-    line = 1,   -- XP per new line
-    save = 50,  -- XP per file save
+    -- XP per character typed
+    char = 1,
+
+    -- XP per new line
+    line = 1,
+
+    -- XP per file save
+    save = 50,
   },
 
   -- Add filetypes to be excluded
