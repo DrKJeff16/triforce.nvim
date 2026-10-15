@@ -2,12 +2,9 @@
 
 [![Mentioned in Awesome Neovim](https://awesome.re/mentioned-badge.svg)](https://github.com/rockerBOO/awesome-neovim)
 
-[Share Your Stats](https://github.com/gisketch/triforce.nvim/discussions/30)
+**Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels and achievements while you work.
 
-**Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels and achievements
-while you work.
-
-![Showcase](https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce.png)
+![Showcase](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce.png)
 
 ---
 
@@ -124,7 +121,7 @@ so much smoother and helped me focus on bringing those ideas to life.
 
 ```lua
 {
-  'gisketch/triforce.nvim',
+  'DrKJeff16/triforce.nvim',
   dependencies = { 'nvzone/volt' },
   keys = {
     {
@@ -145,7 +142,7 @@ so much smoother and helped me focus on bringing those ideas to life.
 ```lua
 require('pckr').add({
   {
-    'gisketch/triforce.nvim',
+    'DrKJeff16/triforce.nvim',
     requires = { 'nvzone/volt' },
     config = function()
       require('triforce').setup()
@@ -161,7 +158,7 @@ require('pckr').add({
 ```lua
 require('paq')({
   'nvzone/volt',
-  'gisketch/triforce.nvim',
+  'DrKJeff16/triforce.nvim',
 })
 ```
 
@@ -171,7 +168,7 @@ require('paq')({
 
 ```vim
 Plug 'nvzone/volt'
-Plug 'gisketch/triforce.nvim'
+Plug 'DrKJeff16/triforce.nvim'
 ```
 
 </details>
@@ -452,7 +449,7 @@ The profile includes the following tabs:
 
 ### Stats Tab
 
-![Stats Tab](https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_stats.png)
+![Stats Tab](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_stats.png)
 
 - Level progress bar
 - Session/time milestone progress
@@ -462,7 +459,7 @@ The profile includes the following tabs:
 
 ### Achievements Tab
 
-![Achievements Tab](https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_achievements.png)
+![Achievements Tab](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_achievements.png)
 
 - View all unlocked achievements and locked achievements with unlock requirements
 - Paginate through achievements (`H` / `L` or arrow keys)
@@ -470,7 +467,7 @@ The profile includes the following tabs:
 
 ### Languages Tab
 
-![Languages Tab](https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_languages.png)
+![Languages Tab](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_languages.png)
 
 - Bar graph showing your most-used languages
 - See character count breakdown by language
@@ -478,7 +475,7 @@ The profile includes the following tabs:
 
 ### Levels Tab
 
-![Levels Tab](https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_levels.png)
+![Levels Tab](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_levels.png)
 
 - View unlocked levels first, then locked ones
 - Paginate through achievements (`H` / `L` or arrow keys)
@@ -668,7 +665,7 @@ omit a key, the default color for that level is used.
 
 ## Lualine Integration
 
-![Lualine Integration](https://github.com/gisketch/triforce.nvim/blob/main/assets/triforce_lualine.png)
+![Lualine Integration](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_lualine.png)
 
 Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display
 your coding stats right in your statusline.
@@ -932,7 +929,7 @@ Currently only these formats are supported:
 
 ## License
 
-MIT License - see [LICENSE](https://github.com/gisketch/triforce.nvim/blob/main/LICENSE) for details.
+MIT License - see [LICENSE](https://github.com/DrKJeff16/triforce.nvim/blob/main/LICENSE) for details.
 
 ---
 
@@ -942,19 +939,19 @@ MIT License - see [LICENSE](https://github.com/gisketch/triforce.nvim/blob/main/
 
 ⭐ Star this repo if you find it useful!
 
-<a href="https://star-history.dera.page/#gisketch/triforce.nvim&type=date&legend=top-left">
+<a href="https://star-history.dera.page/#DrKJeff16/triforce.nvim&type=date&legend=top-left">
   <picture>
     <source
     media="(prefers-color-scheme: dark)"
-    srcset="https://star-history.dera.page/svg?repos=gisketch/triforce.nvim&type=date&theme=dark&legend=top-left"
+    srcset="https://star-history.dera.page/svg?repos=DrKJeff16/triforce.nvim&type=date&theme=dark&legend=top-left"
     />
     <source
     media="(prefers-color-scheme: light)"
-    srcset="https://star-history.dera.page/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left"
+    srcset="https://star-history.dera.page/svg?repos=DrKJeff16/triforce.nvim&type=date&legend=top-left"
     />
     <img
     alt="Star History Chart"
-    src="https://star-history.dera.page/svg?repos=gisketch/triforce.nvim&type=date&legend=top-left"
+    src="https://star-history.dera.page/svg?repos=DrKJeff16/triforce.nvim&type=date&legend=top-left"
     />
   </picture>
 </a>
