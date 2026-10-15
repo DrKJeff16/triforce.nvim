@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
       - name: Run panvimdoc
-        uses: kdheepak/panvimdoc@v6
+        uses: kdheepak/panvimdoc@v6.0.0
         with:
           vimdoc: triforce
           pandoc: README.md
