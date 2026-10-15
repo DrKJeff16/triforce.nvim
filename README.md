@@ -2,6 +2,12 @@
 
 [![Mentioned in Awesome Neovim](https://awesome.re/mentioned-badge.svg)](https://github.com/rockerBOO/awesome-neovim)
 
+> [!IMPORTANT]
+> **_The original repository ([gisketch/triforce.nvim](https://github.com/gisketch/triforce.nvim)) is currently unavailable.
+> Since I was the co-maintainer, [@gisketch](https://github.com/gisketch) authorized me to mirror it while his account is reinstated._**
+>
+> **_Read [this post](https://www.reddit.com/r/neovim/comments/1x696yi/triforcenvim_the_plugin_is_now_available_once/) for more information on the topic._**
+
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP, levels and achievements while you work.
 
 ![Showcase](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce.png)
