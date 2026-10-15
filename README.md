@@ -18,20 +18,20 @@
 
 I named this plugin **Triforce** just because I love **The Legend of Zelda**.
 
-I have ADHD (Attention Deficit Hyperactivity Disorder), which can make coding feel like
-a grind — it’s hard to stay consistent or even get started some days. That’s part of why I fell
-in love with Neovim: it’s customizable, expressive, and makes the act of writing code feel fun again.
+I have ADHD (Attention Deficit Hyperactivity Disorder), which can make coding feel like a grind;
+it’s hard to stay consistent or even get started some days. That’s part of why I fell in love with
+Neovim: it’s customizable, expressive, and makes the act of writing code feel fun again.
 
 Triforce is co-maintained by [@DrKJeff16](https://github.com/DrKJeff16), who has ADHD, too.
 
 This is my first Neovim plugin (and the first plugin I’ve ever built in general). I’d always wanted
-to make something of my own, but I never really knew where to start. Once I got into Neovim’s
-Lua ecosystem I got completely hooked. I started experimenting, tinkering, breaking things,
-and slowly, Triforce came to life.
+to make something of my own, but I never really knew where to start. Once I got into Neovim’s Lua
+ecosystem I got completely hooked. I started experimenting, tinkering, breaking things, and slowly,
+Triforce came to life.
 
 This exists to **gamify my coding workflow**; to turn those long, sometimes frustrating coding
-sessions into something that actually feels rewarding. Watching the XP bar fill up, unlocking
-achievements, and seeing my progress in real time gives me that little dopamine boost that helps me
+sessions into an experience that actually feels rewarding. Watching the XP bar fill up, unlocking
+achievements, and seeing my progress in real time gives me that little dopamine boost to help me
 stay focused and motivated.
 
 The UI is **heavily inspired by [@siduck](https://github.com/siduck)’s gorgeous designs** and **[nvzone/typr](https://github.com/nvzone/typr)**; their aesthetic sense
@@ -447,17 +447,18 @@ require('triforce').setup({
 
 Triforce creates the `:Triforce` user command for your comfort. Here are the available arguments:
 
-| Command                                                    | Description                                                                                                              |
-|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `:Triforce config`                                         | Open floating window showing your setup config                                                                           |
-| `:Triforce debug languages`                                | Debug language tracking                                                                                                  |
-| `:Triforce profile`                                        | Toggles the Profile UI.                                                                                                  |
-| `:Triforce profile stats\|achievements\|languages\|levels` | Toggles/cycles the Profile UI. If the UI is open and the passed tab is not the same as the current, it will cycle to it. |
-| `:Triforce reset`                                          | Reset all stats (useful for testing)                                                                                     |
-| `:Triforce stats`                                          | Display current stats in a notification                                                                                  |
-| `:Triforce stats export`                                   | Export stats to a new Neovim buffer                                                                                      |
-| `:Triforce stats export <json\|markdown> </path/to/file>`  | Export stats to JSON or Markdown                                                                                         |
-| `:Triforce stats save`                                     | Force save stats immediately                                                                                             |
+| Command                                                    | Description                                                                                                                                              |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `:Triforce config`                                         | Open floating window showing your setup config                                                                                                           |
+| `:Triforce debug languages`                                | Debug language tracking                                                                                                                                  |
+| `:Triforce profile`                                        | Toggles the Profile UI.                                                                                                                                  |
+| `:Triforce profile stats\|achievements\|languages\|levels` | Toggles/cycles the Profile UI. If the UI is open and the passed tab is not the same as the current, it will cycle to it                                  |
+| `:Triforce reset`                                          | Reset all stats (useful for testing)                                                                                                                     |
+| `:Triforce stats`                                          | Display current stats in a notification                                                                                                                  |
+| `:Triforce stats export`                                   | Export stats to a new buffer                                                                                                                             |
+| `:Triforce stats export json [</path/to/file> [INDENT]]`   | Export stats to JSON format. If a file name is given, the exported data will be saved there, otherwise a new buffer will open with the exported data     |
+| `:Triforce stats export markdown [</path/to/file>]`        | Export stats to Markdown format. If a file name is given, the exported data will be saved there, otherwise a new buffer will open with the exported data |
+| `:Triforce stats save`                                     | Force-save stats immediately                                                                                                                             |
 
 ---
 
@@ -707,9 +708,7 @@ Add Triforce components to your lualine configuration:
 ```lua
 require('lualine').setup({
   sections = {
-    lualine_x = {
-      'triforce',
-    },
+    lualine_x = { 'triforce' },
   }
 })
 ```
@@ -747,10 +746,10 @@ require('lualine').setup({
       {
         'triforce',
         level = {
+          bar = { length = 6, chars = { filled = '█', empty = '░' } },
           enabled = true,
           prefix = 'Lv.',
           show = { level = true, bar = true, percent = false, xp = false },
-          bar = { length = 6, chars = { filled = '█', empty = '░' } },
         },
       },
     },
@@ -770,10 +769,7 @@ Options:
 require('lualine').setup({
   sections = {
     lualine_x = {
-      {
-        'triforce',
-        achievements = { enabled = false, icon = '', show_count = true },
-      },
+      { 'triforce', achievements = { enabled = false, icon = '', show_count = true } },
     },
   }
 })
@@ -835,18 +831,10 @@ require('lualine').setup({
       {
         'triforce',
         level = {
+          bar = { chars = { empty = '░', filled = '█' }, length = 6 },
           enabled = true,
           prefix = 'Lv.',
-          show = {
-            level = true,
-            bar = true,
-            percent = false,
-            xp = false,
-          },
-          bar = {
-            length = 6,
-            chars = { filled = '█', empty = '░' },
-          },
+          show = { bar = true, level = true, percent = false, xp = false },
         },
         achievements = {
           enabled = false,
@@ -874,9 +862,8 @@ require('lualine').setup({
 
 ## Data Storage
 
-By default, stats are saved to `~/.local/share/nvim/triforce_stats.json`.
-The file is automatically backed up before each save
-to `~/.local/share/nvim/triforce_stats.json.bak`.
+By default, stats are saved to `~/.local/share/nvim/triforce_stats.json`. A backup is automatically
+created before each save to `~/.local/share/nvim/triforce_stats.json.bak`.
 
 ### Exporting
 
@@ -884,11 +871,11 @@ You can export your stats with the `:Triforce stats export` command.
 
 Currently only these formats are supported:
 
-| Format                           | Command                                         | Description                                                    |
-|----------------------------------|-------------------------------------------------|----------------------------------------------------------------|
-| `N/A` (export to another window) | `:Triforce stats export`                        | Raw export of your stats in another Neovim buffer.             |
-| `JSON`                           | `:Triforce stats export json <PATH> [INDENT]`   | Export your stats to a given JSON file (with optional indent). |
-| `Markdown`                       | `:Triforce stats export markdown <PATH>`        | Export your to a given Markdown file, with custom formatting.  |
+| Command                                         | Format   | Description                                                                                                                      |
+|-------------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------|
+| `:Triforce stats export`                        | Lua      | Raw export of your stats in a new buffer                                                                                         |
+| `:Triforce stats export json [<PATH> [INDENT]]` | JSON     | Export your stats to a given JSON file (with optional indent). If no path is given, the stats will be exported in another buffer |
+| `:Triforce stats export markdown [<PATH>]`      | Markdown | Export your to a given Markdown file, with custom formatting. If no path is given, the stats will be exported in another buffer  |
 
 ### Data Format
 
@@ -989,7 +976,7 @@ The following is an example JSON file from an export operation:
 
 - [`nvzone/volt`](https://github.com/nvzone/volt): Beautiful UI framework.
 - [`nvzone/typr`](https://github.com/nvzone/typr): Beautiful grid design component inspiration.
-- [`GrzegorzSzczepanek/gamify.nvim`](https://github.com/GrzegorzSzczepanek/gamify.nvim): Another cool gamification plugin. Inspired the inclusion of achievements.
+- [`GrzegorzSzczepanek/gamify.nvim`](https://github.com/GrzegorzSzczepanek/gamify.nvim): Another cool gamification plugin, inspired the inclusion of achievements.
 
 ---
 
