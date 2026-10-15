@@ -686,7 +686,9 @@ the default color for that level is used.
 
 ## Lualine Integration
 
-![Lualine Integration](https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_lualine.png)
+<div align="center">
+<img alt="Lualine Integration" src="https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_lualine.png" />
+</div>
 
 Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display
 your coding stats right in your statusline.
@@ -722,22 +724,32 @@ Each component can be customized independently.
 Options:
 
 - `enabled` (boolean): Activates this component (default: `true`)
-- `prefix` (string): The prefix before the amount of currency (default: `💰`)
+- `prefix` (string): The prefix before the amount of currency (default: `'💰'`)
+
+```lua
+require('lualine').setup({
+  sections = {
+    lualine_x = {
+      { 'triforce', currency = { enabled = true, prefix = '💰' } },
+    },
+  }
+})
+```
 
 #### Level Component
 
 Options:
 
+- `bar` (table): Bar properties:
+  - `chars` (table): Signal both char types (`empty` and `filled`) for the bar (default: `{ empty = '░', filled = '█' }`)
+  - `length` (number): Progress bar length (default: `6`)
 - `enabled` (boolean): Activates this component (default: `true`)
 - `prefix` (string): Text prefix before level number (default: `'Lv.'`)
 - `show` (table): Toggles for showing different components:
-  - `level` (boolean): Show level number (default: `true`)
   - `bar` (boolean): Show progress bar (default: `true`)
+  - `level` (boolean): Show level number (default: `true`)
   - `percent` (boolean): Show percentage (default: `false`)
   - `xp` (boolean): Show XP numbers like `450/500` (default: `false`)
-- `bar` (table): Bar properties:
-  - `length` (number): Progress bar length (default: `6`)
-  - `chars` (table): `{ filled = '█', empty = '░' }` (default)
 
 ```lua
 require('lualine').setup({
@@ -746,10 +758,10 @@ require('lualine').setup({
       {
         'triforce',
         level = {
-          bar = { length = 6, chars = { filled = '█', empty = '░' } },
+          bar = { chars = { filled = '█', empty = '░' }, length = 6 },
           enabled = true,
           prefix = 'Lv.',
-          show = { level = true, bar = true, percent = false, xp = false },
+          show = { bar = true, level = true, percent = false, xp = false },
         },
       },
     },
@@ -803,9 +815,9 @@ require('lualine').setup({
 Options:
 
 - `enabled` (boolean): Activates this component (default: `false`)
+- `format` (string): `'short'` (2h 34m) or `'long'` (2:34:12) (default: `'short'`)
 - `icon` (string): Icon to display (default: `''` - clock)
 - `show_duration` (boolean): Show time duration (default: `true`)
-- `format` (string): `'short'` (2h 34m) or `'long'` (2:34:12) (default: `'short'`)
 
 ```lua
 require('lualine').setup({
@@ -830,27 +842,31 @@ require('lualine').setup({
     lualine_x = {
       {
         'triforce',
+        achievements = {
+          enabled = false,
+          icon = '',
+          show_count = true,
+        },
+        currency = {
+          enabled = true,
+          prefix = '💰',
+        },
         level = {
           bar = { chars = { empty = '░', filled = '█' }, length = 6 },
           enabled = true,
           prefix = 'Lv.',
           show = { bar = true, level = true, percent = false, xp = false },
         },
-        achievements = {
-          enabled = false,
-          icon = '',
-          show_count = true,
-        },
-        streak = {
-          enabled = false,
-          icon = '',
-          show_days = true,
-        },
         session_time = {
           enabled = false,
           icon = '',
           show_duration = true,
           format = 'short',
+        },
+        streak = {
+          enabled = false,
+          icon = '',
+          show_days = true,
         },
       },
     },
