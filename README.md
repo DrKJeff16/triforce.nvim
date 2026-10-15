@@ -102,14 +102,11 @@ so much smoother and helped me focus on bringing those ideas to life.
 - **Activity Heatmap** - GitHub-style contribution graph showing your coding consistency
 - **Language Tracking** - See which programming languages you use most
 - **Beautiful UI** - Clean, themed interface powered by [nvzone/volt](https://github.com/nvzone/volt)
-- **Lualine Integration** - Optional modular statusline components
-  (see [Lualine Integration](#lualine-integration))
-- **Highly Configurable** - Customize notifications and keymaps, add custom languages, levels
-  and achievements
+- **Lualine Integration** - Optional modular [lualine components](#lualine-integration)
+- **Highly Configurable** - Customize notifications and keymaps, add custom languages, levels and achievements
 - **Auto-Save** - Your progress is automatically saved every 5 minutes
 - **Documented Code** - The code is thoroughly documented and annotated with LuaLS annotations
-- **(NEW!) Currency and Items** - You can gain currency alongside XP, which allows you to buy items
-  (try running `:Triforce items <TAB>`)
+- **(EXPERIMENTAL) Currency and Items** - Gain currency alongside XP to buy items. Try running `:Triforce items <TAB>`
 
 ---
 
@@ -139,6 +136,17 @@ so much smoother and helped me focus on bringing those ideas to life.
   },
   opts = {},
 }
+```
+
+</details>
+<details>
+<summary><code>vim.pack</code></summary>
+
+```lua
+vim.pack.add({
+  { src = 'https://github.com/nvzone/volt' },
+  { src = 'https://github.com/DrKJeff16/triforce.nvim' },
+})
 ```
 
 </details>
