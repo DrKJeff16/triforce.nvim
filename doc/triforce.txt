@@ -6,6 +6,11 @@
 
 <https://github.com/rockerBOO/awesome-neovim>
 
+
+  [!IMPORTANT] **The original repository (gisketch/triforce.nvim) is currently
+  unavailable. Since I was the co-maintainer, @gisketch authorized me to mirror
+  it while his account is reinstated.**
+  **Read this post for more information on the topic.**
 **Hey, listen!** Triforce adds a bit of RPG flavor to your coding — XP,
 levels and achievements while you work.
 
