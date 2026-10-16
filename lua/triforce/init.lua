@@ -2,9 +2,13 @@ local Util = require('triforce.util')
 
 ---@class Triforce
 ---@field achievement Triforce.Achievements
+---@field add_levels fun(lvls: LevelParams[]|LevelParams)
 ---@field commands Triforce.Commands
 ---@field config Triforce.Config
+---@field get_config fun(): config: TriforceConfigDefaults
+---@field get_levels fun(): levels: table<integer, LevelTitle>
 ---@field get_stats fun(): stats: Stats|nil|?
+---@field has_gamification fun(silent?: boolean): gamified: boolean
 ---@field health Triforce.Health
 ---@field items Triforce.Items
 ---@field languages Triforce.Languages
@@ -12,11 +16,72 @@ local Util = require('triforce.util')
 ---@field lualine Triforce.Lualine
 ---@field open_config function
 ---@field random_stats Triforce.RandomStats
+---@field reset_all_items function
+---@field reset_stats function
+---@field set_config fun(key: any, value: any)
 ---@field stats Triforce.Stats
 ---@field tracker Triforce.Tracker
 ---@field ui Triforce.Ui
 ---@field util Triforce.Util
 local M = {}
+
+---@generic T: table, F
+---@param t T
+---@param k any
+---@param fallback F
+---@return F fallback
+local function get(t, k, fallback)
+  return Util.get(t, k, function()
+    return Util.rawset(t, k, fallback)
+  end, true)
+end
+
+setmetatable(M, {
+  ---@param self Triforce
+  ---@param k any
+  __index = function(self, k)
+    local raw = Util.get(self, k)
+    if raw then
+      return raw
+    end
+
+    if type(k) ~= 'string' then
+      return
+    end
+
+    ---@cast k string
+    if Util.mod_exists('triforce.' .. k) then
+      return get(self, k, require('triforce.' .. k))
+    end
+    if k == 'add_levels' then
+      return get(self, k, self.levels.add_levels)
+    end
+    if k == 'get_config' then
+      return get(self, k, self.config.get)
+    end
+    if k == 'get_levels' then
+      return get(self, k, self.levels.get)
+    end
+    if k == 'get_stats' then
+      return get(self, k, self.tracker.get_stats)
+    end
+    if k == 'has_gamification' then
+      return get(self, k, self.config.has_gamification)
+    end
+    if k == 'open_config' then
+      return get(self, k, self.config.open_window)
+    end
+    if k == 'reset_all_items' then
+      return get(self, k, self.items.reset_all_items)
+    end
+    if k == 'reset_stats' then
+      return get(self, k, self.tracker.reset_stats)
+    end
+    if k == 'set_config' then
+      return get(self, k, self.config.set)
+    end
+  end,
+})
 
 ---@param opts? TriforceConfig
 function M.setup(opts)
@@ -31,7 +96,7 @@ function M.setup(opts)
 
   Util.validate({ opts = { opts, { 'table', 'nil' }, true } })
 
-  require('triforce.config').setup(opts or {})
+  M.config.setup(opts or {})
 
   -- Create <Plug> mappings for users to map to their own keys
   vim.keymap.set(
@@ -41,23 +106,17 @@ function M.setup(opts)
     { desc = 'Triforce: Show profile', noremap = true, silent = true }
   )
 
-  local config = require('triforce.config').get()
+  local config = M.get_config()
 
-  require('triforce.levels').setup(config.override_levels)
+  M.levels.setup(config.override_levels)
 
-  ---@diagnostic disable:undefined-field
-  if config.keymap and config.keymap.show_profile and config.keymap.show_profile ~= '' then
-    vim.keymap.set('n', config.keymap.show_profile, M.show_profile, { desc = 'Show Triforce Profile' })
-  end
-  ---@diagnostic enable:undefined-field
-
-  if require('triforce.config').has_gamification(true) then
-    require('triforce.tracker').setup()
+  if M.has_gamification(true) then
+    M.tracker.setup()
 
     M.new_achievements(config.achievements or {})
 
-    if config.levels and not vim.tbl_isempty(config.levels) then
-      require('triforce.levels').add_levels(config.levels)
+    if config.levels and #config.levels > 0 then
+      M.levels.add_levels(config.levels)
     end
 
     vim.api.nvim_create_autocmd('ColorScheme', {
@@ -65,7 +124,7 @@ function M.setup(opts)
       group = vim.api.nvim_create_augroup('TriforceProfile', { clear = true }),
       callback = function()
         vim.schedule(function()
-          require('triforce.ui').profile.setup_highlights()
+          M.ui.profile.setup_highlights()
         end)
       end,
     })
@@ -76,16 +135,17 @@ end
 ---@param tab? string
 function M.show_profile(tab)
   Util.validate({ tab = { tab, { 'string', 'nil' }, true } })
-  if require('triforce.config').has_gamification() then
-    if not require('triforce.tracker').get_stats() then
-      require('triforce.tracker').setup()
+
+  if M.has_gamification() then
+    if not M.get_stats() then
+      M.tracker.setup()
     end
 
-    local Profile = require('triforce.ui').profile
+    local Profile = M.ui.profile
     local tabs_map, current_tab, dimensions =
       Profile.get_tabs_map(), Profile.get_current_tab(), Profile.get_dimensions()
 
-    local tab_n = (tab and tabs_map[tab]) and tabs_map[tab] or current_tab
+    local tab_n = tab and (tabs_map[tab] or current_tab) or current_tab
     if current_tab ~= tab_n and dimensions.float and dimensions.dim_float then
       Profile.cycle_tab(nil, tab_n)
     else
@@ -96,26 +156,26 @@ end
 
 ---Reset all stats (useful for testing)
 function M.reset()
-  if require('triforce.config').has_gamification() then
-    require('triforce.tracker').reset_stats()
-    require('triforce.items').reset_all_items()
+  if M.has_gamification() then
+    M.reset_stats()
+    M.reset_all_items()
   end
 end
 
 ---Debug language tracking
 function M.debug_languages()
-  if require('triforce.config').has_gamification() then
-    require('triforce.tracker').debug_languages()
+  if M.has_gamification() then
+    M.tracker.debug_languages()
   end
 end
 
 ---Force save stats
 function M.save_stats()
-  if require('triforce.config').has_gamification() then
-    local stats = require('triforce.tracker').get_stats()
+  if M.has_gamification() then
+    local stats = M.get_stats()
     if not stats then
       vim.notify('No stats to save!', vim.log.levels.WARN)
-    elseif not require('triforce.stats').save(stats) then
+    elseif not M.stats.save(stats) then
       vim.notify('Failed to save stats!', vim.log.levels.ERROR)
     else
       vim.notify(
@@ -129,22 +189,22 @@ end
 ---Show current XP progress (debug).
 --- ---
 function M.debug_xp()
-  if require('triforce.config').has_gamification() then
-    require('triforce.tracker').debug_xp()
+  if M.has_gamification() then
+    M.tracker.debug_xp()
   end
 end
 
 ---Debug: Test achievement notification
 function M.debug_achievement()
-  if require('triforce.config').has_gamification() then
-    require('triforce.tracker').debug_achievement()
+  if M.has_gamification() then
+    M.tracker.debug_achievement()
   end
 end
 
 ---Debug: Fix level/XP mismatch
 function M.debug_fix_level()
-  if require('triforce.config').has_gamification() then
-    require('triforce.tracker').debug_fix_level()
+  if M.has_gamification() then
+    M.tracker.debug_fix_level()
   end
 end
 
@@ -154,8 +214,8 @@ function M.export_stats(format)
   format = format or 'lua'
   format = vim.list_contains({ 'json', 'lua', 'markdown' }, format) and format or 'lua'
 
-  if require('triforce.config').has_gamification() then
-    require('triforce.stats').export_stats(require('triforce.tracker').get_stats(), format)
+  if M.has_gamification() then
+    M.stats.export_stats(M.get_stats(), format)
   end
 end
 
@@ -168,18 +228,19 @@ function M.export_stats_to_json(file, indent)
     indent = { indent, { 'string', 'nil' }, true },
   })
 
-  if require('triforce.config').has_gamification() then
-    require('triforce.stats').export_to_json(require('triforce.tracker').get_stats(), file, indent or nil)
+  if M.has_gamification() then
+    M.stats.export_to_json(M.get_stats(), file, indent or nil)
   end
 end
 
 ---Export stats to Markdown
+---
 ---@param file string
 function M.export_stats_to_md(file)
   Util.validate({ file = { file, { 'string' } } })
 
-  if require('triforce.config').has_gamification() then
-    require('triforce.stats').export_to_md(require('triforce.tracker').get_stats(), file)
+  if M.has_gamification() then
+    M.stats.export_to_md(M.get_stats(), file)
   end
 end
 
@@ -187,29 +248,10 @@ end
 function M.new_achievements(achievements)
   Util.validate({ achievements = { achievements, { 'table' } } })
 
-  if require('triforce.config').has_gamification() then
-    require('triforce.achievement').new_achievements(achievements, require('triforce.tracker').get_stats())
+  if M.has_gamification() then
+    M.achievement.new_achievements(achievements, M.get_stats())
   end
 end
 
-local Triforce = setmetatable(M, { ---@type Triforce
-  __index = function(self, k)
-    local raw = rawget(self, k) or nil
-    if raw then
-      return raw
-    end
-
-    if Util.mod_exists('triforce.' .. k) then
-      return Util.rawset(self, k, require('triforce.' .. k))
-    end
-    if k == 'get_stats' then
-      return Util.rawset(self, k, require('triforce.tracker').get_stats)
-    end
-    if k == 'open_config' then
-      return Util.rawset(self, k, require('triforce.config').open_window)
-    end
-  end,
-})
-
-return Triforce
+return M
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:

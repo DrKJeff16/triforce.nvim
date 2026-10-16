@@ -469,6 +469,7 @@ end
 ---@param y U
 ---@return U x
 ---@return T y
+---@nodiscard
 function M.swap(x, y)
   x, y = y, x
   return x, y
@@ -492,14 +493,39 @@ function M.is_file(path, writable)
   return vim.fn.filereadable(path) == 1
 end
 
----@generic T, V
+---@generic T: table, V
 ---@param t T
----@param k string|integer
+---@param k any
 ---@param v V
 ---@return V v
 function M.rawset(t, k, v)
   rawset(t, k, v)
   return v
+end
+
+---@generic T: table, F, K, V
+---@param t T<K, V>
+---@param k K
+---@param fallback F|fun(): raw: F
+---@param is_rawset boolean
+---@return F|V?
+---@overload fun(t: T<K, V>, k: K): raw: V?
+---@overload fun(t: T<K, V>, k: K, fallback: F): raw: F|V
+---@overload fun(t: T<K, V>, k: K, fallback: F, is_rawset: false): raw: F|V
+---@overload fun(t: T<K, V>, k: K, fallback: (fun(): raw: F), is_rawset: true): raw: F|V
+function M.get(t, k, fallback, is_rawset)
+  if is_rawset == nil then
+    is_rawset = false
+  end
+
+  if k ~= nil then
+    local raw = rawget(t, k) or nil --[[@as unknown|nil|?]]
+    if raw ~= nil or fallback == nil then
+      return raw
+    end
+
+    return (is_rawset and fallback() or fallback) or nil
+  end
 end
 
 local Util = setmetatable(M, {
