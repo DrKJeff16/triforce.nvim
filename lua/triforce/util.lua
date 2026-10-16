@@ -524,12 +524,17 @@ function M.get(t, k, fallback, is_rawset)
       return raw
     end
 
-    return (is_rawset and fallback() or fallback) or nil
+    if is_rawset then
+      ---@cast fallback fun(): any
+      local _, res = pcall(fallback)
+      return res
+    end
+    ---@cast fallback any
+    return fallback
   end
 end
 
 local Util = setmetatable(M, {
-  __index = M,
   __newindex = function()
     error('`triforce.util` is read-only!')
   end,
