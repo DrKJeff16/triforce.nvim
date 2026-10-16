@@ -49,7 +49,6 @@ made the process so much smoother and helped me focus on bringing those ideas to
 - [Features](#features)
 - [Installation](#installation)
 - [Configuration](#configuration)
-  - [Configuration Options](#configuration-options)
   - [Custom Levels](#custom-levels)
   - [Level Progression](#level-progression)
   - [XP Rewards](#xp-rewards)
@@ -72,19 +71,12 @@ made the process so much smoother and helped me focus on bringing those ideas to
   - [Custom Keymap](#custom-keymap)
   - [Customizing Heatmap Colors](#customizing-heatmap-colors)
 - [Lualine Integration](#lualine-integration)
-  - [Basic Setup](#basic-setup)
-  - [Quick Setup](#quick-setup)
   - [Component Configuration](#component-configuration)
     - [Achievements Component](#achievements-component)
     - [Currency Component](#currency-component)
     - [Level Component](#level-component)
     - [Session Time Component](#session-time-component)
     - [Streak Component](#streak-component)
-  - [Global Component Configuration](#global-component-configuration)
-  - [Example Configurations](#example-configurations)
-    - [Minimalist Setup](#minimalist-setup)
-    - [Full Stats Dashboard](#full-stats-dashboard)
-    - [Custom Style](#custom-style)
 - [Data Storage](#data-storage)
   - [Exporting](#exporting)
 - [Roadmap](#roadmap)
@@ -202,6 +194,24 @@ You can simply call `setup()` and the defaults will be loaded:
 require('triforce').setup()
 ```
 
+| Field                  | Type          | Default Value                                              | Description                                |
+|------------------------|---------------|------------------------------------------------------------|--------------------------------------------|
+| `achievements`         | `table\|nil`  | See [Custom Achievements](#custom-achievements)            | Custom achievements                        |
+| `auto_save_interval`   | `number`      | `300`                                                      | Auto-save interval in seconds              |
+| `backdrop`             | `table\|nil`  | `{ enabled = true, winblend = 20 }`                        | List of excluded filetypes                 |
+| `custom_languages`     | `table\|nil`  | `nil`                                                      | Custom language definitions                |
+| `debug`                | `boolean`     | `true`                                                     | Enable some debugging messages             |
+| `enabled`              | `boolean`     | `true`                                                     | Enable/disable the plugin                  |
+| `gamification_enabled` | `boolean`     | `true`                                                     | Enable gamification features               |
+| `heat_highlights`      | `table\|nil`  | Defaults shown below                                       | Override heatmap highlights (hex or links) |
+| `ignore_ft`            | `table\|nil`  | `{}`                                                       | Backdrop customization                     |
+| `items`                | `table\|nil`  | `{ enabled = false }`                                      | Items configuration                        |
+| `level_progression`    | `table\|nil`  | See [Level Progression](#level-progression)                | Custom XP requirements per level tier      |
+| `levels`               | `table\|nil`  | See [Custom Levels](#custom-levels)                        | List of custom levels                      |
+| `notifications`        | `table\|nil`  | `{ achievements = true, enabled = true, level_up = true }` | Notifications for different events |
+| `override_levels`      | `boolean`     | `false`                                                    | Don't include the built-in levels          |
+| `xp_rewards`           | `table\|nil`  | [See below](#xp-rewards)                                   | Custom XP rewards for actions              |
+
 <details>
 <summary><b><ins>Defaults</ins></b></summary>
 
@@ -314,26 +324,6 @@ require('triforce').setup({
 ```
 
 </details>
-
-### Configuration Options
-
-| Option                 | Type          | Default                             | Description                                |
-|------------------------|---------------|-------------------------------------|--------------------------------------------|
-| `achievements`         | `table\|nil`  | [See below](#custom-achievements)   | Custom achievements                        |
-| `auto_save_interval`   | `number`      | `300`                               | Auto-save interval in seconds              |
-| `backdrop`             | `table\|nil`  | `{ enabled = true, winblend = 20 }` | List of excluded filetypes                 |
-| `custom_languages`     | `table\|nil`  | `nil`                               | Custom language definitions                |
-| `debug`                | `boolean`     | `true`                              | Enable some debugging messages             |
-| `enabled`              | `boolean`     | `true`                              | Enable/disable the plugin                  |
-| `gamification_enabled` | `boolean`     | `true`                              | Enable gamification features               |
-| `heat_highlights`      | `table\|nil`  | Defaults shown above                | Override heatmap highlights (hex or links) |
-| `ignore_ft`            | `table\|nil`  | `{}`                                | Backdrop customization                     |
-| `items`                | `table\|nil`  | `{ enabled = false }`               | Items configuration                        |
-| `level_progression`    | `table\|nil`  | [See below](#level-progression)     | Custom XP requirements per level tier      |
-| `levels`               | `table\|nil`  | [See below](#custom-levels)         | List of custom levels                      |
-| `notifications`        | `table\|nil`  | `{ achievements = true, enabled = true, level_up = true }` | Notifications for different events |
-| `override_levels`      | `boolean`     | `false`                                                    | Don't include the built-in levels          |
-| `xp_rewards`           | `table\|nil`  | [See below](#xp-rewards)                                   | Custom XP rewards for actions              |
 
 ### Custom Levels
 
@@ -577,17 +567,20 @@ The `Achievement` type spec is shown below:
 
 ```lua
 ---@class Stats
----@field xp number
----@field level integer
----@field chars_typed integer
----@field lines_typed integer
----@field sessions integer
----@field time_coding integer
 ---@field achievements table<string, boolean>
 ---@field chars_by_language table<string, integer>
----@field daily_activity table<string, integer>
+---@field chars_typed integer
+---@field currency integer
 ---@field current_streak integer
+---@field daily_activity table<string, integer>
+---@field db_path string
+---@field last_session_start integer
+---@field level integer
+---@field lines_typed integer
 ---@field longest_streak integer
+---@field sessions integer
+---@field time_coding integer
+---@field xp number
 
 -- DO NOT COPY DIRECTLY
 {
@@ -643,7 +636,7 @@ require('triforce').setup({
 
 ### Adding Custom Languages
 
-Triforce supports 50+ programming languages out of the box, but you can add more:
+More than 50 programming languages are natively supported, but you can add more if you wish:
 
 ```lua
 require('triforce').setup({
@@ -656,7 +649,7 @@ require('triforce').setup({
 
 ### Disabling Notifications
 
-Turn off all notifications or specific types:
+To turn off notifications, simply disable them on setup:
 
 ```lua
 require('triforce').setup({
@@ -677,9 +670,8 @@ vim.keymap.set('n', '<C-s>', require('triforce').show_profile, { desc = 'Show Tr
 
 ### Customizing Heatmap Colors
 
-If your colorscheme uses unconventional highlight groups, point the heatmap to colors that fit your palette.
-
-You can mix hex colors and links to existing highlight groups:
+If your colorscheme uses unconventional highlight groups, point the heatmap-to-colors that fit
+your palette the best. You can use hex colors and/or links to existing highlight groups:
 
 ```lua
 require('triforce').setup({
@@ -693,8 +685,8 @@ require('triforce').setup({
 })
 ```
 
-Each key corresponds to a heat level used in the profile activity graph. If a key is omitted then
-it will revert back to its default value.
+Each key corresponds to a heat level used in the profile activity graph. If a key is omitted or
+set to `nil` then it will revert back to its default value.
 
 ---
 
@@ -704,22 +696,10 @@ it will revert back to its default value.
 <img alt="Lualine Integration" src="https://github.com/DrKJeff16/triforce.nvim/blob/main/assets/triforce_lualine.png" />
 </div>
 
-Triforce provides **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display your coding
-stats right in your statusline.
+Triforce comes with **modular statusline components** for [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim), letting you display your
+coding stats right in your statusline.
 
-The following `lualine` components are available (**need a patched font**):
-
-| Component         | Default Display | Description                  |
-|-------------------|-----------------|------------------------------|
-| `achievements`    | `🏆 12/18`      | Unlocked/total achievements  |
-| `currency`        | `💰 484`        | Current amount of currency   |
-| `level`           | `Lv.27 ████░░`  | Level + XP progress bar      |
-| `session_time`    | `⏰ 2h 34m`     | Current session duration     |
-| `streak`          | `🔥 5`          | Current coding streak (days) |
-
-### Basic Setup
-
-Add Triforce components to your lualine configuration:
+You can add the default Triforce component to your lualine config:
 
 ```lua
 require('lualine').setup({
@@ -733,19 +713,72 @@ require('lualine').setup({
 
 Each component can be customized independently.
 
+The following `lualine` components are available (**a patched font is required**):
+
+| Component                                 | Default Display | Enabled by Default? | Description                   |
+|-------------------------------------------|-----------------|---------------------|-------------------------------|
+| [`achievements`](#achievements-component) | `🏆 12/18`      |                    | Unlocked/total achievements   |
+| [`currency`](#currency-component)         | `💰 484`        |                    | Current amount of currency    |
+| [`level`](#level-component)               | `Lv.27 ████░░`  |                    | Level + XP progress bar       |
+| [`session_time`](#session-time-component) | `⏰ 2h 34m`     |                    | Current session duration      |
+| [`streak`](#streak-component)             | `🔥 5`          |                    | Current coding streak in days |
+
+<details>
+<summary><b><ins></ins>Default setup options</b></summary>
+
+```lua
+require('lualine').setup({
+  sections = {
+    lualine_x = {
+      {
+        'triforce',
+        achievements = {
+          enabled = false,
+          icon = '',
+          show_count = true,
+        },
+        currency = {
+          enabled = true,
+          prefix = '💰',
+        },
+        level = {
+          bar = { chars = { empty = '░', filled = '█' }, length = 6 },
+          enabled = true,
+          prefix = 'Lv.',
+          show = { bar = true, level = true, percent = false, xp = false },
+        },
+        session_time = {
+          enabled = false,
+          icon = '',
+          show_duration = true,
+          format = 'short',
+        },
+        streak = {
+          enabled = false,
+          icon = '',
+          show_days = true,
+        },
+      },
+    },
+  }
+})
+```
+
+</details>
+
 #### Achievements Component
 
 Options:
 
 - `enabled` (boolean): Activates this component (default: `false`)
-- `icon` (string): Icon to display (default: `''` - trophy)
+- `icon` (string): Icon to display (default: `'🏆'`)
 - `show_count` (boolean): Show unlocked/total count (default: `true`)
 
 ```lua
 require('lualine').setup({
   sections = {
     lualine_x = {
-      { 'triforce', achievements = { enabled = false, icon = '', show_count = true } },
+      { 'triforce', achievements = { enabled = false, icon = '🏆', show_count = true } },
     },
   }
 })
@@ -840,48 +873,6 @@ require('lualine').setup({
       {
         'triforce',
         streak = { enabled = false, icon = '', show_days = true },
-      },
-    },
-  }
-})
-```
-
-### Global Component Configuration
-
-Set defaults for all components:
-
-```lua
-require('lualine').setup({
-  sections = {
-    lualine_x = {
-      {
-        'triforce',
-        achievements = {
-          enabled = false,
-          icon = '',
-          show_count = true,
-        },
-        currency = {
-          enabled = true,
-          prefix = '💰',
-        },
-        level = {
-          bar = { chars = { empty = '░', filled = '█' }, length = 6 },
-          enabled = true,
-          prefix = 'Lv.',
-          show = { bar = true, level = true, percent = false, xp = false },
-        },
-        session_time = {
-          enabled = false,
-          icon = '',
-          show_duration = true,
-          format = 'short',
-        },
-        streak = {
-          enabled = false,
-          icon = '',
-          show_days = true,
-        },
       },
     },
   }
