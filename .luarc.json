@@ -87,6 +87,9 @@
         "$VIMRUNTIME",
         "${3rd}/busted/library",
         "${3rd}/luv/library",
-        "$XDG_DATA_HOME/nvim/lazy/lualine.nvim"
+        "$HOME/Projects/nvim/volt",
+        "$XDG_DATA_HOME/nvim/lazy/lualine.nvim",
+        "$XDG_DATA_HOME/nvim/lazy/mini.icons",
+        "$XDG_DATA_HOME/nvim/lazy/volt"
     ]
 }
