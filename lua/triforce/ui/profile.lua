@@ -840,6 +840,10 @@ function Profile.cycle_tab(back, num)
   back = back ~= nil and back or false
   num = (num and Util.is_int(num)) and num or 0
 
+  if not dimensions.float then
+    return
+  end
+
   local old_tab = current_tab
   local positions = vim.tbl_keys(all_tabs) --[[@as integer[]\]]
   local pos = 1 ---@type Triforce.Ui.Profile.TabIndeces
@@ -907,7 +911,7 @@ end
 ---@param tab? Triforce.Ui.Profile.TabIndeces
 function Profile.open(tab)
   Util.validate({ tab = { tab, { 'number', 'nil' }, true } })
-  tab = (tab and vim.tbl_contains(tabs_map, tab)) and tab or current_tab
+  tab = (tab and vim.list_contains(vim.tbl_values(tabs_map), tab)) and tab or current_tab
   if dimensions.float and vim.api.nvim_buf_is_valid(dimensions.float.buf) then
     return
   end
