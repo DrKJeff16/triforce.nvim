@@ -1071,16 +1071,6 @@ LICENSE                                                     *triforce-license*
 
 MIT <https://github.com/DrKJeff16/triforce.nvim/blob/main/LICENSE>
 
-------------------------------------------------------------------------------
-
-STAR HISTORY                                           *triforce-star-history*
-
-**Made with for the Neovim community**
-
-Star this repo if you find it useful!
-
-
-
 ==============================================================================
 2. Links                                                      *triforce-links*
 
