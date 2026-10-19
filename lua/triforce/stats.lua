@@ -725,8 +725,8 @@ function M.export_to_lua(stats, target)
     error(('Unable to open target `%s`'):format(target))
   end
 
-  local data = vim.inspect(stats, { indent = (' '):rep(2) })
-  assert(vim.uv.fs_write(fd, vim.split(data, '\n', { trimempty = true })), ('Failed to write to %s'):format(target))
+  local data = vim.inspect(stats, { indent = (' '):rep(2), newline = '\n' })
+  assert(vim.uv.fs_write(fd, data), ('Failed to write to %s'):format(target))
   assert(vim.uv.fs_close(fd), ('Failed to close file descriptor for %s'):format(target))
   return data
 end
@@ -757,20 +757,27 @@ function M.export_to_md(stats, target)
     error(('Unable to open target `%s`'):format(target))
   end
 
-  local data = '# Triforce Stats\n'
-  for k, v in pairs(stats) do
-    data = ('%s\n## %s\n\n**Value**:'):format(data, k:sub(1, 1):upper() .. k:sub(2))
-    if type(v) == 'table' then
-      data = ('%s\n'):format(data)
-      for key, val in pairs(v) do
-        data = ('%s- **%s**: `%s`\n'):format(data, key, vim.inspect(val, { indent = '', newline = ' ' }))
+  local data = '# Triforce Stats'
+  local stats_keys = vim.tbl_keys(stats)
+  table.sort(stats_keys)
+
+  for _, key in ipairs(stats_keys) do
+    data = ('%s\n\n---\n\n## `%s`\n'):format(data, key)
+    if type(stats[key]) == 'table' then
+      data = ('%s\n| Key | Value |\n|------|--------|'):format(data)
+      local value_keys = vim.tbl_keys(stats[key])
+      table.sort(value_keys)
+      for _, k in ipairs(value_keys) do
+        data = ('%s\n| **%s** | `%s` |'):format(data, k, vim.inspect(stats[key][k], { indent = '', newline = ' ' }))
       end
     else
-      data = ('%s `%s`\n'):format(data, tostring(v))
+      data = ('%s\nValue: `%s`'):format(data, tostring(stats[key]))
     end
   end
 
-  assert(vim.uv.fs_write(fd, vim.split(data, '\n', { trimempty = false })), ('Failed to write to %s'):format(target))
+  data = ('%s\n<!-- vim: set ft=markdown ts=2 sts=2 sw=2 et: -->'):format(data)
+
+  assert(vim.uv.fs_write(fd, data), ('Failed to write to %s'):format(target))
   assert(vim.uv.fs_close(fd), ('Failed to close file descriptor for %s'):format(target))
   return data
 end
