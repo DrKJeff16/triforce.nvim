@@ -24,12 +24,16 @@ describe('triforce', function()
       end
     end)
 
-    describe('export', function()
+    describe('exporting', function()
       describe('to JSON', function()
         local fpath = 'spec/.stats.json'
+
+        after_each(function()
+          pcall(os.remove, fpath)
+        end)
+
         it('should export to stats with a given path', function()
           assert.is_true((pcall(triforce.export_stats_to_json, fpath)))
-          os.remove(fpath)
         end)
 
         it('should throw error when path is not valid', function()
@@ -41,11 +45,35 @@ describe('triforce', function()
         end)
       end)
 
-      describe('to Markdown', function()
-        local fpath = 'spec/.stats.md'
+      describe('to Lua', function()
+        local fpath = 'spec/.stats.lua'
+
+        after_each(function()
+          pcall(os.remove, fpath)
+        end)
+
         it('should export to stats with a given path', function()
           assert.is_true((pcall(triforce.export_stats_to_md, fpath)))
+        end)
+
+        it('should throw error when path is not valid', function()
+          assert.is_false((pcall(triforce.export_stats_to_md, '.anyarbitrarydirectory/specs.md')))
+        end)
+
+        it('should throw error when nil path is passed', function()
+          assert.is_false((pcall(triforce.export_stats_to_md, nil)))
+        end)
+      end)
+
+      describe('to Markdown', function()
+        local fpath = 'spec/.stats.md'
+
+        after_each(function()
           pcall(os.remove, fpath)
+        end)
+
+        it('should export to stats with a given path', function()
+          assert.is_true((pcall(triforce.export_stats_to_md, fpath)))
         end)
 
         it('should throw error when path is not valid', function()
