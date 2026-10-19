@@ -3,7 +3,6 @@ local Util = require('triforce.util')
 ---@class Triforce
 ---@field achievement Triforce.Achievements
 ---@field add_levels fun(lvls: LevelParams[]|LevelParams)
----@field commands Triforce.Commands
 ---@field config Triforce.Config
 ---@field get_config fun(): config: TriforceConfigDefaults
 ---@field get_levels fun(): levels: table<integer, LevelTitle>
