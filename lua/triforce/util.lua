@@ -156,6 +156,9 @@ function M.validate(T)
 end
 
 ---Emulates the behaviour of Python's builtin `range()` function.
+---
+---If only one argument is passed, then the start of the range will be `1`.
+---
 ---@overload fun(x: integer): range_list: integer[]
 ---@overload fun(x: integer, y: integer): range_list: integer[]
 ---@overload fun(x: integer, y: integer, step: integer): range_list: integer[]
@@ -181,7 +184,7 @@ function M.range(x, y, step)
     end
   elseif y and not step then
     if not M.is_int(y) then
-      error(('Argument `y` is not an integer: `%s`'):format(y))
+      error(('Argument `y` (`%s`) is not of integer type'):format(y))
     end
     step = x <= y and 1 or -1
 
@@ -191,10 +194,10 @@ function M.range(x, y, step)
     end
   elseif y and step then
     if not M.is_int({ y, step }) then
-      error('Arguments `y` and/or `step` are not an integer!')
+      error('Arguments `y` and/or `step` are not of integer type')
     end
     if step == 0 then
-      error('Argument `step` cannot be `0`!')
+      error('Argument `step` cannot be `0`')
     end
     if x > y and step >= 1 then
       error('Index out of bounds!')

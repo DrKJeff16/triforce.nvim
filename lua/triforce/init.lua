@@ -244,6 +244,14 @@ function M.export_stats_to_md(file)
   end
 end
 
+function M.export_stats_to_lua(file)
+  Util.validate({ file = { file, { 'string' } } })
+
+  if M.has_gamification() then
+    M.stats.export_to_lua(M.get_stats(), file)
+  end
+end
+
 ---@param achievements Achievement[]|Achievement
 function M.new_achievements(achievements)
   Util.validate({ achievements = { achievements, { 'table' } } })

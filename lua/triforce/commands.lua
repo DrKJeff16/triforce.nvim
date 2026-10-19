@@ -6,7 +6,11 @@ local M = {}
 -- Create user commands with subcommands
 function M.setup()
   vim.api.nvim_create_user_command('Triforce', function(opts)
-    local sub_2, sub_3, sub_4 = opts.fargs[2] or '', opts.fargs[3] or '', opts.fargs[4] or ''
+    local sub_2 = opts.fargs[2] or ''
+    local sub_3 = opts.fargs[3] or ''
+    local sub_4 = opts.fargs[4] or ''
+    local sub_5 = opts.fargs[5] or ''
+    local n_args = #opts.fargs
     local T = require('triforce')
     local options = vim.tbl_keys(T.ui.profile.get_tabs_map()) --[[@as string[]\]]
     local debug_ops = {
@@ -15,12 +19,11 @@ function M.setup()
       languages = T.debug_languages,
       xp = T.debug_xp,
     }
-
-    if #opts.fargs == 1 and opts.fargs[1] == 'config' then
+    if n_args == 1 and opts.fargs[1] == 'config' then
       T.config.open_window()
-    elseif opts.args[1] == 'profile' and sub_2 == '' then
+    elseif n_args == 2 and opts.args[1] == 'profile' then
       T.show_profile()
-    elseif opts.fargs[1] == 'profile' and not vim.list_contains(options, sub_2) then
+    elseif n_args == 3 and opts.fargs[1] == 'profile' and not vim.list_contains(options, sub_2) then
       local msg = 'Usage:\n  :Triforce profile'
       for _, option in ipairs(options) do
         msg = ('%s\n  :Triforce profile %s'):format(msg, option)
@@ -30,7 +33,7 @@ function M.setup()
       T.show_profile(sub_2)
     elseif opts.fargs[1] == 'reset' then
       T.reset()
-    elseif opts.fargs[1] == 'items' and sub_2 == '' then
+    elseif n_args == 1 and opts.fargs[1] == 'items' then
       vim.notify(
         [[Usage:
   :Triforce items buy <item>
@@ -38,30 +41,31 @@ function M.setup()
   :Triforce items list]],
         vim.log.levels.INFO
       )
-    elseif opts.fargs[1] == 'items' and sub_2 == 'currency' then
+    elseif n_args == 2 and opts.fargs[1] == 'items' and sub_2 == 'currency' then
       vim.notify(tostring(T.tracker.get_stats().currency), vim.log.levels.INFO)
-    elseif opts.fargs[1] == 'items' and sub_2 == 'list' then
+    elseif n_args == 2 and opts.fargs[1] == 'items' and sub_2 == 'list' then
       local msg = ''
       for name, item in pairs(T.items.get_items()) do
         msg = (msg .. (msg == '' and '' or '\n') .. '%s    %d'):format(name, item:price(T.tracker.get_stats()))
       end
       vim.notify(msg, vim.log.levels.INFO)
-    elseif opts.fargs[1] == 'items' and sub_2 == 'buy' then
+    elseif n_args == 2 and opts.fargs[1] == 'items' and sub_2 == 'buy' then
       if not vim.list_contains(T.items.get_items_by_name(), sub_3) then
         vim.notify('Usage:\n  :Triforce items buy <item>', vim.log.levels.INFO)
       else
         T.items.buy_item(sub_3)
       end
-    elseif opts.fargs[1] == 'stats' and sub_2 == '' then
+    elseif n_args == 1 and opts.fargs[1] == 'stats' then
       vim.notify(vim.inspect(T.get_stats(), { indent = '  ' }), vim.log.levels.INFO)
-    elseif opts.fargs[1] == 'stats' and sub_2 == 'save' then
+    elseif n_args == 2 and opts.fargs[1] == 'stats' and sub_2 == 'save' then
       T.save_stats()
     elseif opts.fargs[1] == 'stats' and not vim.list_contains({ 'export', 'save' }, sub_2) then
       vim.notify(
         [[Usage:
   :Triforce stats
   :Triforce stats export
-  :Triforce stats export json [</path/to/file>]
+  :Triforce stats export json [</path/to/file>] [INDENT_LEVEL]
+  :Triforce stats export lua [</path/to/file>]
   :Triforce stats export markdown [</path/to/file>]
   :Triforce stats save]],
         vim.log.levels.INFO
@@ -69,26 +73,44 @@ function M.setup()
     elseif
       opts.fargs[1] == 'stats'
       and sub_2 == 'export'
-      and not vim.list_contains({ 'json', 'markdown', '' }, sub_3)
+      and (not vim.list_contains({ 'json', 'markdown', 'lua', '' }, sub_3) or n_args > 5)
     then
       vim.notify(
         [[Usage:
-  :Triforce stats export json [<path/to/file>]
+  :Triforce stats export
+  :Triforce stats export json [<path/to/file>] [INDENT_LEVEL]
+  :Triforce stats export lua [</path/to/file>]
   :Triforce stats export markdown [</path/to/file>]\]],
         vim.log.levels.INFO
       )
-    elseif opts.fargs[1] == 'stats' and sub_2 == 'export' and sub_4 == '' then
+    elseif (n_args >= 2 and n_args <= 3) and opts.fargs[1] == 'stats' and sub_2 == 'export' then
       T.export_stats(sub_3 ~= '' and sub_3 or nil)
-    elseif opts.fargs[1] == 'stats' and sub_2 == 'export' and not vim.list_contains({ sub_3, sub_4 }, '') then
-      (sub_3 == 'markdown' and T.export_stats_to_md or T.export_stats_to_json)(sub_4)
-    elseif opts.fargs[1] == 'debug' and debug_ops[sub_2] then
-      pcall(debug_ops[sub_2])
-    elseif opts.fargs[1] == 'debug' then -- Plan B: If subcommand2 value is not valid then execute all debug operations but 'fix'
+    elseif n_args == 4 and opts.fargs[1] == 'stats' and sub_2 == 'export' and sub_3 == 'markdown' then
+      T.export_stats_to_md(sub_4)
+    elseif n_args == 4 and opts.fargs[1] == 'stats' and sub_2 == 'export' and sub_3 == 'lua' then
+      T.export_stats_to_lua(sub_4)
+    elseif (n_args >= 4 and n_args <= 5) and opts.fargs[1] == 'stats' and sub_2 == 'export' and sub_3 == 'json' then
+      T.export_stats_to_json(
+        sub_4,
+        (function()
+          local indent_str = nil ---@type string|nil|?
+          if sub_5 ~= '' then
+            local _, indent = pcall(tonumber, sub_5, 10) ---@type boolean, integer|nil|?
+            if indent and T.util.is_int(indent, indent > 0) then
+              indent_str = (' '):rep(indent)
+            end
+          end
+          return indent_str
+        end)()
+      )
+    elseif n_args == 1 and opts.fargs[1] == 'debug' then -- If only first subcommand exists then execute all debug operations but 'fix'
       for k, cb in pairs(debug_ops) do
         if k ~= 'fix' then
           pcall(cb)
         end
       end
+    elseif n_args == 2 and opts.fargs[1] == 'debug' and debug_ops[sub_2] then
+      pcall(debug_ops[sub_2])
     else
       vim.notify(
         [[Usage:
@@ -104,7 +126,8 @@ function M.setup()
   :Triforce reset
   :Triforce stats
   :Triforce stats export
-  :Triforce stats export json [<path/to/file>]
+  :Triforce stats export json [<path/to/file>] [INDENT_LEVEL]
+  :Triforce stats export lua [</path/to/file>]
   :Triforce stats export markdown [</path/to/file>]
   :Triforce stats save]],
         vim.log.levels.INFO
@@ -114,6 +137,7 @@ function M.setup()
     nargs = '*',
     desc = 'Triforce gamification commands',
     complete = function(_, line)
+      local Util = require('triforce.util')
       local res = {} ---@type string[]
       local third_pos = {
         debug = { 'xp', 'achievement', 'languages', 'fix' },
@@ -137,7 +161,7 @@ function M.setup()
           end
         end
       elseif #args == 4 and args[2] == 'stats' and args[3] == 'export' then
-        for _, comp in ipairs({ 'json', 'markdown' }) do
+        for _, comp in ipairs({ 'json', 'markdown', 'lua' }) do
           if args[4] == '' or (args[4] ~= '' and vim.startswith(comp, args[4])) then
             table.insert(res, comp)
           end
@@ -163,9 +187,15 @@ function M.setup()
         #args == 5
         and args[2] == 'stats'
         and args[3] == 'export'
-        and vim.list_contains({ 'json', 'markdown' }, args[4])
+        and vim.list_contains({ 'json', 'markdown', 'lua' }, args[4])
       then
         res = vim.fn.getcompletion(args[5], 'file', true)
+      elseif #args == 6 and args[2] == 'stats' and args[3] == 'export' and args[4] == 'json' and args[5] ~= '' then
+        for _, v in ipairs(Util.range(1, 32)) do
+          if vim.startswith(tostring(v), args[#args]) then
+            table.insert(res, tostring(v))
+          end
+        end
       end
       return res
     end,
