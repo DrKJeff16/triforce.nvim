@@ -466,37 +466,42 @@ USAGE                                                         *triforce-usage*
 Triforce creates the `:Triforce` user command for your comfort. Here are the
 available arguments:
 
-  --------------------------------------------------------------------------------------------------------------
-  Command                                                    Description
-  ---------------------------------------------------------- ---------------------------------------------------
-  :Triforce config                                           Open floating window showing your setup config
+  -----------------------------------------------------------------------------------------------------------------
+  Command                                                        Description
+  -------------------------------------------------------------- --------------------------------------------------
+  :Triforce config                                               Open floating window showing your setup config
 
-  :Triforce debug languages                                  Debug language tracking
+  :Triforce debug languages                                      Debug language tracking
 
-  :Triforce profile                                          Toggles the Profile UI.
+  :Triforce profile                                              Toggles the Profile UI.
 
-  :Triforce profile stats\|achievements\|languages\|levels   Toggles/cycles the Profile UI. If the UI is open
-                                                             and the passed tab is not the same as the current,
-                                                             it will cycle to it
+  :Triforce profile stats\|achievements\|languages\|levels       Toggles/cycles the Profile UI. If the UI is open
+                                                                 and the passed tab is not the same as the current,
+                                                                 it will cycle to it
 
-  :Triforce reset                                            Reset all stats (useful for testing)
+  :Triforce reset                                                Reset all stats (useful for testing)
 
-  :Triforce stats                                            Display current stats in a notification
+  :Triforce stats                                                Display current stats in a notification
 
-  :Triforce stats export                                     Export stats to a new buffer
+  :Triforce stats export                                         Export stats to a new buffer
 
-  :Triforce stats export json [</path/to/file> [INDENT]]     Export stats to JSON format. If a file name is
-                                                             given, the exported data will be saved there,
-                                                             otherwise a new buffer will open with the exported
-                                                             data
+  :Triforce stats export json [</path/to/file> [INDENT_LEVEL]]   Export stats to JSON format. If a file name is
+                                                                 given, the exported data will be saved there,
+                                                                 otherwise a new buffer will open with the exported
+                                                                 data
 
-  :Triforce stats export markdown [</path/to/file>]          Export stats to Markdown format. If a file name is
-                                                             given, the exported data will be saved there,
-                                                             otherwise a new buffer will open with the exported
-                                                             data
+  :Triforce stats export lua [</path/to/file>]                   Export stats to Lua format. If a file name is
+                                                                 given, the exported data will be saved there,
+                                                                 otherwise a new buffer will open with the exported
+                                                                 data
 
-  :Triforce stats save                                       Force-save stats immediately
-  --------------------------------------------------------------------------------------------------------------
+  :Triforce stats export markdown [</path/to/file>]              Export stats to Markdown format. If a file name is
+                                                                 given, the exported data will be saved there,
+                                                                 otherwise a new buffer will open with the exported
+                                                                 data
+
+  :Triforce stats save                                           Force-save stats immediately
+  -----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 
 PROFILE UI                                               *triforce-profile-ui*
@@ -1025,19 +1030,23 @@ The following is an export output in JSON format:
 
 The following user command operations are available:
 
-  -----------------------------------------------------------------------------------------------------------
-  Command                                         Format     Description
-  ----------------------------------------------- ---------- ------------------------------------------------
-  :Triforce stats export                          Lua        Raw export of your stats in a new buffer
+  ----------------------------------------------------------------------------------------------------------------
+  Command                                               Format     Description
+  ----------------------------------------------------- ---------- -----------------------------------------------
+  :Triforce stats export                                Lua        Raw export of your stats in a new buffer
 
-  :Triforce stats export json [<PATH> [INDENT]]   JSON       Export your stats to a given JSON file (with
-                                                             optional indent). If no path is given, the stats
-                                                             will be exported in another buffer
+  :Triforce stats export json [<PATH> [INDENT_LEVEL]]   JSON       Export your stats to a given JSON file (with
+                                                                   optional indent). If no path is given, the
+                                                                   stats will be exported in another buffer
 
-  :Triforce stats export markdown [<PATH>]        Markdown   Export your to a given Markdown file, with
-                                                             custom formatting. If no path is given, the
-                                                             stats will be exported in another buffer
-  -----------------------------------------------------------------------------------------------------------
+  :Triforce stats export lua [<PATH>]                   Lua        Export your to a given Lua file, with custom
+                                                                   formatting. If no path is given, the stats will
+                                                                   be exported in another buffer
+
+  :Triforce stats export markdown [<PATH>]              Markdown   Export your to a given Markdown file, with
+                                                                   custom formatting. If no path is given, the
+                                                                   stats will be exported in another buffer
+  ----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
 
 ROADMAP                                                     *triforce-roadmap*
