@@ -1,5 +1,5 @@
 *triforce.txt*
-                            For NVIM >=v0.10.0    Last change: 2026 October 19
+                                                  Last change: 2026 October 19
 
 ==============================================================================
 1. triforce.nvim                                      *triforce-triforce.nvim*
@@ -823,7 +823,7 @@ Default setup options ~
 <
 
 
-ACHIEVEMENTS COMPONENT
+Achievements Component                       *triforce-Achievements-Component*
 
 Options:
 
@@ -842,7 +842,7 @@ Options:
 <
 
 
-CURRENCY COMPONENT
+Currency Component                               *triforce-Currency-Component*
 
 Options:
 
@@ -860,7 +860,7 @@ Options:
 <
 
 
-LEVEL COMPONENT
+Level Component                                     *triforce-Level-Component*
 
 Options:
 
@@ -894,7 +894,7 @@ Options:
 <
 
 
-SESSION TIME COMPONENT
+Session Time Component                       *triforce-Session-Time-Component*
 
 Options:
 
@@ -917,7 +917,7 @@ Options:
 <
 
 
-STREAK COMPONENT
+Streak Component                                   *triforce-Streak-Component*
 
 Options:
 
