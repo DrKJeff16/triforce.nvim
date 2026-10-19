@@ -691,10 +691,7 @@ function M.export_to_json(stats, target, indent)
     error('Unable to encode stats!')
   end
 
-  assert(
-    vim.uv.fs_write(fd, vim.split(data, '\n', { trimempty = true })),
-    ('Failed to write data to %s'):format(target)
-  )
+  assert(vim.uv.fs_write(fd, data), ('Failed to write data to %s'):format(target))
   assert(vim.uv.fs_close(fd), ('Failed to close file descriptor for %s'):format(target))
   return data
 end
