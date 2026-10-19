@@ -21,14 +21,14 @@ jobs:
         with:
           vimdoc: triforce
           pandoc: README.md
-          version: "NVIM >=v0.10.0"
+          novimversion: true
           toc: false
           demojify: true
           dedupsubheadings: false
           treesitter: true
           ignorerawblocks: true
-          docmapping: false
-          docmappingprojectname: false
+          docmapping: true
+          docmappingprojectname: true
       - name: Auto Commit
         uses: stefanzweifel/git-auto-commit-action@v7.2.0
         with:
