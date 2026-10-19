@@ -59,11 +59,6 @@ made the process so much smoother and helped me focus on bringing those ideas to
   - [Levels Tab](#levels-tab)
   - [Stats Tab](#stats-tab)
 - [Achievements](#achievements)
-  - [Level Achievements](#level-achievements)
-  - [Polyglot Achievements](#polyglot-achievements)
-  - [Session Achievements](#session-achievements)
-  - [Time Achievements](#time-achievements)
-  - [Typing Achievements](#typing-achievements)
   - [Custom Achievements](#custom-achievements)
 - [Customization](#customization)
   - [Adding Custom Languages](#adding-custom-languages)
@@ -525,38 +520,48 @@ The following keybindings can be used in the profile UI:
 
 Triforce includes **18 built-in achievements** across 5 categories:
 
-### Level Achievements
+- **Level Achievements:**
 
-- ⭐ **Rising Star**: Reach level 5
-- 💎 **Expert Coder**: Reach level 10
-- 👑 **Champion**: Reach level 25
-- 🔱 **Legend**: Reach level 50
+| Achievement Name    | Completion Requirement(s) |
+|---------------------|---------------------------|
+| ⭐ **Rising Star**  | Reach level 5             |
+| 💎 **Expert Coder** | Reach level 10            |
+| 👑 **Champion**     | Reach level 25            |
+| 🔱 **Legend**       | Reach level 50            |
 
-### Polyglot Achievements
+- **Polyglot Achievements:**
 
-- 🌍 **Polyglot Beginner**: Code in 3 different languages
-- 🌎 **Polyglot**: Code in 5 different languages
-- 🌏 **Master Polyglot**: Code in 10 different languages
-- 🗺️ **Language Virtuoso**: Code in 15 different languages
+| Achievement Name         | Completion Requirement(s)      |
+|--------------------------|--------------------------------|
+| 🌍 **Polyglot Beginner** | Code in 3 different languages  |
+| 🌎 **Polyglot**          | Code in 5 different languages  |
+| 🌏 **Master Polyglot**   | Code in 10 different languages |
+| 🗺️ **Language Virtuoso** | Code in 15 different languages |
 
-### Session Achievements
+- **Session Achievements:**
 
-- 🔄 **Regular Visitor**: Complete 10 sessions
-- 📅 **Creature of Habit**: Complete 50 sessions
-- 🏆 **Dedicated Hero**: Complete 100 sessions
+| Achievement Name         | Completion Requirement(s) |
+|--------------------------|---------------------------|
+| 🔄 **Regular Visitor**   | Complete 10 sessions      |
+| 📅 **Creature of Habit** | Complete 50 sessions      |
+| 🏆 **Dedicated Hero**    | Complete 100 sessions     |
 
-### Time Achievements
+- **Time Achievements:**
 
-- ⏰ **First Hour**: Code for 1 hour total
-- ⌛ **Committed**: Code for 10 hours total
-- 🕐 **Veteran**: Code for 100 hours total
+| Achievement Name  | Completion Requirement(s) |
+|-------------------|---------------------------|
+| ⏰ **First Hour** | Code for 1 hour total     |
+| ⌛ **Committed**  | Code for 10 hours total   |
+| 🕐 **Veteran**    | Code for 100 hours total  |
 
-### Typing Achievements
+- **Typing Achievements:**
 
-- 🌱 **First Steps**: Type 100 characters
-- ⚔️ **Getting Started**: Type 1,000 characters
-- 🛡️ **Dedicated Coder**: Type 10,000 characters
-- 📜 **Master Scribe**: Type 100,000 characters
+| Achievement Name       | Completion Requirement(s) |
+|------------------------|---------------------------|
+| 🌱 **First Steps**     | Type 100 characters       |
+| ⚔️ **Getting Started** | Type 1,000 characters     |
+| 🛡️ **Dedicated Coder** | Type 10,000 characters    |
+| 📜 **Master Scribe**   | Type 100,000 characters   |
 
 ### Custom Achievements
 
