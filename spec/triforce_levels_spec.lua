@@ -4,9 +4,22 @@ describe('triforce', function()
   local triforce ---@type Triforce
   local levels ---@type Triforce.Levels
 
-  before_each(function()
-    -- Clear module cache to get fresh instance
+  before_each(function() -- Clear module cache to get fresh instance
     package.loaded['triforce'] = nil
+    package.loaded['triforce.achievement'] = nil
+    package.loaded['triforce.config'] = nil
+    package.loaded['triforce.health'] = nil
+    package.loaded['triforce.items'] = nil
+    package.loaded['triforce.languages'] = nil
+    package.loaded['triforce.levels'] = nil
+    package.loaded['triforce.lualine'] = nil
+    package.loaded['triforce.random_stats'] = nil
+    package.loaded['triforce.stats'] = nil
+    package.loaded['triforce.tracker'] = nil
+    package.loaded['triforce.ui'] = nil
+    package.loaded['triforce.ui.profile'] = nil
+    package.loaded['triforce.util'] = nil
+
     triforce = require('triforce')
     levels = require('triforce.levels')
   end)
@@ -19,8 +32,7 @@ describe('triforce', function()
         { level = 8, title = 'Test 3' },
       }
 
-      local ok = pcall(triforce.setup, { levels = lvls })
-      assert.is_true(ok)
+      assert.is_true((pcall(triforce.setup, { levels = lvls })))
 
       for _, lvl in ipairs(lvls) do
         assert.is_same(lvl.title, levels.get_level_title(lvl.level, false))
@@ -29,15 +41,10 @@ describe('triforce', function()
 
     it('should fail on missing custom level field', function()
       ---@diagnostic disable:missing-fields
-      local lvls = { ---@type LevelParams[]
-        { title = 'Test 1' },
-        { level = 600 },
-        { title = 'Test 3' },
-      }
+      assert.is_false(
+        (pcall(triforce.setup, { levels = { { title = 'Test 1' }, { level = 600 }, { title = 'Test 3' } } }))
+      )
       ---@diagnostic enable:missing-fields
-
-      local ok = pcall(triforce.setup, { levels = lvls })
-      assert.is_false(ok)
     end)
   end)
 end)

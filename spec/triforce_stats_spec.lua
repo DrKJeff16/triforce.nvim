@@ -2,16 +2,30 @@ local assert = require('luassert') --[[@as Luassert]]
 
 describe('triforce', function()
   local triforce ---@type Triforce
-  local stats ---@type Triforce.Stats
 
-  before_each(function()
-    -- Clear module cache to get fresh instance
-    package.loaded.triforce = nil
+  before_each(function() -- Clear module cache to get fresh instance
+    package.loaded['triforce'] = nil
+    package.loaded['triforce.achievement'] = nil
+    package.loaded['triforce.config'] = nil
+    package.loaded['triforce.health'] = nil
+    package.loaded['triforce.items'] = nil
+    package.loaded['triforce.languages'] = nil
+    package.loaded['triforce.levels'] = nil
+    package.loaded['triforce.lualine'] = nil
+    package.loaded['triforce.random_stats'] = nil
+    package.loaded['triforce.stats'] = nil
+    package.loaded['triforce.tracker'] = nil
+    package.loaded['triforce.ui'] = nil
+    package.loaded['triforce.ui.profile'] = nil
+    package.loaded['triforce.util'] = nil
+
     triforce = require('triforce')
     triforce.setup()
   end)
 
   describe('stats', function()
+    local stats ---@type Triforce.Stats
+
     before_each(function()
       stats = require('triforce.stats')
     end)
