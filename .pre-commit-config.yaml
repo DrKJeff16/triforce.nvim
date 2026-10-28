@@ -3,14 +3,11 @@ repos:
     rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
-        verbose: true
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.6
     hooks:
       - id: remove-crlf
-        verbose: true
-      - id: forbid-crlf # Forbid files containing CRLF end-lines to be committed
-        verbose: true
+      - id: forbid-crlf
   - repo: local
     hooks:
       - id: stylua
@@ -33,5 +30,3 @@ repos:
         files: ^(lua|spec)/.*\.lua$
         types: [lua]
         verbose: true
-
-# vim: set ts=2 sts=2 sw=2 et ai si sta:
