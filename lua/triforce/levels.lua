@@ -93,9 +93,7 @@ end
 ---@return string icon
 function M.get_level_icon(level)
   Util.validate({ level = { level, { 'number' } } })
-  if not Util.is_int(level, level > 0) then
-    error(('Level `%s` is not valid!'):format(vim.inspect(level)), ERROR)
-  end
+  assert(Util.is_int(level, level > 0), ('Level `%s` is not valid!'):format(vim.inspect(level)))
 
   if vim.tbl_isempty(levels) then
     return ''
@@ -110,18 +108,18 @@ function M.get_level_icon(level)
   return levels[math.min(unpack(values))].icon or '💫'
 end
 
----Get title based on given level
+---Get title based on given level.
+---
 ---@param level integer
----@param with_icon? boolean
+---@param with_icon boolean
 ---@return string title
+---@overload fun(level: integer): title: string
 function M.get_level_title(level, with_icon)
   Util.validate({
     level = { level, { 'number' } },
     with_icon = { with_icon, { 'boolean', 'nil' }, true },
   })
-  if not Util.is_int(level, level > 0) then
-    error(('Level `%s` is not valid!'):format(vim.inspect(level)), ERROR)
-  end
+  assert(Util.is_int(level, level > 0), ('Level `%s` is not valid!'):format(vim.inspect(level)))
   if with_icon == nil then
     with_icon = true
   end

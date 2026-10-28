@@ -35,7 +35,7 @@ local Item = {}
 
 ---@param stats Stats
 ---@param no_notify? boolean
-function Item.available(self, stats, no_notify)
+function Item:available(stats, no_notify)
   Util.validate({
     stats = { stats, { 'table' } },
     no_notify = { no_notify, { 'boolean', 'nil' }, true },
@@ -43,37 +43,39 @@ function Item.available(self, stats, no_notify)
   if no_notify == nil then
     no_notify = false
   end
+
+  local res = true
   if self.level_cap > 0 and stats.level >= self.level_cap then
     if not no_notify then
       vim.notify('(triforce.nvim): Level is higher than the limit!', ERROR)
     end
-    return false
-  end
-  if stats.currency < self.price(self, stats) then
+    res = false
+  elseif stats.currency < self:price(stats) then
     if not no_notify then
       vim.notify('(triforce.nvim): Not enough currency!', ERROR)
     end
-    return false
-  end
-  if self.once and self.times_used > 0 then
+    res = false
+  elseif self.once and self.times_used > 0 then
     if not no_notify then
       vim.notify('(triforce.nvim): Item cannot be used again!', ERROR)
     end
-    return false
-  end
-  if not self.once and self.max_uses > 0 and self.max_uses <= self.times_used then
+    res = false
+  elseif not self.once and self.max_uses > 0 and self.max_uses <= self.times_used then
     if not no_notify then
       vim.notify('(triforce.nvim): Item cannot be used more than its maximum!', ERROR)
     end
-    return false
+    res = false
   end
-  return true
+  return res
 end
 
 ---@param T Triforce.Items.Spec
 ---@return Triforce.Items.FullSpec item
 function Item.new(T)
-  local item = setmetatable(T, { __index = Item }) ---@type Triforce.Items.FullSpec
+  ---@diagnostic disable-next-line:missing-fields
+  local item = {} ---@type Triforce.Items.FullSpec
+  setmetatable(item, { __index = Item })
+
   item.max_uses = T.max_uses or 0
   item.level_cap = T.level_cap and T.level_cap(item) or 0
   item.filetypes = T.filetypes or {}
@@ -83,7 +85,7 @@ function Item.new(T)
   local cb = item.callback
   item.callback = function(self, stats)
     local filetype = Util.optget('filetype', 'buf', vim.api.nvim_get_current_buf()) --[[@as string]]
-    local is_ft = vim.tbl_isempty(self.filetypes)
+    local is_ft = #self.filetypes == 0
     for _, ft in ipairs(self.filetypes) do
       if vim.list_contains({ '*', filetype }, ft) then
         is_ft = true
@@ -134,10 +136,10 @@ local items = { ---@type table<string, Triforce.Items.Spec>
       end
 
       local res = false
+      local new_stats ---@type Stats
       if not level_boost then
         vim.notify('(triforce.nvim) Unable to boost higher!', ERROR)
       else
-        local new_stats
         res, new_stats = require('triforce.stats').add_xp(
           stats,
           require('triforce.stats').xp_for_next_level(stats.level + level_boost) - stats.xp,
@@ -202,22 +204,16 @@ local items = { ---@type table<string, Triforce.Items.Spec>
         timers.xp_timer_3x = nil
       end
 
-      local res = false
-      timers.xp_timer_3x = vim.uv.new_timer()
-      if not timers.xp_timer_3x then
-        vim.notify('(triforce.nvim): Unable to create timer!')
-      else
-        require('triforce.stats').set_xp_multiplier(3)
-        timers.xp_timer_3x:start(
-          15 * 60 * 1000, -- minutes * seconds * milliseconds
-          0,
-          vim.schedule_wrap(function()
-            require('triforce.stats').set_xp_multiplier(1)
-          end)
-        )
-        res = true
-      end
-      return res
+      timers.xp_timer_3x = assert(vim.uv.new_timer(), '(triforce.nvim): Unable to create timer!')
+      require('triforce.stats').set_xp_multiplier(3)
+      timers.xp_timer_3x:start(
+        15 * 60 * 1000, -- minutes * seconds * milliseconds
+        0,
+        vim.schedule_wrap(function()
+          require('triforce.stats').set_xp_multiplier(1)
+        end)
+      )
+      return true
     end,
     desc = 'Triplicate your XP gain for 15 minutes (cannot be stacked). Closing Neovim will cancel this timer!',
     name = 'XP Multiplier (3X, 15 minutes)',
@@ -236,22 +232,16 @@ local items = { ---@type table<string, Triforce.Items.Spec>
         timers.xp_timer_5x = nil
       end
 
-      local res = false
-      timers.xp_timer_5x = vim.uv.new_timer()
-      if not timers.xp_timer_5x then
-        vim.notify('(triforce.nvim): Unable to create timer!')
-      else
-        require('triforce.stats').set_xp_multiplier(5)
-        timers.xp_timer_5x:start(
-          5 * 60 * 1000, -- minutes * seconds * milliseconds
-          0,
-          vim.schedule_wrap(function()
-            require('triforce.stats').set_xp_multiplier(1)
-          end)
-        )
-        res = true
-      end
-      return res
+      timers.xp_timer_5x = assert(vim.uv.new_timer(), '(triforce.nvim): Unable to create timer!')
+      require('triforce.stats').set_xp_multiplier(5)
+      timers.xp_timer_5x:start(
+        5 * 60 * 1000, -- minutes * seconds * milliseconds
+        0,
+        vim.schedule_wrap(function()
+          require('triforce.stats').set_xp_multiplier(1)
+        end)
+      )
+      return true
     end,
     desc = 'Multiplie your XP gain by 5, for 5 minutes (cannot be stacked). Closing Neovim will cancel this timer!',
     name = 'XP Multiplier (5X, 5 minutes)',
@@ -269,12 +259,7 @@ local function setup_watch()
     return
   end
 
-  event = vim.uv.new_fs_event()
-  if not event then
-    vim.notify('(triforce.nvim): Unable to setup item file setup event!', ERROR)
-    return
-  end
-
+  event = assert(vim.uv.new_fs_event(), '(triforce.nvim): Unable to setup item file setup event')
   event:start(items_path, {}, function(err, filename, events)
     if err or not events.change then
       vim.notify(('Error while watching events for `%s`:\n%s'):format(filename, err or ''), ERROR)
@@ -303,6 +288,7 @@ function M.get_items(json)
   if json == nil then
     json = false
   end
+
   if not json then
     return all_items
   end
@@ -323,31 +309,33 @@ end
 function M.read_items()
   local stat = vim.uv.fs_stat(items_path)
   if not stat then
-    local fd = vim.uv.fs_open(items_path, 'w', tonumber('644', 8))
-    if not fd then
-      error(('Error while opening %s'):format(items_path))
+    local fd = assert(
+      vim.uv.fs_open(items_path, 'w', tonumber('644', 8)),
+      ('Unable to open items path: `%s`'):format(items_path)
+    )
+    assert(vim.uv.fs_write(fd, vim.json.encode(M.get_items(true))), 'Unable to write to items file')
+    assert(vim.uv.fs_close(fd), 'Unable to close file descriptor for items file')
+  else
+    local fd = assert(
+      vim.uv.fs_open(items_path, 'r', tonumber('644', 8)),
+      ('Unable to open items path: `%s`'):format(items_path)
+    )
+    local ok, raw_data = pcall(vim.uv.fs_read, fd, stat.size)
+    assert(vim.uv.fs_close(fd), 'Unable to close file descriptor for items file')
+
+    if not (ok and raw_data) then
+      return
     end
-    vim.uv.fs_write(fd, vim.json.encode(M.get_items(true)))
-    vim.uv.fs_close(fd)
-    return
-  end
 
-  local fd = vim.uv.fs_open(items_path, 'r', tonumber('644', 8))
-  if not fd then
-    return
-  end
-
-  local ok, raw_data = pcall(vim.uv.fs_read, fd, stat.size)
-  vim.uv.fs_close(fd)
-  if ok and raw_data then
     local json_ok, data = pcall(vim.json.decode, raw_data) ---@type boolean, table<string, Triforce.Items.FullSpec>|nil|?
-    if json_ok and data then
-      for name, item in pairs(data) do
-        for k, v in pairs(item) do
-          ---@cast k string
-          if all_items[name][k] == nil then
-            all_items[name][k] = v
-          end
+    if not (json_ok and data) then
+      return
+    end
+
+    for name, item in pairs(data) do
+      for k, v in pairs(item) do
+        if all_items[name][k] == nil then
+          all_items[name][k] = v
         end
       end
     end
@@ -355,25 +343,12 @@ function M.read_items()
 end
 
 function M.save_items()
-  local stat = vim.uv.fs_stat(items_path)
-  if not stat or stat.size == 0 then
-    local fd = vim.uv.fs_open(items_path, 'w', tonumber('644', 8))
-    if not fd then
-      error(('Error while opening %s'):format(items_path))
-    end
-    vim.uv.fs_write(fd, vim.json.encode(M.get_items(true)))
-    vim.uv.fs_close(fd)
-    return
-  end
+  local json_ok, data = pcall(vim.json.encode, M.get_items(true))
+  assert(json_ok and data ~= nil, 'Unable to encode items into JSON')
 
-  local fd = vim.uv.fs_open(items_path, 'w', tonumber('644', 8))
-  if fd then
-    local json_ok, data = pcall(vim.json.encode, M.get_items(true))
-    if json_ok and data then
-      vim.uv.fs_write(fd, data)
-    end
-    vim.uv.fs_close(fd)
-  end
+  local fd = assert(vim.uv.fs_open(items_path, 'w', tonumber('644', 8)), 'Unable to open items file')
+  assert(vim.uv.fs_write(fd, data), 'Unable to write to items file')
+  assert(vim.uv.fs_close(fd), 'Unable to close file descriptor for items file')
 end
 
 ---@param id string
@@ -422,13 +397,14 @@ function M.reset_all_items()
       all_items[name] = vim.deepcopy(item)
     end
 
-    local fd = vim.uv.fs_open(items_path, 'w', tonumber('644', 8))
-    if fd then
-      vim.uv.fs_ftruncate(fd, 0)
-      vim.uv.fs_close(fd)
+    local fd = assert(
+      vim.uv.fs_open(items_path, 'w', tonumber('644', 8)),
+      ('Unable to open items file: `%s`'):format(items_path)
+    )
+    assert(vim.uv.fs_ftruncate(fd, 0), 'Unable to truncate items file')
+    assert(vim.uv.fs_close(fd), 'Unable to close file descriptor for items file')
 
-      M.save_items()
-    end
+    M.save_items()
   end
 end
 

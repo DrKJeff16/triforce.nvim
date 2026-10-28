@@ -1,7 +1,9 @@
 ---@class Triforce.Ui
 ---@field profile Triforce.Ui.Profile
-local M = setmetatable({}, {
-  __index = function(self, k)
+local M = {}
+
+setmetatable(M, {
+  __index = function(self, k) ---@param self Triforce.Ui
     local raw = rawget(self, k) or nil
     if raw then
       return raw

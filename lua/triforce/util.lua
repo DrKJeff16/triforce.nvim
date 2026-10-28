@@ -53,23 +53,25 @@ function M.optget(option, param, param_value)
     param = { param, { 'string' } },
     param_value = { param_value, { 'string', 'number', 'nil' }, true },
   })
-  if not vim.list_contains({ 'scope', 'ft', 'buf', 'win' }, param) then
-    error(('Bad parameter: `%s`\nCan only accept `scope`, `ft`, `buf` or `win`!'):format(vim.inspect(param)))
-  end
+  assert(
+    vim.list_contains({ 'scope', 'ft', 'buf', 'win' }, param),
+    ('Bad parameter: `%s`\nCan only accept `scope`, `ft`, `buf` or `win`!'):format(vim.inspect(param))
+  )
   if param == 'scope' then
     param_value = param_value or 'local'
-    if not vim.list_contains({ 'global', 'local' }, param_value) then
-      error(('Bad param value `%s`\nCan only accept `global` or `local`!'):format(vim.inspect(param_value)))
-    end
+    assert(
+      vim.list_contains({ 'global', 'local' }, param_value),
+      ('Bad param value `%s`\nCan only accept `global` or `local`!'):format(vim.inspect(param_value))
+    )
   end
-  if param == 'ft' and (not param_value or type(param_value) ~= 'string') then
-    error('Missing/bad value for `ft` parameter!')
+  if param == 'ft' then
+    assert(param_value and type(param_value) == 'string', 'Missing/bad value for `ft` parameter!')
   end
-  if
-    vim.list_contains({ 'win', 'buf' }, param)
-    and not (param_value and type(param_value) == 'number' and M.is_int(param_value, param_value >= 0))
-  then
-    error('Missing/bad value for `win`/`buf` parameter!')
+  if vim.list_contains({ 'win', 'buf' }, param) then
+    assert(
+      param_value and type(param_value) == 'number' and M.is_int(param_value, param_value >= 0),
+      'Missing/bad value for `win`/`buf` parameter!'
+    )
   end
 
   return vim.api.nvim_get_option_value(option, { [param] = param_value })
@@ -84,26 +86,26 @@ function M.optset(option, value, param, param_value)
     param = { param, { 'string' } },
     param_value = { param_value, { 'string', 'number', 'nil' }, true },
   })
-  if value == nil then
-    error('Empty option value is unacceptable!')
-  end
-  if not vim.list_contains({ 'scope', 'ft', 'buf', 'win' }, param) then
-    error(('Bad parameter: `%s`\nCan only accept `scope`, `ft`, `buf` or `win`!'):format(vim.inspect(param)))
-  end
+  assert(value ~= nil, 'Empty option value is unacceptable!')
+  assert(
+    vim.list_contains({ 'scope', 'ft', 'buf', 'win' }, param),
+    ('Bad parameter: `%s`\nCan only accept `scope`, `ft`, `buf` or `win`!'):format(vim.inspect(param))
+  )
   if param == 'scope' then
     param_value = param_value or 'local'
-    if not vim.list_contains({ 'global', 'local' }, param_value) then
-      error(('Bad param value `%s`\nCan only accept `global` or `local`!'):format(vim.inspect(param_value)))
-    end
+    assert(
+      vim.list_contains({ 'global', 'local' }, param_value),
+      ('Bad param value `%s`\nCan only accept `global` or `local`!'):format(vim.inspect(param_value))
+    )
   end
-  if param == 'ft' and (not param_value or type(param_value) ~= 'string') then
-    error('Missing/bad value for `ft` parameter!')
+  if param == 'ft' then
+    assert(param_value and type(param_value) == 'string', 'Missing/bad value for `ft` parameter!')
   end
-  if
-    vim.list_contains({ 'win', 'buf' }, param)
-    and not (param_value and type(param_value) == 'number' and M.is_int(param_value, param_value >= 0))
-  then
-    error('Missing/bad value for `win`/`buf` parameter!')
+  if vim.list_contains({ 'win', 'buf' }, param) then
+    assert(
+      param_value and type(param_value) == 'number' and M.is_int(param_value, param_value >= 0),
+      'Missing/bad value for `win`/`buf` parameter!'
+    )
   end
 
   vim.api.nvim_set_option_value(option, value, { [param] = param_value })
@@ -169,9 +171,7 @@ function M.range(x, y, step)
     step = { step, { 'number', 'nil' }, true },
   })
 
-  if not M.is_int(x) then
-    error(('Argument `x` is not an integer: `%s`'):format(x))
-  end
+  assert(M.is_int(x), ('Argument `x` is not an integer: `%s`'):format(x))
 
   local range_list = {} ---@type integer[]
   if not (y or step) then
@@ -183,9 +183,8 @@ function M.range(x, y, step)
       table.insert(range_list, v)
     end
   elseif y and not step then
-    if not M.is_int(y) then
-      error(('Argument `y` (`%s`) is not of integer type'):format(y))
-    end
+    assert(M.is_int(y), ('Argument `y` (`%s`) is not of integer type'):format(y))
+
     step = x <= y and 1 or -1
 
     table.insert(range_list, x)
@@ -193,14 +192,10 @@ function M.range(x, y, step)
       table.insert(range_list, v)
     end
   elseif y and step then
-    if not M.is_int({ y, step }) then
-      error('Arguments `y` and/or `step` are not of integer type')
-    end
-    if step == 0 then
-      error('Argument `step` cannot be `0`')
-    end
-    if x > y and step >= 1 then
-      error('Index out of bounds!')
+    assert(M.is_int({ y, step }), 'Arguments `y` and/or `step` are not of integer type')
+    assert(step ~= 0, 'Argument `step` cannot be `0`')
+    if x > y then
+      assert(step >= 1, 'Index out of bounds!')
     end
     if x > y and step <= -1 then
       x, y = y, x
@@ -223,9 +218,7 @@ end
 ---@return boolean leap_year
 function M.is_leap(year)
   M.validate({ year = { year, { 'number' } } })
-  if not M.is_int(year) then
-    error(('Not an integer: `%s`'):format(year))
-  end
+  assert(M.is_int(year), ('Not an integer: `%s`'):format(year))
 
   return (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0)
 end
@@ -239,9 +232,7 @@ function M.days_in_month(month, year)
     year = { year, { 'number' } },
   })
 
-  if not (M.is_int(month) and vim.list_contains(M.range(12), month)) then
-    error('Cannot calculate days in month!')
-  end
+  assert(M.is_int(month) and vim.list_contains(M.range(12), month), 'Cannot calculate days in month!')
 
   if month ~= 2 then
     return DAYS_PER_MONTH[month]
@@ -447,17 +438,13 @@ function M.cycle_range(curr, first, last, back)
     back = false
   end
 
-  if not M.is_int({ curr, first, last }) then
-    error('Value is not an integer!')
-  end
+  assert(M.is_int({ curr, first, last }), 'Value is not an integer!')
 
   if last < first then
     first, last = M.swap(first, last)
   end
 
-  if curr > last or curr < first then
-    error('Number to be cycled is out of range!')
-  end
+  assert(curr <= last and curr >= first, 'Number to be cycled is out of range!')
 
   local cycled = curr + 1 > last and first or curr + 1
   if back then
@@ -537,11 +524,5 @@ function M.get(t, k, fallback, is_rawset)
   end
 end
 
-local Util = setmetatable(M, {
-  __newindex = function()
-    error('`triforce.util` is read-only!')
-  end,
-})
-
-return Util
+return M
 -- vim: set ts=2 sts=2 sw=2 et ai si sta:

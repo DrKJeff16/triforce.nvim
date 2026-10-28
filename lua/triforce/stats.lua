@@ -673,24 +673,12 @@ function M.export_to_json(stats, target, indent)
   target, indent = vim.fn.fnamemodify(target, ':p'), (indent and indent ~= '') and indent or nil
 
   local parent_stat = vim.uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
-  if not parent_stat or parent_stat.type ~= 'directory' then
-    error(('Target not in a valid directory: `%s`'):format(target))
-  end
-  if vim.fn.isdirectory(target) == 1 then
-    error(('Target is a directory: `%s`'):format(target))
-  end
+  assert(parent_stat and parent_stat.type == 'directory', ('Target not in a valid directory: `%s`'):format(target))
+  assert(vim.fn.isdirectory(target) ~= 1, ('Target is a directory: `%s`'):format(target))
 
-  local fd = vim.uv.fs_open(target, 'w', tonumber('644', 8))
-  if not fd then
-    error(('Unable to open target `%s`'):format(target))
-  end
-
+  local fd = assert(vim.uv.fs_open(target, 'w', tonumber('644', 8)), ('Unable to open tagret: `%s`'):format(target))
   local ok, data = pcall(vim.json.encode, stats, { sort_keys = true, indent = indent })
-  if not (ok and data) then
-    vim.uv.fs_close(fd)
-    error('Unable to encode stats!')
-  end
-
+  assert(ok and data ~= nil, 'Unable to encode stats!')
   assert(vim.uv.fs_write(fd, data), ('Failed to write data to %s'):format(target))
   assert(vim.uv.fs_close(fd), ('Failed to close file descriptor for %s'):format(target))
   return data
@@ -709,20 +697,15 @@ function M.export_to_lua(stats, target)
   target = vim.fn.fnamemodify(target, ':p')
 
   local parent_stat = vim.uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
-  if not parent_stat or parent_stat.type ~= 'directory' then
-    error(('Target not in a valid directory: `%s`'):format(target))
-  end
+  assert(parent_stat and parent_stat.type == 'directory', ('Target not in a valid directory: `%s`'):format(target))
 
-  if vim.list_contains({ '/', '\\' }, target:sub(-1, -1)) or vim.fn.isdirectory(target) == 1 then
-    error(('Target is a directory: `%s`'):format(target))
-  end
-
-  local fd = vim.uv.fs_open(target, 'w', tonumber('644', 8))
-  if not fd then
-    error(('Unable to open target `%s`'):format(target))
-  end
+  assert(
+    not vim.list_contains({ '/', '\\' }, target:sub(-1, -1)) and vim.fn.isdirectory(target) ~= 1,
+    ('Target is a directory: `%s`'):format(target)
+  )
 
   local data = vim.inspect(stats, { indent = (' '):rep(2), newline = '\n' })
+  local fd = assert(vim.uv.fs_open(target, 'w', tonumber('644', 8)), ('Unable to open target `%s`'):format(target))
   assert(vim.uv.fs_write(fd, data), ('Failed to write to %s'):format(target))
   assert(vim.uv.fs_close(fd), ('Failed to close file descriptor for %s'):format(target))
   return data
@@ -741,18 +724,13 @@ function M.export_to_md(stats, target)
   target = vim.fn.fnamemodify(target, ':p')
 
   local parent_stat = vim.uv.fs_stat(vim.fn.fnamemodify(target, ':h'))
-  if not parent_stat or parent_stat.type ~= 'directory' then
-    error(('Target not in a valid directory: `%s`'):format(target))
-  end
+  assert(parent_stat and parent_stat.type == 'directory', ('Target not in a valid directory: `%s`'):format(target))
+  assert(
+    not vim.list_contains({ '/', '\\' }, target:sub(-1, -1)) and vim.fn.isdirectory(target) ~= 1,
+    ('Target is a directory: `%s`'):format(target)
+  )
 
-  if vim.list_contains({ '/', '\\' }, target:sub(-1, -1)) or vim.fn.isdirectory(target) == 1 then
-    error(('Target is a directory: `%s`'):format(target))
-  end
-
-  local fd = vim.uv.fs_open(target, 'w', tonumber('644', 8))
-  if not fd then
-    error(('Unable to open target `%s`'):format(target))
-  end
+  local fd = assert(vim.uv.fs_open(target, 'w', tonumber('644', 8)), ('Unable to open target: `%s`'):format(target))
 
   local data = '# Triforce Stats'
   local stats_keys = vim.tbl_keys(stats)
